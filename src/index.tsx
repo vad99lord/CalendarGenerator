@@ -1,15 +1,21 @@
-import bridge from "@vkontakte/vk-bridge";
 import "@vkontakte/vkui/dist/vkui.css";
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { LaunchParamsProvider } from "./contexts/LaunchParamsContext";
 import reportWebVitals from "./reportWebVitals";
+import { fetchVkApi } from "./utils/network/fetchVkApi";
 
-bridge.send("VKWebAppInit", {});
+fetchVkApi("VKWebAppInit", {});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <LaunchParamsProvider>
+        <App />
+      </LaunchParamsProvider>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root") as HTMLElement
 );
