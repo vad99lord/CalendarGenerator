@@ -1,15 +1,20 @@
-import { UsersUserFull } from "@vkontakte/api-schema-typescript";
-import { Div } from "@vkontakte/vkui";
+import { Avatar, SimpleCell } from "@vkontakte/vkui";
+import { UserModel } from "../network/models/User/UserModel";
 
 type UserProps = {
-  user: UsersUserFull;
+  user: UserModel;
 };
+
+const getPhotoUrl = (user: UserModel) => user.photo200;
 
 const User = ({ user }: UserProps) => {
   return (
-    <Div>
-      {user.first_name}, {user.last_name}
-    </Div>
+    <SimpleCell
+      before={<Avatar size={48} src={getPhotoUrl(user)} />}
+      description={user.bdate}
+    >
+      {user.firstName} {user.lastName}
+    </SimpleCell>
   );
 };
 
