@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
-import Users from "./routes/users/users";
+import Users from "./routes/users/Users";
 import VkAppRoot from "./VkAppRoot";
 
 const App = () => {

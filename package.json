@@ -10,6 +10,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^18.0.0",
+    "@vkontakte/api-schema-typescript": "^1.5131.2",
     "@vkontakte/icons": "^1.170.0",
     "@vkontakte/vk-bridge": "^2.6.2",
     "@vkontakte/vkui": "^4.32.0",
@@ -56,5 +57,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }

@@ -5,9 +5,9 @@ export const useAsyncEffect = <R>(
   deps: any[],
   destroy: ((result: R) => any) | undefined = undefined
 ) => {
-  console.log(effect, destroy, deps);
   useEffect(() => {
-    console.log("useEffect");
+    console.log("useAsyncEffect");
+    console.log({ effect, destroy, deps });
     let result: R;
 
     effect()

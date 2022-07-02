@@ -9,7 +9,7 @@ const useAppearance = (bridge: VKBridge = vkBridge) => {
   const [appearance, setAppearance] =
     useState<AppearanceType>("light");
   useEffect(() => {
-    const updateAppApearance: VKBridgeSubscribeHandler = ({
+    const updateAppAppearance: VKBridgeSubscribeHandler = ({
       detail,
     }) => {
       if (detail.type === "VKWebAppUpdateConfig") {
@@ -32,10 +32,11 @@ const useAppearance = (bridge: VKBridge = vkBridge) => {
         }
       }
     };
-    bridge.subscribe(updateAppApearance);
+    bridge.subscribe(updateAppAppearance);
     return () => {
-      bridge.unsubscribe(updateAppApearance);
+      bridge.unsubscribe(updateAppAppearance);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return appearance;

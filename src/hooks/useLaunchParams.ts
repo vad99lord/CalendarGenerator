@@ -1,9 +1,6 @@
 import { GetLaunchParamsResponse } from "@vkontakte/vk-bridge";
 import { useState } from "react";
-import {
-  fetchVkApi,
-  isValidResponse
-} from "../utils/network/fetchVkApi";
+import { fetchVkBridge } from "../network/vk/fetchVkBridge";
 import useAsyncEffect from "./useAsyncEffect";
 type LaunchParams = GetLaunchParamsResponse;
 
@@ -11,11 +8,11 @@ const useLaunchParams = () => {
   const [launchParams, setLaunchParams] = useState<LaunchParams>();
 
   useAsyncEffect(async () => {
-    const launchParamsResponse = await fetchVkApi(
+    const { data: launchParams, isError } = await fetchVkBridge(
       "VKWebAppGetLaunchParams"
     );
-    if (isValidResponse(launchParamsResponse)) {
-      setLaunchParams(launchParamsResponse);
+    if (!isError) {
+      setLaunchParams(launchParams);
     }
   }, []);
   return launchParams;

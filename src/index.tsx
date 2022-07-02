@@ -4,10 +4,10 @@ import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { LaunchParamsProvider } from "./contexts/LaunchParamsContext";
+import { fetchVkBridge } from "./network/vk/fetchVkBridge";
 import reportWebVitals from "./reportWebVitals";
-import { fetchVkApi } from "./utils/network/fetchVkApi";
 
-fetchVkApi("VKWebAppInit", {});
+fetchVkBridge("VKWebAppInit", {});
 
 ReactDOM.render(
   <React.StrictMode>
