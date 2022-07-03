@@ -7,3 +7,6 @@ export type DeepIndexSignature<O extends object> = {
     ? DeepIndexSignature<O[P]>
     : O[P];
 };
+
+export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> &
+  Omit<T, K>;

@@ -1,3 +1,4 @@
+import { BirthDate } from "../Birthday/Birthday";
 import { BaseUserModel } from "./BaseUserModel";
 
 export type UserPhotoModel = {
@@ -14,5 +15,5 @@ export const DEFAULT_USER_PHOTOS: UserPhotoModel = {
 
 export type UserModel = BaseUserModel &
   UserPhotoModel & {
-    bdate?: string;
+    birthday?: BirthDate;
   };
