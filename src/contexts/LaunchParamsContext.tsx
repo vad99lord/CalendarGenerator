@@ -1,12 +1,12 @@
 import { GetLaunchParamsResponse } from "@vkontakte/vk-bridge";
 import { createContext } from "react";
 import useLaunchParams from "../hooks/useLaunchParams";
+import { createLateInitContext } from "../utils/utils";
 
 type LaunchParams = GetLaunchParamsResponse;
 
-export const LaunchParamsContext = createContext<
-  LaunchParams | undefined
->(undefined);
+export const LaunchParamsContext =
+  createLateInitContext<LaunchParams>();
 
 type Props = {
   children: React.ReactNode;

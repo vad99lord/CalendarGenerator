@@ -1,4 +1,6 @@
 import {
+  FriendsSearchParams,
+  FriendsSearchResponse,
   UsersReportParams,
   UsersReportResponse,
   UsersSearchParams,
@@ -20,7 +22,11 @@ type Methods = VkApiMethod<
   UsersSearchParams,
   UsersSearchResponse
 > &
-  VkApiMethod<"users.report", UsersReportParams, UsersReportResponse>;
+  VkApiMethod<
+    "friends.search",
+    FriendsSearchParams,
+    FriendsSearchResponse
+  >;
 
 export type MethodsParamsMap<K extends MethodsNames> =
   Methods[K]["params"];

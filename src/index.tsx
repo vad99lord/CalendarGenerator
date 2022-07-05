@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { LaunchParamsProvider } from "./contexts/LaunchParamsContext";
+import { TokenProvider } from "./contexts/TokenContext";
 import { fetchVkBridge } from "./network/vk/fetchVkBridge";
 import reportWebVitals from "./reportWebVitals";
 
@@ -13,7 +14,9 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <LaunchParamsProvider>
-        <App />
+        <TokenProvider>
+          <App />
+        </TokenProvider>
       </LaunchParamsProvider>
     </BrowserRouter>
   </React.StrictMode>,

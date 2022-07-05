@@ -17,7 +17,7 @@ export class BirthDate {
     this.birthDateParts = BirthDate.stringToBirthDateParts(bdate);
     const { year, month, day } = this.birthDateParts;
     this.birthDate = new Date(year ?? 0, month - 1, day);
-    console.log(this.getMonthDate());
+    // console.log(this.getMonthDate());
     
   }
 
@@ -45,7 +45,7 @@ export class BirthDate {
   private static stringToBirthDateParts(
     bdate: string
   ): BirthDateParts {
-    console.log(bdate);
+    // console.log(bdate);
     const bdateTokenized = bdate.split(".").map(Number);
     
     if (
@@ -60,7 +60,7 @@ export class BirthDate {
       },
       {}
     ) as BirthDateParts;
-    console.log(birthDate);
+    // console.log(birthDate);
     return birthDate;
   }
 }

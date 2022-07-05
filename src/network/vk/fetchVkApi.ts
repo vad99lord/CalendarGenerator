@@ -24,8 +24,8 @@ export const fetchVkApi = async <M extends MethodsNames>(
     }
   );
   if (!isError) {
-    // manually extracting response since from data
-    // since bridge doesn't do it for us in api case
+    // manually extracting response from data
+    // since bridge doesn't do it for us in api fetch case
     const { response } = data;
     if (isMethodResponse(response)) {
       return { isError, data: response };
@@ -40,7 +40,6 @@ export const fetchVkApi = async <M extends MethodsNames>(
 };
 
 // TODO: change simple casting type guard to correct checks for types?????
-
 const isMethodResponse = <M extends MethodsNames>(
   response: any
 ): response is MethodsResponsesMap<M> => {

@@ -2,7 +2,7 @@ import { GetLaunchParamsResponse } from "@vkontakte/vk-bridge";
 import { useState } from "react";
 import { fetchVkBridge } from "../network/vk/fetchVkBridge";
 import useAsyncEffect from "./useAsyncEffect";
-type LaunchParams = GetLaunchParamsResponse;
+export type LaunchParams = GetLaunchParamsResponse;
 
 const useLaunchParams = () => {
   const [launchParams, setLaunchParams] = useState<LaunchParams>();
