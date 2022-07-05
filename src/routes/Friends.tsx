@@ -5,15 +5,12 @@ import {
   Search,
   SplitCol,
   Text,
-  View,
+  View
 } from "@vkontakte/vkui";
 import {
-  ChangeEvent,
-  useCallback,
   useContext,
-  useState,
+  useState
 } from "react";
-import { useDebounce } from "use-debounce";
 import User from "../components/User";
 import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
 import { TokenContext } from "../contexts/TokenContext";
