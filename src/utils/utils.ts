@@ -9,3 +9,5 @@ export const toStringOrEmpty = (
 
 export const createLateInitContext = <T>() =>
   createContext<T | undefined>(undefined);
+
+export const isEmptyArray = (arr: any[]) => arr.length === 0;

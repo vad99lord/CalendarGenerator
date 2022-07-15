@@ -13,7 +13,6 @@ const useSearchState = (waitTimeMs: number = 500) => {
     },
     []
   );
-//   console.log({ debouncedSearchText, searchText });
   return [debouncedSearchText, searchText, onSearchChange] as const;
 };
 

@@ -47,7 +47,12 @@ const Users = () => {
     }
   }, [token]);
   const userItems = users.map((user) => (
-    <User key={user.id} user={user} />
+    <User
+      key={user.id}
+      user={user}
+      disabled={false}
+      checked={false}
+    />
   ));
   return (
     <SplitCol>
