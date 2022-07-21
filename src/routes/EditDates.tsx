@@ -1,5 +1,7 @@
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
+import { useMemo } from "react";
 import { PickerDate } from "../components/BirthdayPicker";
+import BottomButton from "../components/BottomButton";
 import UserDateAdd from "../components/UserDateAdd";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
@@ -9,6 +11,7 @@ type EditDatesProps = {
   usersWithoutDates: UserModel[];
   onUserRemove: (userId: UserID) => void;
   onUserDateChange: (date: PickerDate, user: UserModel) => void;
+  onNextClick: () => void;
 };
 
 const EditDates = ({
@@ -16,37 +19,13 @@ const EditDates = ({
   id: panelId,
   onUserRemove,
   onUserDateChange,
+  onNextClick,
 }: EditDatesProps) => {
-  // const [usersWithoutDates, setUsersWithoutDates] = useState(() => {
-  //   return users.filter((user) => user.birthday === undefined);
-  // });
-  // console.log({ usersWithoutDates });
-
-  // const onRemove = useCallback((userId: UserID) => {
-  //   console.log(userId);
-
-  //   setUsersWithoutDates((prevState) =>
-  //     prevState.filter(({ id }) => id !== userId)
-  //   );
-  // }, []);
-  // const onDateChange = useCallback(
-  //   (date: PickerDate, userId: UserID) => {
-  //     setUsersWithoutDates((prevState) =>
-  //       prevState.map((user) => {
-  //         if (user.id !== userId) {
-  //           return user;
-  //         }
-  //         //@ts-ignore
-  //         //TODO make correct date conversion
-  //         const dateStr = date.year
-  //           ? `${date.day}.${date.month}.${date.year}`
-  //           : `${date.day}.${date.month}`;
-  //         return { ...user, birthday: new BirthDate(dateStr) };
-  //       })
-  //     );
-  //   },
-  //   []
-  // );
+  const allDatesProvided = useMemo(
+    () => usersWithoutDates.every((user) => Boolean(user.birthday)),
+    [usersWithoutDates]
+  );
+  console.log({ allDatesProvided, usersWithoutDates });
 
   const editDatesItems = usersWithoutDates.map((user) => (
     <UserDateAdd
@@ -63,6 +42,9 @@ const EditDates = ({
       <Group>
         <List>{editDatesItems}</List>
       </Group>
+      <BottomButton onClick={onNextClick} disabled={!allDatesProvided}>
+        Далее
+      </BottomButton>
     </Panel>
   );
 };

@@ -74,6 +74,7 @@ const UsersPicker = () => {
           usersWithoutDates={checkedUsersWithoutDates}
           onUserRemove={onUserRemove}
           onUserDateChange={onUserDateChange}
+          onNextClick={() => console.log(checkedState)}
         />
       </View>
     </SplitCol>

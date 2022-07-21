@@ -1,8 +1,5 @@
 import {
-  Button,
   Checkbox,
-  Div,
-  FixedLayout,
   Footer,
   FormItem,
   Group,
@@ -21,6 +18,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import BottomButton from "../components/BottomButton";
 import User, { isUserSelectionEnabled } from "../components/User";
 import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
 import { TokenContext } from "../contexts/TokenContext";
@@ -51,10 +49,9 @@ const Friends = ({
     onUserCheckChanged: onFriendCheckChanged,
     setUsersCheckChanged: setFriendsCheckChanged,
   },
-  id : panelId,
+  id: panelId,
   onNextClick,
 }: FriendsProps) => {
-  
   const launchParams = useContext(LaunchParamsContext);
   const token = useContext(TokenContext);
   const [debouncedSearchText, searchText, onSearchChange] =
@@ -181,23 +178,16 @@ const Friends = ({
           </SimpleCell>
         </FormItem>
         {userItems.length ? (
-          <List>{userItems}</List>
+          <List style={{ marginBottom: 60 }}>{userItems}</List>
         ) : (
           <Footer>Ничего не найдено</Footer>
         )}
-        <FixedLayout filled vertical="bottom">
-          <Div>
-            <Button
-              size="l"
-              appearance="accent"
-              stretched
-              disabled={checkedCount === 0}
-              onClick={onNextClick}
-            >
-              Далее
-            </Button>
-          </Div>
-        </FixedLayout>
+        <BottomButton
+          onClick={onNextClick}
+          disabled={checkedCount === 0}
+        >
+          Далее
+        </BottomButton>
       </Group>
     </Panel>
   );
