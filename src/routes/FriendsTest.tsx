@@ -24,7 +24,7 @@ import {
   UserModel,
 } from "../network/models/User/UserModel";
 
-const mockUser: UserModel = {
+export const mockUser: UserModel = {
   id: 1,
   lastName: "last",
   firstName: "first",
@@ -44,12 +44,11 @@ const FriendsTest = () => {
 
   // const [checkFriends, setCheckedFriends] = useState<boolean[]>([]);
 
-  const [
-    checkedFriends,
-    _,
-    setFriendsCheckChanged,
-    onFriendCheckChanged,
-  ] = useCheckedUsersState();
+  const {
+    state: checkedFriends,
+    setUsersCheckChanged : setFriendsCheckChanged,
+    onUserCheckChanged : onFriendCheckChanged,
+   } = useCheckedUsersState();
   // const onFriendCheck = useCallback(
   //   (user: UserModel) => {
   //     if (checkFriends[user.id]) {

@@ -1,3 +1,7 @@
+import {
+  isFullDate,
+  PickerDate,
+} from "../../../components/BirthdayPicker";
 import { Optional } from "../../../utils/types";
 
 const DATE_PARTS = ["day", "month", "year"] as const;
@@ -13,12 +17,22 @@ export class BirthDate {
     month: "long",
   });
 
-  constructor(bdate: string) {
-    this.birthDateParts = BirthDate.stringToBirthDateParts(bdate);
+  constructor(bdate: string);
+  constructor(bdate: PickerDate);
+  constructor(bdate: string | PickerDate) {
+    if (typeof bdate === "string") {
+      this.birthDateParts = BirthDate.stringToBirthDateParts(bdate);
+    } else {
+      const { month, day } = bdate;
+      if (isFullDate(bdate)) {
+        this.birthDateParts = { year: bdate.year, month, day };
+      } else {
+        this.birthDateParts = { month, day };
+      }
+    }
     const { year, month, day } = this.birthDateParts;
     this.birthDate = new Date(year ?? 0, month - 1, day);
     // console.log(this.getMonthDate());
-    
   }
 
   public getDay(): number {
@@ -47,7 +61,7 @@ export class BirthDate {
   ): BirthDateParts {
     // console.log(bdate);
     const bdateTokenized = bdate.split(".").map(Number);
-    
+
     if (
       bdateTokenized.some(isNaN) ||
       bdateTokenized.length < 2 ||

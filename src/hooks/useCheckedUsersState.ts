@@ -1,14 +1,31 @@
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
 
-export type CheckedUsers = Record<UserID, UserModel>;
+export type CheckedUsersMap = Record<UserID, UserModel>;
 
-const useCheckedUsersState = () => {
+export type CheckedUsers = {
+  state: CheckedUsersMap;
+  count: number;
+  setUsersCheckChanged: (
+    isSelected: boolean,
+    users: UserModel[]
+  ) => void;
+  onUserCheckChanged: (user: UserModel) => void;
+  removeUserCheck: (userId: UserID) => void;
+};
+
+const useCheckedUsersState = (): CheckedUsers => {
   const { current: checkedUsersMap } = useRef(
     new Map<UserID, UserModel>()
   );
-  const [checkedUsers, setCheckedUsers] = useState<CheckedUsers>({});
+  const [checkedUsers, setCheckedUsers] = useState<CheckedUsersMap>(
+    {}
+  );
+
+  const updateCheckedStateFromMap = useCallback(() => {
+    setCheckedUsers(Object.fromEntries(checkedUsersMap));
+  }, [checkedUsersMap]);
 
   const checkedUsersCount = checkedUsersMap.size;
 
@@ -23,9 +40,19 @@ const useCheckedUsersState = () => {
           checkedUsersMap.delete(user.id);
         });
       }
-      setCheckedUsers(Object.fromEntries(checkedUsersMap));
+      updateCheckedStateFromMap();
     },
-    [checkedUsersMap]
+    [checkedUsersMap, updateCheckedStateFromMap]
+  );
+
+  const removeUserCheck = useCallback(
+    (userId: UserID) => {
+      if (checkedUsersMap.has(userId)) {
+        checkedUsersMap.delete(userId);
+        updateCheckedStateFromMap();
+      }
+    },
+    [checkedUsersMap, updateCheckedStateFromMap]
   );
 
   const onUserCheckChanged = useCallback(
@@ -35,16 +62,17 @@ const useCheckedUsersState = () => {
       } else {
         checkedUsersMap.set(user.id, user);
       }
-      setCheckedUsers(Object.fromEntries(checkedUsersMap));
+      updateCheckedStateFromMap();
     },
-    [checkedUsersMap]
+    [checkedUsersMap, updateCheckedStateFromMap]
   );
-  return [
-    checkedUsers,
-    checkedUsersCount,
+  return {
+    state: checkedUsers,
+    count: checkedUsersCount,
     setUsersCheckChanged,
     onUserCheckChanged,
-  ] as const;
+    removeUserCheck,
+  };
 };
 
 export default useCheckedUsersState;

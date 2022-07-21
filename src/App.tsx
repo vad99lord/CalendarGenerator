@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
-import Friends from "./routes/Friends";
+import UsersPicker from "./routes/UsersPicker";
 import VkAppRoot from "./VkAppRoot";
 
 const App = () => {
@@ -8,7 +8,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<VkAppRoot />}>
         <Route element={<AppLayout />}>
-          <Route index element={<Friends />}></Route>
+          <Route index element={<UsersPicker />}></Route>
         </Route>
       </Route>
     </Routes>

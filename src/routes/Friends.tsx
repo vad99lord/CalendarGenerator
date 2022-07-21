@@ -12,9 +12,7 @@ import {
   Search,
   SimpleCell,
   SizeType,
-  SplitCol,
   Switch,
-  View,
 } from "@vkontakte/vkui";
 import {
   useCallback,
@@ -27,7 +25,7 @@ import User, { isUserSelectionEnabled } from "../components/User";
 import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
 import { TokenContext } from "../contexts/TokenContext";
 import useAsyncEffect from "../hooks/useAsyncEffect";
-import useCheckedUsersState from "../hooks/useCheckedUsersState";
+import { CheckedUsers } from "../hooks/useCheckedUsersState";
 import useSearchState from "../hooks/useSearchState";
 import useSimpleCheckBoxState from "../hooks/useSimpleCheckBoxState";
 import userApiToUser from "../network/models/User/userApiToUser";
@@ -40,7 +38,23 @@ type SelectableUser = {
   isSelectable: boolean;
 };
 
-const Friends = () => {
+export type FriendsProps = {
+  id: string;
+  checkedFriends: CheckedUsers;
+  onNextClick: () => void;
+};
+
+const Friends = ({
+  checkedFriends: {
+    state: checkedState,
+    count: checkedCount,
+    onUserCheckChanged: onFriendCheckChanged,
+    setUsersCheckChanged: setFriendsCheckChanged,
+  },
+  id : panelId,
+  onNextClick,
+}: FriendsProps) => {
+  
   const launchParams = useContext(LaunchParamsContext);
   const token = useContext(TokenContext);
   const [debouncedSearchText, searchText, onSearchChange] =
@@ -73,16 +87,9 @@ const Friends = () => {
     [selectableFriends]
   );
 
-  const [
-    checkedFriends,
-    checkedFriendsCount,
-    setFriendsCheckChanged,
-    onFriendCheckChanged,
-  ] = useCheckedUsersState();
-
   const areAllSelected = useMemo(
-    () => enabledFriends.every(({ id }) => checkedFriends[id]),
-    [checkedFriends, enabledFriends]
+    () => enabledFriends.every(({ id }) => checkedState[id]),
+    [checkedState, enabledFriends]
   );
 
   const onSelectAllChanged = useCallback(() => {
@@ -102,7 +109,7 @@ const Friends = () => {
   console.log("FRIENDS RENDER", {
     areAllSelected,
     isManualEdit,
-    checkedFriends,
+    checkedState,
   });
 
   useAsyncEffect(async () => {
@@ -137,7 +144,7 @@ const Friends = () => {
       <User
         key={user.id}
         user={user}
-        checked={Boolean(checkedFriends[user.id])}
+        checked={Boolean(checkedState[user.id])}
         disabled={!isSelectable}
         onUserCheckChanged={onFriendCheckChanged}
       />
@@ -145,57 +152,54 @@ const Friends = () => {
   );
 
   return (
-    <SplitCol>
-      <View activePanel="panel">
-        <Panel id="panel">
-          <PanelHeader separator={false}>Стартовый экран</PanelHeader>
-          <Group>
-            <Search
-              value={searchText}
-              onChange={onSearchChange}
-              after={null}
-            />
-            <FormItem>
-              <Checkbox
-                checked={areAllSelected}
-                onChange={onSelectAllChanged}
-              >
-                Выбрать всех
-              </Checkbox>
-              <SimpleCell
-                sizeY={SizeType.COMPACT}
-                Component="label"
-                after={
-                  <Switch
-                    checked={isManualEdit}
-                    onChange={setIsManualEdit}
-                  />
-                }
-              >
-                Ручной выбор
-              </SimpleCell>
-            </FormItem>
-            {userItems.length ? (
-              <List>{userItems}</List>
-            ) : (
-              <Footer>Ничего не найдено</Footer>
-            )}
-            <FixedLayout filled vertical="bottom">
-              <Div>
-                <Button
-                  size="l"
-                  appearance="accent"
-                  stretched
-                  disabled={checkedFriendsCount === 0}
-                >
-                  Далее
-                </Button>
-              </Div>
-            </FixedLayout>
-          </Group>
-        </Panel>
-      </View>
-    </SplitCol>
+    <Panel id={panelId}>
+      <PanelHeader separator={false}>Стартовый экран</PanelHeader>
+      <Group>
+        <Search
+          value={searchText}
+          onChange={onSearchChange}
+          after={null}
+        />
+        <FormItem>
+          <Checkbox
+            checked={areAllSelected}
+            onChange={onSelectAllChanged}
+          >
+            Выбрать всех
+          </Checkbox>
+          <SimpleCell
+            sizeY={SizeType.COMPACT}
+            Component="label"
+            after={
+              <Switch
+                checked={isManualEdit}
+                onChange={setIsManualEdit}
+              />
+            }
+          >
+            Ручной выбор
+          </SimpleCell>
+        </FormItem>
+        {userItems.length ? (
+          <List>{userItems}</List>
+        ) : (
+          <Footer>Ничего не найдено</Footer>
+        )}
+        <FixedLayout filled vertical="bottom">
+          <Div>
+            <Button
+              size="l"
+              appearance="accent"
+              stretched
+              disabled={checkedCount === 0}
+              onClick={onNextClick}
+            >
+              Далее
+            </Button>
+          </Div>
+        </FixedLayout>
+      </Group>
+    </Panel>
   );
 };
 

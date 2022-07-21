@@ -1,0 +1,3 @@
+.BirthdayPicker__no-year .vkuiDatePicker__year {
+ display: none !important;
+}

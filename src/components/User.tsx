@@ -10,7 +10,7 @@ export type UserProps = {
   onUserCheckChanged?: (user: UserModel) => void;
 };
 
-const getPhotoUrl = (user: UserModel) => user.photo200;
+export const getPhotoUrl = (user: UserModel) => user.photo200;
 
 export const isUserSelectionEnabled = (user: UserModel) =>
   Boolean(!user.deactivated && user.birthday);
