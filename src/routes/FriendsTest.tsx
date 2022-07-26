@@ -19,6 +19,7 @@ import {
 import UserTest from "../components/UserTest";
 import useCheckedUsersState from "../hooks/useCheckedUsersState";
 import useSimpleCheckBoxState from "../hooks/useSimpleCheckBoxState";
+import { BirthDate } from "../network/models/Birthday/Birthday";
 import {
   DEFAULT_USER_PHOTOS,
   UserModel,
@@ -29,6 +30,7 @@ export const mockUser: UserModel = {
   lastName: "last",
   firstName: "first",
   ...DEFAULT_USER_PHOTOS,
+  birthday: new BirthDate("10.10.2010"),
 };
 
 const friends = Array.apply(null, Array(10)).map((_, ind) => ({
@@ -46,9 +48,9 @@ const FriendsTest = () => {
 
   const {
     state: checkedFriends,
-    setUsersCheckChanged : setFriendsCheckChanged,
-    onUserCheckChanged : onFriendCheckChanged,
-   } = useCheckedUsersState();
+    setUsersCheckChanged: setFriendsCheckChanged,
+    onUserCheckChanged: onFriendCheckChanged,
+  } = useCheckedUsersState();
   // const onFriendCheck = useCallback(
   //   (user: UserModel) => {
   //     if (checkFriends[user.id]) {

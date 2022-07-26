@@ -31,8 +31,9 @@ export class BirthDate {
       }
     }
     const { year, month, day } = this.birthDateParts;
-    this.birthDate = new Date(year ?? 0, month - 1, day);
-    // console.log(this.getMonthDate());
+    // backing Date field should contain UTC based date to 
+    // avoid client-server local timezones discrepancies
+    this.birthDate = new Date(Date.UTC(year ?? 0, month - 1, day));
   }
 
   public getDay(): number {
@@ -50,6 +51,10 @@ export class BirthDate {
   public getYear(): number | undefined {
     if (!this.birthDateParts.year) return undefined;
     return this.birthDate.getFullYear();
+  }
+
+  public toDate(): Date {
+    return new Date(this.birthDate);
   }
 
   /**
