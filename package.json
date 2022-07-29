@@ -37,11 +37,11 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "start:server": "cd server && ts-node-dev --respawn --transpile-only ./server.ts && wait-on tcp:3000",
-    "start:client": "PORT=10888 HTTPS=true react-scripts start",
+    "start:server": "cd server && ts-node-dev -r tsconfig-paths/register --respawn ./server.ts && wait-on tcp:3000",
+    "start:client": "PORT=10888 HTTPS=true react-app-rewired start",
     "start": "run-p --race start:server start:client",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -71,10 +71,18 @@
     ]
   },
   "devDependencies": {
-    "rrule": "^2.7.1"
+    "customize-cra": "^1.0.0",
+    "react-app-alias": "^2.2.1",
+    "react-app-rewired": "^2.2.1",
+    "rrule": "^2.7.1",
+    "tsconfig-paths": "^4.0.0"
   },
   "dependenciesComments": {
-    "rrule": "extra types for rules in ical events"
+    "rrule": "extra types for rules in ical events",
+    "react-app-rewired": "adjusts react scripts configs without ejecting",
+    "customize-cra": "rewired for newer versions of react scripts",
+    "react-app-alias": "enables aliasing for non /src files from sibling folders, used in customize cra",
+    "tsconfig-paths": "enables aliasing from tsconfig paths for node runtime"
   },
   "proxy": "http://localhost:3000/"
 }

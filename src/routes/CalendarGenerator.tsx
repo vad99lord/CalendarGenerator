@@ -3,14 +3,11 @@ import saveAs from "file-saver";
 import { useCallback, useMemo, useState } from "react";
 import { UserModel } from "../network/models/User/UserModel";
 
+import { CalendarUserApi } from "@shared/models/CalendarUser";
+
 type CalendarGeneratorProps = {
   users: UserModel[];
   id: string;
-};
-
-export type CalendarUser = {
-  name: string;
-  birthday: string;
 };
 
 export enum FetchState {
@@ -21,7 +18,7 @@ export enum FetchState {
 }
 
 const CalendarGenerator = ({ users, id }: CalendarGeneratorProps) => {
-  const calendarUsers: CalendarUser[] = useMemo(
+  const calendarUsers: CalendarUserApi[] = useMemo(
     () =>
       users.map((user) => ({
         name: `${user.firstName} ${user.lastName}`,

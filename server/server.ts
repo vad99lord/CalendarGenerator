@@ -1,10 +1,11 @@
-import express, { Response } from "express";
-import { check, validationResult } from "express-validator";
 import {
   CalendarUser,
   CalendarUserApiRequest,
-  createBirthdayCalendar,
-} from "./calendar-generator";
+} from "@shared/models/CalendarUser";
+import { createUTCDate } from "@shared/utils/utils";
+import express, { Response } from "express";
+import { check, validationResult } from "express-validator";
+import { createBirthdayCalendar } from "./calendar-generator";
 import { RequestTypedBody } from "./types";
 
 const app = express();
@@ -34,10 +35,10 @@ app.post(
         const birthDate = new Date(birthday);
         const day = birthDate.getUTCDate();
         const month = birthDate.getUTCMonth();
-        console.log({currentYear,day,month});
+        console.log({ currentYear, day, month });
         return {
           name,
-          birthday: new Date(Date.UTC(currentYear, month, day)),
+          birthday: createUTCDate(currentYear, month, day),
         };
       }
     );

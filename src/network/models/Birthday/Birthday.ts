@@ -1,3 +1,4 @@
+import { createUTCDate } from "@shared/utils/utils";
 import {
   isFullDate,
   PickerDate,
@@ -34,9 +35,9 @@ export class BirthDate {
       }
     }
     const { year, month, day } = this.birthDateParts;
-    // backing Date field should contain UTC based date to 
+    // backing Date field should contain UTC based date to
     // avoid client-server local timezones discrepancies
-    this.birthDate = new Date(Date.UTC(year ?? 0, month - 1, day));
+    this.birthDate = createUTCDate(year ?? 0, month - 1, day);
   }
 
   public getDay(): number {
@@ -45,9 +46,9 @@ export class BirthDate {
 
   public getMonthName(): string {
     // formatter output contains "DD MMMM" => ensured month is last token
-    return BirthDate.MONTH_FORMATTER.format(this.birthDate).split(
-      /(\s+)/
-    ).pop()!!;
+    return BirthDate.MONTH_FORMATTER.format(this.birthDate)
+      .split(/(\s+)/)
+      .pop()!!;
   }
 
   public getMonthDate(): number {
