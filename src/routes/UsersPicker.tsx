@@ -6,12 +6,14 @@ import useCheckedUsersState from "../hooks/useCheckedUsersState";
 import { BirthDate } from "../network/models/Birthday/Birthday";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
+import CalendarGenerator from "./CalendarGenerator";
 import EditDates from "./EditDates";
 import Friends from "./Friends";
 
 enum USERS_PICKER_PANELS {
   FRIENDS = "friends",
   EDIT_DATES = "edit_dates",
+  GENERATE_CALENDAR = "generate_calendar",
 }
 
 const UsersPicker = () => {
@@ -37,6 +39,10 @@ const UsersPicker = () => {
       )
     );
   }, [checkedState]);
+
+  const setGenerateCalendarPanel = useCallback(() => {
+    setActivePanel(USERS_PICKER_PANELS.GENERATE_CALENDAR);
+  }, []);
 
   const checkedUsersWithoutDates = useMemo(
     () =>
@@ -74,7 +80,11 @@ const UsersPicker = () => {
           usersWithoutDates={checkedUsersWithoutDates}
           onUserRemove={onUserRemove}
           onUserDateChange={onUserDateChange}
-          onNextClick={() => console.log(checkedState)}
+          onNextClick={setGenerateCalendarPanel}
+        />
+        <CalendarGenerator
+          id={USERS_PICKER_PANELS.GENERATE_CALENDAR}
+          users={Object.values(checkedState)}
         />
       </View>
     </SplitCol>

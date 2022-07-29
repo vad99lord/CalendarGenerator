@@ -15,8 +15,10 @@ app.use(express.json());
 app.post(
   "/api/calendar",
   check("birthdays.*.name").notEmpty(),
-  check("birthdays.*.birthday")
-    .isISO8601({ strict: true, strictSeparator: true }),
+  check("birthdays.*.birthday").isISO8601({
+    strict: true,
+    strictSeparator: true,
+  }),
   (req: RequestTypedBody<CalendarUserApiRequest>, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -24,11 +26,20 @@ app.post(
         .status(400)
         .json({ errors: errors.array({ onlyFirstError: true }) });
     }
+    const currentYear = new Date().getUTCFullYear();
+    console.log(req.body.birthdays);
+    //TODO handle 29 february => 28 february change
     const calendarUsers: CalendarUser[] = req.body.birthdays.map(
-      ({ name, birthday }) => ({
-        name,
-        birthday: new Date(birthday),
-      })
+      ({ name, birthday }) => {
+        const birthDate = new Date(birthday);
+        const day = birthDate.getUTCDate();
+        const month = birthDate.getUTCMonth();
+        console.log({currentYear,day,month});
+        return {
+          name,
+          birthday: new Date(Date.UTC(currentYear, month, day)),
+        };
+      }
     );
     const calendar = createBirthdayCalendar(calendarUsers);
     calendar.serve(res);

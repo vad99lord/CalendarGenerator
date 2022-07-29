@@ -13,7 +13,10 @@ export type BirthDateParts = Optional<DateParts, "year">;
 export class BirthDate {
   private readonly birthDate: Date;
   private birthDateParts: BirthDateParts;
+
+  // formatter needs date to properly decline month names
   private static MONTH_FORMATTER = new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
     month: "long",
   });
 
@@ -41,7 +44,10 @@ export class BirthDate {
   }
 
   public getMonthName(): string {
-    return BirthDate.MONTH_FORMATTER.format(this.birthDate);
+    // formatter output contains "DD MMMM" => ensured month is last token
+    return BirthDate.MONTH_FORMATTER.format(this.birthDate).split(
+      /(\s+)/
+    ).pop()!!;
   }
 
   public getMonthDate(): number {

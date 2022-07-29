@@ -1,10 +1,11 @@
-import { Button, Div, Text } from "@vkontakte/vkui";
+import { Button, Div, Panel, Text } from "@vkontakte/vkui";
 import saveAs from "file-saver";
 import { useCallback, useMemo, useState } from "react";
 import { UserModel } from "../network/models/User/UserModel";
 
 type CalendarGeneratorProps = {
   users: UserModel[];
+  id: string;
 };
 
 export type CalendarUser = {
@@ -19,7 +20,7 @@ export enum FetchState {
   ERROR,
 }
 
-const CalendarGenerator = ({ users }: CalendarGeneratorProps) => {
+const CalendarGenerator = ({ users, id }: CalendarGeneratorProps) => {
   const calendarUsers: CalendarUser[] = useMemo(
     () =>
       users.map((user) => ({
@@ -56,10 +57,12 @@ const CalendarGenerator = ({ users }: CalendarGeneratorProps) => {
   }, [calendarUsers]);
 
   return (
-    <Div>
-      <Button onClick={onGenerate}>Gen cal</Button>
-      <Text>{genState}</Text>
-    </Div>
+    <Panel id={id}>
+      <Div>
+        <Button onClick={onGenerate}>Gen cal</Button>
+        <Text>{genState}</Text>
+      </Div>
+    </Panel>
   );
 };
 
