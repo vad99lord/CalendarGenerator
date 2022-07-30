@@ -1,5 +1,7 @@
 import {
+  Button,
   Checkbox,
+  Counter,
   Footer,
   FormItem,
   Group,
@@ -40,6 +42,7 @@ export type FriendsProps = {
   id: string;
   checkedFriends: CheckedUsers;
   onNextClick: () => void;
+  onOpenChecked: () => void;
 };
 
 const Friends = ({
@@ -51,6 +54,7 @@ const Friends = ({
   },
   id: panelId,
   onNextClick,
+  onOpenChecked,
 }: FriendsProps) => {
   const launchParams = useContext(LaunchParamsContext);
   const token = useContext(TokenContext);
@@ -158,25 +162,34 @@ const Friends = ({
           after={null}
         />
         <FormItem>
-          <Checkbox
-            checked={areAllSelected}
-            onChange={onSelectAllChanged}
+          <Button
+            size="m"
+            appearance="accent"
+            stretched={false}
+            after={<Counter size="s">{checkedCount}</Counter>}
+            onClick={onOpenChecked}
           >
-            Выбрать всех
-          </Checkbox>
-          <SimpleCell
-            sizeY={SizeType.COMPACT}
-            Component="label"
-            after={
-              <Switch
-                checked={isManualEdit}
-                onChange={setIsManualEdit}
-              />
-            }
-          >
-            Ручной выбор
-          </SimpleCell>
+            Выбранные пользователи
+          </Button>
         </FormItem>
+        <Checkbox
+          checked={areAllSelected}
+          onChange={onSelectAllChanged}
+        >
+          Выбрать всех
+        </Checkbox>
+        <SimpleCell
+          sizeY={SizeType.COMPACT}
+          Component="label"
+          after={
+            <Switch
+              checked={isManualEdit}
+              onChange={setIsManualEdit}
+            />
+          }
+        >
+          Ручной выбор
+        </SimpleCell>
         {userItems.length ? (
           <List style={{ marginBottom: 60 }}>{userItems}</List>
         ) : (

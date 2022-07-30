@@ -1,48 +1,58 @@
 import { SplitCol, View } from "@vkontakte/vkui";
-import { useMemo } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PickerDate } from "../components/BirthdayPicker";
 import useCheckedUsersState from "../hooks/useCheckedUsersState";
+import useNavigationStack from "../hooks/useNavigationStack";
 import { BirthDate } from "../network/models/Birthday/Birthday";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
 import CalendarGenerator from "./CalendarGenerator";
 import EditDates from "./EditDates";
 import Friends from "./Friends";
+import SelectedUsers from "./SelectedUsers";
 
 enum USERS_PICKER_PANELS {
   FRIENDS = "friends",
   EDIT_DATES = "edit_dates",
   GENERATE_CALENDAR = "generate_calendar",
+  SELECTED_USERS = "selected_users",
 }
 
 const UsersPicker = () => {
-  const [activePanel, setActivePanel] = useState(
-    USERS_PICKER_PANELS.FRIENDS
-  );
+  const {
+    currentEntry: activePanel,
+    next: onNextPanel,
+    back: onBackPanel,
+  } = useNavigationStack<string>();
 
-  const checkedUsers = useCheckedUsersState();
+  const checkedUsersState = useCheckedUsersState();
   const {
     state: checkedState,
     removeUserCheck,
     setUsersCheckChanged,
-  } = checkedUsers;
+  } = checkedUsersState;
   const [usersToAddDates, setUsersToAddDates] = useState<UserModel[]>(
     []
   );
+  const checkedUsers = useMemo(
+    () => Object.values(checkedState),
+    [checkedState]
+  );
 
   const setEditDatesPanel = useCallback(() => {
-    setActivePanel(USERS_PICKER_PANELS.EDIT_DATES);
+    onNextPanel(USERS_PICKER_PANELS.EDIT_DATES);
     setUsersToAddDates(
-      Object.values(checkedState).filter(
-        (user) => user.birthday === undefined
-      )
+      checkedUsers.filter((user) => user.birthday === undefined)
     );
-  }, [checkedState]);
+  }, [checkedUsers, onNextPanel]);
 
   const setGenerateCalendarPanel = useCallback(() => {
-    setActivePanel(USERS_PICKER_PANELS.GENERATE_CALENDAR);
-  }, []);
+    onNextPanel(USERS_PICKER_PANELS.GENERATE_CALENDAR);
+  }, [onNextPanel]);
+
+  const onOpenCheckedUsers = useCallback(() => {
+    onNextPanel(USERS_PICKER_PANELS.SELECTED_USERS);
+  }, [onNextPanel]);
 
   const checkedUsersWithoutDates = useMemo(
     () =>
@@ -66,14 +76,15 @@ const UsersPicker = () => {
     },
     [setUsersCheckChanged]
   );
-
+  console.log(activePanel);
   return (
     <SplitCol>
-      <View activePanel={activePanel}>
+      <View activePanel={activePanel ?? USERS_PICKER_PANELS.FRIENDS}>
         <Friends
           id={USERS_PICKER_PANELS.FRIENDS}
-          checkedFriends={checkedUsers}
+          checkedFriends={checkedUsersState}
           onNextClick={setEditDatesPanel}
+          onOpenChecked={onOpenCheckedUsers}
         />
         <EditDates
           id={USERS_PICKER_PANELS.EDIT_DATES}
@@ -84,7 +95,13 @@ const UsersPicker = () => {
         />
         <CalendarGenerator
           id={USERS_PICKER_PANELS.GENERATE_CALENDAR}
-          users={Object.values(checkedState)}
+          users={checkedUsers}
+        />
+        <SelectedUsers
+          id={USERS_PICKER_PANELS.SELECTED_USERS}
+          selectedUsers={checkedUsers}
+          onUserRemove={onUserRemove}
+          onBackClick={onBackPanel}
         />
       </View>
     </SplitCol>
