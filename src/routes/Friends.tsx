@@ -166,6 +166,7 @@ const Friends = ({
             size="m"
             appearance="accent"
             stretched={false}
+            disabled={checkedCount === 0}
             after={<Counter size="s">{checkedCount}</Counter>}
             onClick={onOpenChecked}
           >

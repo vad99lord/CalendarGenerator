@@ -13,6 +13,7 @@ export type CheckedUsers = {
   ) => void;
   onUserCheckChanged: (user: UserModel) => void;
   removeUserCheck: (userId: UserID) => void;
+  clearCheckedUsers: () => void;
 };
 
 const useCheckedUsersState = (): CheckedUsers => {
@@ -66,12 +67,18 @@ const useCheckedUsersState = (): CheckedUsers => {
     },
     [checkedUsersMap, updateCheckedStateFromMap]
   );
+
+  const clearCheckedUsers = useCallback(() => {
+    checkedUsersMap.clear();
+    updateCheckedStateFromMap();
+  }, [checkedUsersMap, updateCheckedStateFromMap]);
   return {
     state: checkedUsers,
     count: checkedUsersCount,
     setUsersCheckChanged,
     onUserCheckChanged,
     removeUserCheck,
+    clearCheckedUsers,
   };
 };
 

@@ -30,6 +30,7 @@ const UsersPicker = () => {
     state: checkedState,
     removeUserCheck,
     setUsersCheckChanged,
+    clearCheckedUsers,
   } = checkedUsersState;
   const [usersToAddDates, setUsersToAddDates] = useState<UserModel[]>(
     []
@@ -100,6 +101,7 @@ const UsersPicker = () => {
         <SelectedUsers
           id={USERS_PICKER_PANELS.SELECTED_USERS}
           selectedUsers={checkedUsers}
+          onAllUsersRemove={clearCheckedUsers}
           onUserRemove={onUserRemove}
           onBackClick={onBackPanel}
         />
