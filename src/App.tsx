@@ -1,17 +1,14 @@
-import { Route, Routes } from "react-router-dom";
-import AppLayout from "./components/AppLayout";
+import AppLayout from "./layouts/AppLayout";
+import VkAppRoot from "./layouts/VkAppRoot";
 import UsersPicker from "./routes/UsersPicker";
-import VkAppRoot from "./VkAppRoot";
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<VkAppRoot />}>
-        <Route element={<AppLayout />}>
-          <Route index element={<UsersPicker />}></Route>
-        </Route>
-      </Route>
-    </Routes>
+    <VkAppRoot>
+      <AppLayout>
+        <UsersPicker />
+      </AppLayout>
+    </VkAppRoot>
   );
 };
 

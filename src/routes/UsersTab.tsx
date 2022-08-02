@@ -87,7 +87,7 @@ const UsersTab = ({
       debouncedSearchText,
       token
     );
-    
+
     if (!token) return;
     const { data: friends, isError } = await fetchVkApi(
       "users.search",

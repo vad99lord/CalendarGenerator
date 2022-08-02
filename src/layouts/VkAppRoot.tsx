@@ -3,17 +3,17 @@ import {
   AppRoot,
   ConfigProvider,
 } from "@vkontakte/vkui";
-import { Outlet } from "react-router-dom";
-import useAppearance from "./hooks/useAppearance";
+import useAppearance from "../hooks/useAppearance";
+import { ChildrenProps } from "../utils/types";
 
-const VkAppRoot = () => {
+type VkAppRootProps = ChildrenProps;
+
+const VkAppRoot = ({ children }: VkAppRootProps) => {
   const appearance = useAppearance();
   return (
     <ConfigProvider appearance={appearance}>
       <AdaptivityProvider>
-        <AppRoot>
-          <Outlet />
-        </AppRoot>
+        <AppRoot>{children}</AppRoot>
       </AdaptivityProvider>
     </ConfigProvider>
   );

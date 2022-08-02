@@ -45,7 +45,11 @@ const SelectedUsers = ({
   const selectedUsersItems = useMemo(
     () =>
       filteredSelectedUsers.map((user) => (
-        <RemovableUser user={user} onRemoveUser={onUserRemove} />
+        <RemovableUser
+          key={user.id}
+          user={user}
+          onRemoveUser={onUserRemove}
+        />
       )),
     [onUserRemove, filteredSelectedUsers]
   );
