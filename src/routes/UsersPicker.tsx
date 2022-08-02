@@ -1,6 +1,6 @@
 import { SplitCol, View } from "@vkontakte/vkui";
 import { useCallback, useMemo, useState } from "react";
-import { PickerDate } from "../components/BirthdayPicker";
+import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
 import useCheckedUsersState from "../hooks/useCheckedUsersState";
 import useNavigationStack from "../hooks/useNavigationStack";
 import { BirthDate } from "../network/models/Birthday/Birthday";

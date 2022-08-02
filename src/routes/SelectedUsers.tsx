@@ -10,7 +10,7 @@ import {
   Search,
 } from "@vkontakte/vkui";
 import { useMemo } from "react";
-import RemovableUser from "../components/RemovableUser";
+import RemovableUser from "../components/User/RemovableUser";
 import useSearchState from "../hooks/useSearchState";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
@@ -49,6 +49,7 @@ const SelectedUsers = ({
           key={user.id}
           user={user}
           onRemoveUser={onUserRemove}
+          showBirthday
         />
       )),
     [onUserRemove, filteredSelectedUsers]

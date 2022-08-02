@@ -17,3 +17,11 @@ export type UserModel = BaseUserModel &
   UserPhotoModel & {
     birthday?: BirthDate;
   };
+
+export const getAvatarUrl = (user: UserModel) => user.photo200;
+
+export const isUserSelectable = (user: UserModel) =>
+  Boolean(!user.deactivated && user.birthday);
+
+export const getFullName = ({ firstName, lastName }: UserModel) =>
+  `${firstName} ${lastName}`;

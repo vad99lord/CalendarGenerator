@@ -18,8 +18,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import BottomButton from "../components/BottomButton";
-import User, { isUserSelectionEnabled } from "../components/User";
+import BottomButton from "../components/BottomButton/BottomButton";
+import SelectableUser from "../components/User/SelectableUser";
 import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
 import { TokenContext } from "../contexts/TokenContext";
 import useAsyncEffect from "../hooks/useAsyncEffect";
@@ -27,7 +27,7 @@ import { CheckedUsers } from "../hooks/useCheckedUsersState";
 import useSearchState from "../hooks/useSearchState";
 import useSimpleCheckBoxState from "../hooks/useSimpleCheckBoxState";
 import userApiToUser from "../network/models/User/userApiToUser";
-import { UserModel } from "../network/models/User/UserModel";
+import { isUserSelectable, UserModel } from "../network/models/User/UserModel";
 import { fetchVkApi } from "../network/vk/fetchVkApi";
 import { isEmptyArray } from "../utils/utils";
 
@@ -65,7 +65,7 @@ const Friends = ({
     () =>
       friends.map((user) => ({
         user,
-        isSelectable: isManualEdit || isUserSelectionEnabled(user),
+        isSelectable: isManualEdit || isUserSelectable(user),
       })),
     [friends, isManualEdit]
   );
@@ -138,12 +138,13 @@ const Friends = ({
 
   const userItems = selectableFriends.map(
     ({ user, isSelectable }) => (
-      <User
+      <SelectableUser
         key={user.id}
         user={user}
         checked={Boolean(checkedState[user.id])}
         disabled={!isSelectable}
         onUserCheckChanged={onFriendCheckChanged}
+        showBirthday
       />
     )
   );

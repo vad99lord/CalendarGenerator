@@ -1,7 +1,6 @@
 import "@vkontakte/vkui/dist/vkui.css";
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { LaunchParamsProvider } from "./contexts/LaunchParamsContext";
 import { TokenProvider } from "./contexts/TokenContext";
@@ -12,13 +11,11 @@ fetchVkBridge("VKWebAppInit", {});
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <LaunchParamsProvider>
-        <TokenProvider>
-          <App />
-        </TokenProvider>
-      </LaunchParamsProvider>
-    </BrowserRouter>
+    <LaunchParamsProvider>
+      <TokenProvider>
+        <App />
+      </TokenProvider>
+    </LaunchParamsProvider>
   </React.StrictMode>,
   document.getElementById("root") as HTMLElement
 );

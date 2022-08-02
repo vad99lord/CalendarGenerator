@@ -1,6 +1,6 @@
 import { Group, List, Panel, SplitCol, View } from "@vkontakte/vkui";
 import { useContext, useState } from "react";
-import User from "../../components/User";
+import User from "../../components/User/SelectableUser";
 import { LaunchParamsContext } from "../../contexts/LaunchParamsContext";
 import useAsyncEffect from "../../hooks/useAsyncEffect";
 import userApiToUser from "../../network/models/User/userApiToUser";

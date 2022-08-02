@@ -1,9 +1,9 @@
 import {
   DatePicker,
   DatePickerDateFormat,
+  DatePickerProps,
   FormItem,
   FormItemProps,
-  SizeType,
 } from "@vkontakte/vkui";
 import { useCallback, useState } from "react";
 
@@ -29,18 +29,30 @@ const isValidDate = (
   return date.year !== 0;
 };
 
-export type BirthdayPickerProps = {
-  minDate?: FullDate;
-  maxDate?: FullDate;
-  acceptYear: boolean;
+export interface BirthdayPickerProps
+  extends Omit<
+    DatePickerProps,
+    | "yearPlaceholder"
+    | "monthPlaceholder"
+    | "dayPlaceholder"
+    | "onDateChange"
+    | "defaultValue"
+  > {
+  min?: FullDate;
+  max?: FullDate;
+  acceptYear?: boolean;
   onDateChange?: (newDate: PickerDate) => void;
-};
+  defaultDate?: PickerDate;
+}
 
 const BirthdayPicker = ({
-  minDate = { day: 1, month: 1, year: 1920 },
-  maxDate = { day: 1, month: 1, year: 2020 },
+  min = { day: 1, month: 1, year: 1920 },
+  max = { day: 1, month: 1, year: 2020 },
   acceptYear = true,
   onDateChange,
+  defaultDate,
+  className,
+  ...props
 }: BirthdayPickerProps) => {
   const [dateFieldState, setDateFieldState] =
     useState<FormFieldStatus>("default");
@@ -61,20 +73,30 @@ const BirthdayPicker = ({
     },
     [acceptYear, onDateChange]
   );
-  console.log({ minDate, maxDate, acceptYear });
+  // console.log({ min, max, acceptYear });
+  const pickerClassName = [
+    className,
+    acceptYear ? undefined : "BirthdayPicker__no-year",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <FormItem status={dateFieldState}>
       <DatePicker
-        className={acceptYear ? undefined : "BirthdayPicker__no-year"}
-        min={minDate}
-        max={maxDate}
+        className={pickerClassName}
+        min={min}
+        max={max}
         yearPlaceholder="ГГГГ"
         monthPlaceholder="ММ"
         dayPlaceholder="ДД"
         onDateChange={onDateChangeCallback}
-        sizeY={SizeType.COMPACT} //TODO check why warning on lacking dom prop
-        popupDirection="bottom"
+        defaultValue={
+          defaultDate ? { year: min.year, ...defaultDate } : undefined
+        }
+        //sizeY={SizeType.COMPACT} //TODO check why warning on lacking dom prop
+        // popupDirection="bottom"
+        {...props}
       />
     </FormItem>
   );

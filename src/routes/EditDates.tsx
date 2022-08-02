@@ -1,8 +1,8 @@
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
 import { useMemo } from "react";
-import { PickerDate } from "../components/BirthdayPicker";
-import BottomButton from "../components/BottomButton";
-import UserDateAdd from "../components/UserDateAdd";
+import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
+import BottomButton from "../components/BottomButton/BottomButton";
+import UserEditBirthday from "../components/User/UserEditBirthday";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
 import { NavElementId } from "./ChooseUsers";
@@ -28,11 +28,12 @@ const EditDates = ({
   console.log({ allDatesProvided, usersWithoutDates });
 
   const editDatesItems = usersWithoutDates.map((user) => (
-    <UserDateAdd
+    <UserEditBirthday
       key={user.id}
       user={user}
       onDateChange={onUserDateChange}
-      removeFromList={onUserRemove}
+      onRemoveUser={onUserRemove}
+      
     />
   ));
 

@@ -8,7 +8,7 @@ export type TabItem = {
 };
 
 export interface TabsListItemProps<TabID extends TabItemID>
-  extends TabsItemProps {
+  extends Omit<TabsItemProps, "onClick"> {
   itemId: TabID;
   onItemClick: (tabID: TabID) => void;
   item: TabItem;

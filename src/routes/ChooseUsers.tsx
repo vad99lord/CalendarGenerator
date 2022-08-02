@@ -1,6 +1,6 @@
 import { NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
 import { useCallback } from "react";
-import TabsList, { TabsMap } from "../components/TabsList";
+import TabsList, { TabsMap } from "../components/TabsList/TabsList";
 import Friends, { FriendsProps } from "./Friends";
 import UsersTab from "./UsersTab";
 

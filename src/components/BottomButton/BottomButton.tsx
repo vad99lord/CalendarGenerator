@@ -2,23 +2,19 @@ import {
   Button,
   ButtonProps,
   Div,
-  FixedLayout
+  FixedLayout,
 } from "@vkontakte/vkui";
 
-export interface NextButtonProps extends ButtonProps {
-  text?: string;
-}
+export interface NextButtonProps
+  extends ButtonProps {}
 
 const BottomButton = ({
-  text = "Далее",
   ...props
 }: NextButtonProps) => {
   return (
     <FixedLayout filled vertical="bottom">
       <Div>
-        <Button size="l" appearance="accent" stretched {...props}>
-          {text}
-        </Button>
+        <Button size="l" appearance="accent" stretched {...props}/>
       </Div>
     </FixedLayout>
   );

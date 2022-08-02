@@ -1,5 +1,5 @@
 import { Tabs, TabsProps } from "@vkontakte/vkui";
-import TabsListItem, { TabItem, TabItemID } from "./TabsListItem";
+import TabsListItem, { TabItem, TabItemID } from "../TabsListItem/TabsListItem";
 
 export type TabsMap<ID extends TabItemID> = Record<ID, TabItem>;
 
