@@ -5,18 +5,18 @@ import BottomButton from "../components/BottomButton";
 import UserDateAdd from "../components/UserDateAdd";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
+import { NavElementId } from "./ChooseUsers";
 
-type EditDatesProps = {
-  id: string;
+interface EditDatesProps extends NavElementId {
   usersWithoutDates: UserModel[];
   onUserRemove: (userId: UserID) => void;
   onUserDateChange: (date: PickerDate, user: UserModel) => void;
   onNextClick: () => void;
-};
+}
 
 const EditDates = ({
   usersWithoutDates,
-  id: panelId,
+  nav: panelId,
   onUserRemove,
   onUserDateChange,
   onNextClick,
@@ -42,7 +42,10 @@ const EditDates = ({
       <Group>
         <List>{editDatesItems}</List>
       </Group>
-      <BottomButton onClick={onNextClick} disabled={!allDatesProvided}>
+      <BottomButton
+        onClick={onNextClick}
+        disabled={!allDatesProvided}
+      >
         Далее
       </BottomButton>
     </Panel>

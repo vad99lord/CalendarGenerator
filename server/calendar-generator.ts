@@ -8,6 +8,7 @@ export const createBirthdayCalendar = (users: CalendarUser[]) => {
     calendar.createEvent({
       start: user.birthday,
       allDay: true,
+      //🎉
       summary: user.name,
       repeating: {
         freq: ICalEventRepeatingFreq.YEARLY,

@@ -15,7 +15,7 @@
     "@vkontakte/api-schema-typescript": "^1.5131.2",
     "@vkontakte/icons": "^1.170.0",
     "@vkontakte/vk-bridge": "^2.6.2",
-    "@vkontakte/vkui": "^4.32.0",
+    "@vkontakte/vkui": "^4.34.1",
     "add": "^2.0.6",
     "eruda": "^2.4.1",
     "eruda-code": "^2.0.0",

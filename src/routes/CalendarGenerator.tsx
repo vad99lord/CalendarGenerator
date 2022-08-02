@@ -4,11 +4,11 @@ import { useCallback, useMemo, useState } from "react";
 import { UserModel } from "../network/models/User/UserModel";
 
 import { CalendarUserApi } from "@shared/models/CalendarUser";
+import { NavElementId } from "./ChooseUsers";
 
-type CalendarGeneratorProps = {
+interface CalendarGeneratorProps extends NavElementId {
   users: UserModel[];
-  id: string;
-};
+}
 
 export enum FetchState {
   INITIAL,
@@ -17,7 +17,10 @@ export enum FetchState {
   ERROR,
 }
 
-const CalendarGenerator = ({ users, id }: CalendarGeneratorProps) => {
+const CalendarGenerator = ({
+  users,
+  nav: panelId,
+}: CalendarGeneratorProps) => {
   const calendarUsers: CalendarUserApi[] = useMemo(
     () =>
       users.map((user) => ({
@@ -54,7 +57,7 @@ const CalendarGenerator = ({ users, id }: CalendarGeneratorProps) => {
   }, [calendarUsers]);
 
   return (
-    <Panel id={id}>
+    <Panel id={panelId}>
       <Div>
         <Button onClick={onGenerate}>Gen cal</Button>
         <Text>{genState}</Text>

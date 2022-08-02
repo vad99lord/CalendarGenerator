@@ -7,23 +7,42 @@ import { BirthDate } from "../network/models/Birthday/Birthday";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
 import CalendarGenerator from "./CalendarGenerator";
+import ChooseUsers, { ChooseUsersTabs } from "./ChooseUsers";
 import EditDates from "./EditDates";
-import Friends from "./Friends";
 import SelectedUsers from "./SelectedUsers";
 
 enum USERS_PICKER_PANELS {
-  FRIENDS = "friends",
+  CHOOSE_USERS = "choose_users",
   EDIT_DATES = "edit_dates",
   GENERATE_CALENDAR = "generate_calendar",
   SELECTED_USERS = "selected_users",
 }
+
+export type PanelNavigation =
+  | {
+      panelId: Exclude<
+        USERS_PICKER_PANELS,
+        USERS_PICKER_PANELS.CHOOSE_USERS
+      >;
+    }
+  | {
+      panelId: Extract<
+        USERS_PICKER_PANELS,
+        USERS_PICKER_PANELS.CHOOSE_USERS
+      >;
+      activeTab: ChooseUsersTabs;
+    };
 
 const UsersPicker = () => {
   const {
     currentEntry: activePanel,
     next: onNextPanel,
     back: onBackPanel,
-  } = useNavigationStack<string>();
+    replace: onReplacePanel,
+  } = useNavigationStack<PanelNavigation>({
+    panelId: USERS_PICKER_PANELS.CHOOSE_USERS,
+    activeTab: "FRIENDS",
+  });
 
   const checkedUsersState = useCheckedUsersState();
   const {
@@ -41,19 +60,29 @@ const UsersPicker = () => {
   );
 
   const setEditDatesPanel = useCallback(() => {
-    onNextPanel(USERS_PICKER_PANELS.EDIT_DATES);
+    onNextPanel({ panelId: USERS_PICKER_PANELS.EDIT_DATES });
     setUsersToAddDates(
       checkedUsers.filter((user) => user.birthday === undefined)
     );
   }, [checkedUsers, onNextPanel]);
 
   const setGenerateCalendarPanel = useCallback(() => {
-    onNextPanel(USERS_PICKER_PANELS.GENERATE_CALENDAR);
+    onNextPanel({ panelId: USERS_PICKER_PANELS.GENERATE_CALENDAR });
   }, [onNextPanel]);
 
   const onOpenCheckedUsers = useCallback(() => {
-    onNextPanel(USERS_PICKER_PANELS.SELECTED_USERS);
+    onNextPanel({ panelId: USERS_PICKER_PANELS.SELECTED_USERS });
   }, [onNextPanel]);
+
+  const onChooseUserTabChange = useCallback(
+    (activeTab: ChooseUsersTabs) => {
+      onReplacePanel({
+        panelId: USERS_PICKER_PANELS.CHOOSE_USERS,
+        activeTab,
+      });
+    },
+    [onReplacePanel]
+  );
 
   const checkedUsersWithoutDates = useMemo(
     () =>
@@ -77,29 +106,39 @@ const UsersPicker = () => {
     },
     [setUsersCheckChanged]
   );
-  console.log(activePanel);
+  console.log({ activePanel });
   return (
     <SplitCol>
-      <View activePanel={activePanel ?? USERS_PICKER_PANELS.FRIENDS}>
-        <Friends
-          id={USERS_PICKER_PANELS.FRIENDS}
+      <View
+        activePanel={
+          activePanel.panelId
+        }
+      >
+        <ChooseUsers
+          nav={USERS_PICKER_PANELS.CHOOSE_USERS}
           checkedFriends={checkedUsersState}
           onNextClick={setEditDatesPanel}
           onOpenChecked={onOpenCheckedUsers}
+          onTabChange={onChooseUserTabChange}
+          selectedTab={
+            activePanel?.panelId === USERS_PICKER_PANELS.CHOOSE_USERS
+              ? activePanel.activeTab
+              : undefined
+          }
         />
         <EditDates
-          id={USERS_PICKER_PANELS.EDIT_DATES}
+          nav={USERS_PICKER_PANELS.EDIT_DATES}
           usersWithoutDates={checkedUsersWithoutDates}
           onUserRemove={onUserRemove}
           onUserDateChange={onUserDateChange}
           onNextClick={setGenerateCalendarPanel}
         />
         <CalendarGenerator
-          id={USERS_PICKER_PANELS.GENERATE_CALENDAR}
+          nav={USERS_PICKER_PANELS.GENERATE_CALENDAR}
           users={checkedUsers}
         />
         <SelectedUsers
-          id={USERS_PICKER_PANELS.SELECTED_USERS}
+          nav={USERS_PICKER_PANELS.SELECTED_USERS}
           selectedUsers={checkedUsers}
           onAllUsersRemove={clearCheckedUsers}
           onUserRemove={onUserRemove}

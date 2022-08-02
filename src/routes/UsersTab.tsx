@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Counter,
   Footer,
   FormItem,
@@ -11,13 +10,7 @@ import {
   SizeType,
   Switch,
 } from "@vkontakte/vkui";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import BottomButton from "../components/BottomButton";
 import User, { isUserSelectionEnabled } from "../components/User";
 import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
@@ -36,13 +29,13 @@ type SelectableUser = {
   isSelectable: boolean;
 };
 
-export type FriendsProps = {
+export type UsersTabProps = {
   checkedFriends: CheckedUsers;
   onNextClick: () => void;
   onOpenChecked: () => void;
 };
 
-const Friends = ({
+const UsersTab = ({
   checkedFriends: {
     state: checkedState,
     count: checkedCount,
@@ -51,8 +44,7 @@ const Friends = ({
   },
   onNextClick,
   onOpenChecked,
-}: FriendsProps) => {
-  const launchParams = useContext(LaunchParamsContext);
+}: UsersTabProps) => {
   const token = useContext(TokenContext);
   const [debouncedSearchText, searchText, onSearchChange] =
     useSearchState();
@@ -69,13 +61,7 @@ const Friends = ({
       })),
     [friends, isManualEdit]
   );
-  const enabledFriends = useMemo(
-    () =>
-      selectableFriends
-        .filter((it) => it.isSelectable)
-        .map(({ user }) => user),
-    [selectableFriends]
-  );
+
   const disabledFriends = useMemo(
     () =>
       selectableFriends
@@ -84,43 +70,28 @@ const Friends = ({
     [selectableFriends]
   );
 
-  const areAllSelected = useMemo(
-    () => enabledFriends.every(({ id }) => checkedState[id]),
-    [checkedState, enabledFriends]
-  );
-
-  const onSelectAllChanged = useCallback(() => {
-    if (!areAllSelected) {
-      setFriendsCheckChanged(true, enabledFriends);
-    } else {
-      setFriendsCheckChanged(false, enabledFriends);
-    }
-  }, [areAllSelected, enabledFriends, setFriendsCheckChanged]);
-
   useEffect(() => {
     if (isManualEdit) return;
     if (isEmptyArray(disabledFriends)) return;
     setFriendsCheckChanged(false, disabledFriends);
   }, [disabledFriends, isManualEdit, setFriendsCheckChanged]);
 
-  console.log("FRIENDS RENDER", {
-    areAllSelected,
+  console.log("USERS RENDER", {
     isManualEdit,
     checkedState,
   });
 
   useAsyncEffect(async () => {
     console.log(
-      "friends fetch",
+      "users fetch",
       debouncedSearchText,
-      token,
-      launchParams
+      token
     );
-    if (!token || !launchParams) return;
+    
+    if (!token) return;
     const { data: friends, isError } = await fetchVkApi(
-      "friends.search",
+      "users.search",
       {
-        user_id: launchParams.vk_user_id,
         q: debouncedSearchText,
         count: 20,
         offset: 0,
@@ -131,10 +102,10 @@ const Friends = ({
     );
     if (!isError) {
       console.log(JSON.stringify(friends));
-      const modelFriends = friends.items.map(userApiToUser);
+      const modelFriends = friends.items?.map(userApiToUser) ?? [];
       setFriends(modelFriends);
     }
-  }, [token, launchParams, debouncedSearchText]);
+  }, [token, debouncedSearchText]);
 
   const userItems = selectableFriends.map(
     ({ user, isSelectable }) => (
@@ -167,12 +138,6 @@ const Friends = ({
           Выбранные пользователи
         </Button>
       </FormItem>
-      <Checkbox
-        checked={areAllSelected}
-        onChange={onSelectAllChanged}
-      >
-        Выбрать всех
-      </Checkbox>
       <SimpleCell
         sizeY={SizeType.COMPACT}
         Component="label"
@@ -197,4 +162,4 @@ const Friends = ({
   );
 };
 
-export default Friends;
+export default UsersTab;

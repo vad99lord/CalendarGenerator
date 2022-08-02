@@ -14,18 +14,18 @@ import RemovableUser from "../components/RemovableUser";
 import useSearchState from "../hooks/useSearchState";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
+import { NavElementId } from "./ChooseUsers";
 
-type SelectedUsersProps = {
-  id: string;
+interface SelectedUsersProps extends NavElementId {
   selectedUsers: UserModel[];
   onUserRemove: (userId: UserID) => void;
   onAllUsersRemove: () => void;
   onBackClick: () => void;
-};
+}
 
 const SelectedUsers = ({
   selectedUsers,
-  id: panelId,
+  nav: panelId,
   onUserRemove,
   onAllUsersRemove,
   onBackClick,
