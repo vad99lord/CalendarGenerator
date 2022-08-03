@@ -1,9 +1,13 @@
 import { useCallback, useRef, useState } from "react";
 import { peek } from "../utils/utils";
 
+export type Updater<Item> = (prevState: Item) => Item;
+
 export interface NavigationActions<Item> {
+  nextUpdate: (updater: Updater<Item>) => void;
   next: (item: Item) => void;
   back: () => Item;
+  replaceUpdate: (updater: Updater<Item>) => void;
   replace: (item: Item) => void;
 }
 
@@ -79,6 +83,18 @@ function useNavigationStack<Item>(
     initialItem
   );
 
+  const nextUpdate = useCallback(
+    (updater: Updater<Item>) => {
+      const currentEntry = peekNavStack(navStack, config.mode);
+      if (!currentEntry)
+        throw navigationStackError("no currentEntry in nextUpdate!");
+      const newEntry = updater(currentEntry);
+      navStack.push(newEntry);
+      setCurrentEntry(peekNavStack(navStack, config.mode));
+    },
+    [config, navStack]
+  );
+
   const next = useCallback(
     (item: Item) => {
       navStack.push(item);
@@ -96,13 +112,29 @@ function useNavigationStack<Item>(
     return prevEntry;
   }, [config, navStack]);
 
+  const replaceUpdate = useCallback(
+    (updater: Updater<Item>) => {
+      const prevEntry = peekNavStack(navStack, config.mode);
+      if (!prevEntry)
+        throw navigationStackError(
+          "can't replace current undefined entry!"
+        );
+      const newEntry = updater(prevEntry);
+      navStack[navStack.length - 1] = newEntry;
+      setCurrentEntry(peekNavStack(navStack, config.mode));
+    },
+    [config, navStack]
+  );
+
   const replace = useCallback(
     (item: Item) => {
       const prevEntry = peekNavStack(navStack, config.mode);
       if (!prevEntry)
-        throw navigationStackError("can't replace current undefined entry!");
+        throw navigationStackError(
+          "can't replace current undefined entry!"
+        );
       navStack[navStack.length - 1] = item;
-      setCurrentEntry(peek(navStack)!!);
+      setCurrentEntry(peekNavStack(navStack, config.mode));
     },
     [config, navStack]
   );
@@ -112,7 +144,9 @@ function useNavigationStack<Item>(
     currentEntry,
     back,
     next,
+    nextUpdate,
     replace,
+    replaceUpdate,
   };
 }
 

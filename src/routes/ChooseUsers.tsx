@@ -8,7 +8,7 @@ export type NavElementId = Required<Pick<NavIdProps, "nav">>;
 
 export interface ChooseUsersProps extends FriendsProps, NavElementId {
   onTabChange: (activeTab: ChooseUsersTabs) => void;
-  selectedTab?: ChooseUsersTabs;
+  selectedTab: ChooseUsersTabs;
 }
 
 const CHOOSE_USERS_TABS = ["FRIENDS", "USERS"] as const;
@@ -35,7 +35,7 @@ const getTabContent = (tab: ChooseUsersTabs, props: FriendsProps) => {
 const ChooseUsers = ({
   nav: panelId,
   onTabChange,
-  selectedTab = "FRIENDS",
+  selectedTab,
   ...props
 }: ChooseUsersProps) => {
   const onTabClick = useCallback(
@@ -44,6 +44,7 @@ const ChooseUsers = ({
     },
     [onTabChange]
   );
+  console.log("ChooseUsers RENDER");
   console.log({ panelId, selectedTab });
   const tabContent = getTabContent(selectedTab, props);
 

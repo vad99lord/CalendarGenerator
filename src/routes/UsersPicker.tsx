@@ -11,38 +11,51 @@ import ChooseUsers, { ChooseUsersTabs } from "./ChooseUsers";
 import EditDates from "./EditDates";
 import SelectedUsers from "./SelectedUsers";
 
-enum USERS_PICKER_PANELS {
-  CHOOSE_USERS = "choose_users",
-  EDIT_DATES = "edit_dates",
-  GENERATE_CALENDAR = "generate_calendar",
-  SELECTED_USERS = "selected_users",
-}
+const UsersPickerPanels = {
+  ChooseUsers: "choose_users",
+  EditDates: "edit_dates",
+  GenerateCalendar: "generate_calendar",
+  SelectedUsers: "selected_users",
+} as const;
 
-export type PanelNavigation =
-  | {
-      panelId: Exclude<
-        USERS_PICKER_PANELS,
-        USERS_PICKER_PANELS.CHOOSE_USERS
-      >;
-    }
-  | {
-      panelId: Extract<
-        USERS_PICKER_PANELS,
-        USERS_PICKER_PANELS.CHOOSE_USERS
-      >;
-      activeTab: ChooseUsersTabs;
-    };
+type UsersPickerPanelsIds =
+  typeof UsersPickerPanels[keyof typeof UsersPickerPanels];
+type PanelNavState<id extends UsersPickerPanelsIds, State> = Record<
+  id,
+  State
+>;
+
+export type PanelNavigationState = PanelNavState<
+  "choose_users",
+  { activeTab: ChooseUsersTabs }
+>;
+export type ViewNavigation = {
+  activePanel: UsersPickerPanelsIds;
+  panelsState: PanelNavigationState;
+};
+
+const getPanelState = <Id extends keyof PanelNavigationState>(
+  panelId: Id,
+  navState: ViewNavigation
+): PanelNavigationState[Id] => {
+  return navState.panelsState[panelId];
+};
 
 const UsersPicker = () => {
   const {
-    currentEntry: activePanel,
-    next: onNextPanel,
+    currentEntry: navState,
+    nextUpdate: onNextPanel,
     back: onBackPanel,
-    replace: onReplacePanel,
-  } = useNavigationStack<PanelNavigation>({
-    panelId: USERS_PICKER_PANELS.CHOOSE_USERS,
-    activeTab: "FRIENDS",
+    replaceUpdate: onReplacePanel,
+  } = useNavigationStack<ViewNavigation>({
+    activePanel: "choose_users",
+    panelsState: {
+      choose_users: {
+        activeTab: "FRIENDS",
+      },
+    },
   });
+  console.log("UsersPicker RENDER");
 
   const checkedUsersState = useCheckedUsersState();
   const {
@@ -60,26 +73,39 @@ const UsersPicker = () => {
   );
 
   const setEditDatesPanel = useCallback(() => {
-    onNextPanel({ panelId: USERS_PICKER_PANELS.EDIT_DATES });
+    onNextPanel((prevState) => ({
+      ...prevState,
+      activePanel: "edit_dates",
+    }));
     setUsersToAddDates(
       checkedUsers.filter((user) => user.birthday === undefined)
     );
   }, [checkedUsers, onNextPanel]);
 
   const setGenerateCalendarPanel = useCallback(() => {
-    onNextPanel({ panelId: USERS_PICKER_PANELS.GENERATE_CALENDAR });
+    onNextPanel((prevState) => ({
+      ...prevState,
+      activePanel: "generate_calendar",
+    }));
   }, [onNextPanel]);
 
   const onOpenCheckedUsers = useCallback(() => {
-    onNextPanel({ panelId: USERS_PICKER_PANELS.SELECTED_USERS });
+    onNextPanel((prevState) => ({
+      ...prevState,
+      activePanel: "selected_users",
+    }));
   }, [onNextPanel]);
 
   const onChooseUserTabChange = useCallback(
     (activeTab: ChooseUsersTabs) => {
-      onReplacePanel({
-        panelId: USERS_PICKER_PANELS.CHOOSE_USERS,
-        activeTab,
-      });
+      onReplacePanel((prevState) => ({
+        ...prevState,
+        panelsState: {
+          choose_users: {
+            activeTab: activeTab,
+          },
+        },
+      }));
     },
     [onReplacePanel]
   );
@@ -106,39 +132,31 @@ const UsersPicker = () => {
     },
     [setUsersCheckChanged]
   );
-  console.log({ activePanel });
+  console.log({ navState });
   return (
     <SplitCol>
-      <View
-        activePanel={
-          activePanel.panelId
-        }
-      >
+      <View activePanel={navState.activePanel}>
         <ChooseUsers
-          nav={USERS_PICKER_PANELS.CHOOSE_USERS}
+          nav={UsersPickerPanels.ChooseUsers}
           checkedFriends={checkedUsersState}
           onNextClick={setEditDatesPanel}
           onOpenChecked={onOpenCheckedUsers}
           onTabChange={onChooseUserTabChange}
-          selectedTab={
-            activePanel?.panelId === USERS_PICKER_PANELS.CHOOSE_USERS
-              ? activePanel.activeTab
-              : undefined
-          }
+          selectedTab={getPanelState("choose_users",navState).activeTab}
         />
         <EditDates
-          nav={USERS_PICKER_PANELS.EDIT_DATES}
+          nav={UsersPickerPanels.EditDates}
           usersWithoutDates={checkedUsersWithoutDates}
           onUserRemove={onUserRemove}
           onUserDateChange={onUserDateChange}
           onNextClick={setGenerateCalendarPanel}
         />
         <CalendarGenerator
-          nav={USERS_PICKER_PANELS.GENERATE_CALENDAR}
+          nav={UsersPickerPanels.GenerateCalendar}
           users={checkedUsers}
         />
         <SelectedUsers
-          nav={USERS_PICKER_PANELS.SELECTED_USERS}
+          nav={UsersPickerPanels.SelectedUsers}
           selectedUsers={checkedUsers}
           onAllUsersRemove={clearCheckedUsers}
           onUserRemove={onUserRemove}
@@ -148,5 +166,4 @@ const UsersPicker = () => {
     </SplitCol>
   );
 };
-
 export default UsersPicker;
