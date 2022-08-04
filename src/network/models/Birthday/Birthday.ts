@@ -12,6 +12,8 @@ type DateParts = Record<typeof DATE_PARTS[number], number>;
 export type BirthDateParts = Optional<DateParts, "year">;
 
 export class BirthDate {
+  //default year is set to be leap year to allow for 29 february
+  private static readonly DEFAULT_YEAR = 1904;
   private readonly birthDate: Date;
   private birthDateParts: BirthDateParts;
 
@@ -37,7 +39,11 @@ export class BirthDate {
     const { year, month, day } = this.birthDateParts;
     // backing Date field should contain UTC based date to
     // avoid client-server local timezones discrepancies
-    this.birthDate = createUTCDate(year ?? 0, month - 1, day);
+    this.birthDate = createUTCDate(
+      year ?? BirthDate.DEFAULT_YEAR,
+      month - 1,
+      day
+    );
   }
 
   public getDay(): number {

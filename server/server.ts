@@ -2,7 +2,10 @@ import {
   CalendarUser,
   CalendarUserApiRequest,
 } from "@shared/models/CalendarUser";
-import { createUTCDate } from "@shared/utils/utils";
+import {
+  createUTCDate,
+  isLeapYearLastFebruary,
+} from "@shared/utils/utils";
 import express, { Response } from "express";
 import { check, validationResult } from "express-validator";
 import { createBirthdayCalendar } from "./calendar-generator";
@@ -29,16 +32,23 @@ app.post(
     }
     const currentYear = new Date().getUTCFullYear();
     console.log(req.body.birthdays);
-    //TODO handle 29 february => 28 february change
     const calendarUsers: CalendarUser[] = req.body.birthdays.map(
       ({ name, birthday }) => {
         const birthDate = new Date(birthday);
         const day = birthDate.getUTCDate();
         const month = birthDate.getUTCMonth();
         console.log({ currentYear, day, month });
+        //make 29 february -> 28 for cross-years consistency
+        const fixedLeapYearDay = isLeapYearLastFebruary(month, day)
+          ? day - 1
+          : day;
         return {
           name,
-          birthday: createUTCDate(currentYear, month, day),
+          birthday: createUTCDate(
+            currentYear,
+            month,
+            fixedLeapYearDay
+          ),
         };
       }
     );

@@ -40,6 +40,7 @@ export const fetchVkApi = async <M extends MethodsNames>(
 };
 
 // TODO: change simple casting type guard to correct checks for types?????
+// NOT PLANNING to resolve
 const isMethodResponse = <M extends MethodsNames>(
   response: any
 ): response is MethodsResponsesMap<M> => {

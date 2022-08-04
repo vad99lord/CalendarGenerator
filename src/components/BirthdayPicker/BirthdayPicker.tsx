@@ -94,8 +94,6 @@ const BirthdayPicker = ({
         defaultValue={
           defaultDate ? { year: min.year, ...defaultDate } : undefined
         }
-        //sizeY={SizeType.COMPACT} //TODO check why warning on lacking dom prop
-        // popupDirection="bottom"
         {...props}
       />
     </FormItem>

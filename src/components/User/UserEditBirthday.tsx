@@ -33,7 +33,7 @@ const UserEditBirthday = ({
           acceptYear={false}
           onDateChange={onUserDateChange}
           defaultDate={defaultDate}
-          sizeY={SizeType.COMPACT} //TODO check why warning on lacking dom prop
+          sizeY={SizeType.COMPACT}
           popupDirection="bottom"
         />
       }
