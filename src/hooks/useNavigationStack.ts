@@ -3,12 +3,12 @@ import { peek } from "../utils/utils";
 
 export type Updater<Item> = (prevState: Item) => Item;
 
+export type ItemUpdate<Item> = Item | Updater<Item>;
+
 export interface NavigationActions<Item> {
-  nextUpdate: (updater: Updater<Item>) => void;
-  next: (item: Item) => void;
+  next: (item: ItemUpdate<Item>) => void;
   back: () => Item;
-  replaceUpdate: (updater: Updater<Item>) => void;
-  replace: (item: Item) => void;
+  replace: (item: ItemUpdate<Item>) => void;
 }
 
 type NonEmptyNavigationStack<Item> = NavigationActions<Item> & {
@@ -83,21 +83,20 @@ function useNavigationStack<Item>(
     initialItem
   );
 
-  const nextUpdate = useCallback(
-    (updater: Updater<Item>) => {
-      const currentEntry = peekNavStack(navStack, config.mode);
-      if (!currentEntry)
-        throw navigationStackError("no currentEntry in nextUpdate!");
-      const newEntry = updater(currentEntry);
-      navStack.push(newEntry);
-      setCurrentEntry(peekNavStack(navStack, config.mode));
-    },
-    [config, navStack]
-  );
-
   const next = useCallback(
-    (item: Item) => {
-      navStack.push(item);
+    (item: ItemUpdate<Item>) => {
+      if (typeof item === "function") {
+        const currentEntry = peekNavStack(navStack, config.mode);
+        if (!currentEntry)
+          throw navigationStackError(
+            "no previous state to update in next!"
+          );
+        //can't discriminate updater without casting
+        const newEntry = (item as Updater<Item>)(currentEntry);
+        navStack.push(newEntry);
+      } else {
+        navStack.push(item);
+      }
       setCurrentEntry(peekNavStack(navStack, config.mode));
     },
     [config, navStack]
@@ -112,41 +111,32 @@ function useNavigationStack<Item>(
     return prevEntry;
   }, [config, navStack]);
 
-  const replaceUpdate = useCallback(
-    (updater: Updater<Item>) => {
+  const replace = useCallback(
+    (item: ItemUpdate<Item>) => {
       const prevEntry = peekNavStack(navStack, config.mode);
       if (!prevEntry)
         throw navigationStackError(
           "can't replace current undefined entry!"
         );
-      const newEntry = updater(prevEntry);
-      navStack[navStack.length - 1] = newEntry;
+      if (typeof item === "function") {
+        //can't discriminate updater without casting
+        const newEntry = (item as Updater<Item>)(prevEntry);
+        navStack[navStack.length - 1] = newEntry;
+      } else {
+        navStack[navStack.length - 1] = item;
+      }
       setCurrentEntry(peekNavStack(navStack, config.mode));
     },
     [config, navStack]
   );
 
-  const replace = useCallback(
-    (item: Item) => {
-      const prevEntry = peekNavStack(navStack, config.mode);
-      if (!prevEntry)
-        throw navigationStackError(
-          "can't replace current undefined entry!"
-        );
-      navStack[navStack.length - 1] = item;
-      setCurrentEntry(peekNavStack(navStack, config.mode));
-    },
-    [config, navStack]
-  );
   // console.log({ config, currentEntry, navStack });
   assertNullableCurrentEntry(config.mode, currentEntry);
   return {
     currentEntry,
     back,
     next,
-    nextUpdate,
     replace,
-    replaceUpdate,
   };
 }
 

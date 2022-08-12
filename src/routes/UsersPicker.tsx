@@ -44,9 +44,9 @@ const getPanelState = <Id extends keyof PanelNavigationState>(
 const UsersPicker = () => {
   const {
     currentEntry: navState,
-    nextUpdate: onNextPanel,
+    next: onNextPanel,
     back: onBackPanel,
-    replaceUpdate: onReplacePanel,
+    replace: onReplacePanel,
   } = useNavigationStack<ViewNavigation>({
     activePanel: "choose_users",
     panelsState: {
