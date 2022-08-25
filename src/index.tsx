@@ -2,8 +2,8 @@ import "@vkontakte/vkui/dist/vkui.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import { LaunchParamsProvider } from "./contexts/LaunchParamsContext";
-import { TokenProvider } from "./contexts/TokenContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ConfigProvider } from "./contexts/ConfigContext";
 import { fetchVkBridge } from "./network/vk/fetchVkBridge";
 import reportWebVitals from "./reportWebVitals";
 
@@ -11,11 +11,11 @@ fetchVkBridge("VKWebAppInit", {});
 
 ReactDOM.render(
   <React.StrictMode>
-    <LaunchParamsProvider>
-      <TokenProvider>
+    <ConfigProvider>
+      <AuthProvider>
         <App />
-      </TokenProvider>
-    </LaunchParamsProvider>
+      </AuthProvider>
+    </ConfigProvider>
   </React.StrictMode>,
   document.getElementById("root") as HTMLElement
 );
