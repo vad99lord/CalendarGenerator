@@ -1,33 +1,31 @@
-import { computed, makeObservable, toJS } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { fetchVkApi } from "../network/vk/fetchVkApi";
-import {
-  MethodsNames,
-  VkApiFetchResponse,
-} from "../network/vk/types/VkApi";
+import { VkApiFetchResponse } from "../network/vk/types/VkApi";
 import FetchBaseStore from "./FetchBaseStore";
 import {
   VkApiFetchDeps,
   VkApiFetchDepsProvider,
 } from "./VkApiFetchDepsProvider";
-import { VkApiParamsProvider } from "./VkApiParamsProvider";
+import {
+  VkApiMethodParamsNames,
+  VkApiParamsMethod,
+  VkApiParamsProviderMap,
+  VkApiQueryParams,
+} from "./VkApiParamsProviderMap";
 
 export default class VkApiFetchStore<
-  QueryParams extends object,
-  Method extends MethodsNames
+  ParamsName extends VkApiMethodParamsNames
 > extends FetchBaseStore<
-  QueryParams,
+  VkApiQueryParams[ParamsName],
   VkApiFetchDeps,
-  VkApiFetchResponse<Method>
+  VkApiFetchResponse<VkApiParamsMethod[ParamsName]>
 > {
   private readonly _depsProvider: VkApiFetchDepsProvider;
-  private readonly _paramsProvider: VkApiParamsProvider<
-    QueryParams,
-    Method
-  >;
+  private readonly _paramsProvider: VkApiParamsProviderMap[ParamsName];
 
   constructor(
     depsProvider: VkApiFetchDepsProvider,
-    paramsProvider: VkApiParamsProvider<QueryParams, Method>
+    paramsProvider: VkApiParamsProviderMap[ParamsName]
   ) {
     super();
     this._depsProvider = depsProvider;
@@ -47,7 +45,7 @@ export default class VkApiFetchStore<
   }
 
   protected async _fetchApi(
-    params: QueryParams & Required<VkApiFetchDeps>
+    params: VkApiQueryParams[ParamsName] & Required<VkApiFetchDeps>
   ) {
     const apiParams = this._paramsProvider.getVkApiParams(params);
     const resp = await fetchVkApi(

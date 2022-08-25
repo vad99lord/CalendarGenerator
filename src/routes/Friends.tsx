@@ -11,24 +11,20 @@ import {
   SizeType,
   Switch,
 } from "@vkontakte/vkui";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { observer } from "mobx-react-lite";
+import { useCallback, useEffect, useMemo } from "react";
 import BottomButton from "../components/BottomButton/BottomButton";
 import SelectableUser from "../components/User/SelectableUser";
-import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
-import { TokenContext } from "../contexts/TokenContext";
-import useAsyncEffect from "../hooks/useAsyncEffect";
 import { CheckedUsers } from "../hooks/useCheckedUsersState";
+import useLocalStore from "../hooks/useLocalStore";
 import useSearchState from "../hooks/useSearchState";
 import useSimpleCheckBoxState from "../hooks/useSimpleCheckBoxState";
-import userApiToUser from "../network/models/User/userApiToUser";
-import { isUserSelectable, UserModel } from "../network/models/User/UserModel";
-import { fetchVkApi } from "../network/vk/fetchVkApi";
+import useVkApiFetchStore from "../hooks/useVkApiFetchStore";
+import {
+  isUserSelectable,
+  UserModel,
+} from "../network/models/User/UserModel";
+import FriendsStore from "../stores/FriendsStore";
 import { isEmptyArray } from "../utils/utils";
 
 type SelectableUser = {
@@ -52,14 +48,15 @@ const Friends = ({
   onNextClick,
   onOpenChecked,
 }: FriendsProps) => {
-  const launchParams = useContext(LaunchParamsContext);
-  const token = useContext(TokenContext);
+  const friendsFetchStore = useVkApiFetchStore(
+    "SearchFriendsByQuery"
+  );
+  const friendsStore = useLocalStore(FriendsStore, friendsFetchStore);
   const [debouncedSearchText, searchText, onSearchChange] =
     useSearchState();
   const [isManualEdit, setIsManualEdit] =
     useSimpleCheckBoxState(false);
-
-  const [friends, setFriends] = useState<UserModel[]>([]);
+  const { friends } = friendsStore;
 
   const selectableFriends = useMemo<SelectableUser[]>(
     () =>
@@ -109,32 +106,10 @@ const Friends = ({
     checkedState,
   });
 
-  useAsyncEffect(async () => {
-    console.log(
-      "friends fetch",
-      debouncedSearchText,
-      token,
-      launchParams
-    );
-    if (!token || !launchParams) return;
-    const { data: friends, isError } = await fetchVkApi(
-      "friends.search",
-      {
-        user_id: launchParams.vk_user_id,
-        q: debouncedSearchText,
-        count: 20,
-        offset: 0,
-        //TODO extract to typed const somehow
-        fields: "bdate,photo_100,photo_200,photo_max",
-      },
-      token
-    );
-    if (!isError) {
-      console.log(JSON.stringify(friends));
-      const modelFriends = friends.items.map(userApiToUser);
-      setFriends(modelFriends);
-    }
-  }, [token, launchParams, debouncedSearchText]);
+  useEffect(() => {
+    console.log("friends fetch", debouncedSearchText);
+    friendsStore.fetch({ query: debouncedSearchText });
+  }, [debouncedSearchText, friendsStore]);
 
   const userItems = selectableFriends.map(
     ({ user, isSelectable }) => (
@@ -198,4 +173,4 @@ const Friends = ({
   );
 };
 
-export default Friends;
+export default observer(Friends);

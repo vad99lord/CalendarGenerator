@@ -10,17 +10,21 @@ import {
   SizeType,
   Switch,
 } from "@vkontakte/vkui";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useEffect, useMemo, useState } from "react";
 import BottomButton from "../components/BottomButton/BottomButton";
 import SelectableUser from "../components/User/SelectableUser";
-import { LaunchParamsContext } from "../contexts/LaunchParamsContext";
-import { TokenContext } from "../contexts/TokenContext";
+import { AuthContext } from "../contexts/AuthContext";
 import useAsyncEffect from "../hooks/useAsyncEffect";
 import { CheckedUsers } from "../hooks/useCheckedUsersState";
+import { useLateInitContext } from "../hooks/useLateInitContext";
 import useSearchState from "../hooks/useSearchState";
 import useSimpleCheckBoxState from "../hooks/useSimpleCheckBoxState";
 import userApiToUser from "../network/models/User/userApiToUser";
-import { isUserSelectable, UserModel } from "../network/models/User/UserModel";
+import {
+  isUserSelectable,
+  UserModel,
+} from "../network/models/User/UserModel";
 import { fetchVkApi } from "../network/vk/fetchVkApi";
 import { isEmptyArray } from "../utils/utils";
 
@@ -45,7 +49,7 @@ const UsersTab = ({
   onNextClick,
   onOpenChecked,
 }: UsersTabProps) => {
-  const token = useContext(TokenContext);
+  const authStore = useLateInitContext(AuthContext);
   const [debouncedSearchText, searchText, onSearchChange] =
     useSearchState();
   const [isManualEdit, setIsManualEdit] =
@@ -81,12 +85,9 @@ const UsersTab = ({
     checkedState,
   });
 
+  const token = authStore.token;
   useAsyncEffect(async () => {
-    console.log(
-      "users fetch",
-      debouncedSearchText,
-      token
-    );
+    console.log("users fetch", debouncedSearchText, token);
 
     if (!token) return;
     const { data: friends, isError } = await fetchVkApi(
@@ -105,7 +106,7 @@ const UsersTab = ({
       const modelFriends = friends.items?.map(userApiToUser) ?? [];
       setFriends(modelFriends);
     }
-  }, [token, debouncedSearchText]);
+  }, [debouncedSearchText, token]);
 
   const userItems = selectableFriends.map(
     ({ user, isSelectable }) => (
@@ -163,4 +164,4 @@ const UsersTab = ({
   );
 };
 
-export default UsersTab;
+export default observer(UsersTab);
