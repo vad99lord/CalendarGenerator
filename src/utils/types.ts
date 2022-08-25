@@ -11,6 +11,26 @@ export type DeepIndexSignature<O extends object> = {
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> &
   Omit<T, K>;
 
+export type OptionalKeys<T extends object> = Exclude<
+  {
+    [K in keyof T]: T extends Record<K, T[K]> ? never : K;
+  }[keyof T],
+  undefined
+>;
+export type PickOptional<T extends object> = Pick<T, OptionalKeys<T>>;
+
 export type ChildrenProps = {
   children?: React.ReactNode;
 };
+
+export interface ClassConstructor<
+  Class extends abstract new (...args: any) => any,
+  InstanceInterface = never
+> {
+  new (...args: ConstructorParameters<Class>): InstanceType<Class> &
+    InstanceInterface;
+}
+
+export interface Disposable {
+  destroy: () => void;
+}
