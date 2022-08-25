@@ -1,14 +1,16 @@
 import {
   FriendsSearchParams,
   FriendsSearchResponse,
-  UsersReportParams,
-  UsersReportResponse,
   UsersSearchParams,
   UsersSearchResponse,
 } from "@vkontakte/api-schema-typescript";
 import { DeepIndexSignature } from "../../../utils/types";
 import { ApiMethod } from "../../types/ApiMethod";
-import { ApiResponse } from "../../types/ApiResponse";
+import {
+  ApiError,
+  ApiResponse,
+  ApiSuccess,
+} from "../../types/ApiResponse";
 import { VKBridgeError } from "./VkBridgeFetch";
 
 type VkApiMethod<
@@ -40,3 +42,13 @@ export type VkApiFetchResponse<T extends MethodsNames> = ApiResponse<
   MethodsResponsesMap<T>,
   VKBridgeError
 >;
+
+export type VkSuccessResponse<M extends MethodsNames> = Extract<
+  VkApiFetchResponse<M>,
+  ApiSuccess
+>["data"];
+
+export type VkErrorResponse = Extract<
+  VkApiFetchResponse<any>,
+  ApiError
+>["data"];
