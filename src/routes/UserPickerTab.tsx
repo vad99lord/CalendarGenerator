@@ -11,6 +11,7 @@ import {
   SizeType,
   Switch,
 } from "@vkontakte/vkui";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import BottomButton from "../components/BottomButton/BottomButton";
@@ -18,45 +19,50 @@ import SelectableUser from "../components/User/SelectableUser";
 import useLocalStore from "../hooks/useLocalStore";
 import useSearchState from "../hooks/useSearchState";
 import useVkApiFetchStore from "../hooks/useVkApiFetchStore";
-import { UserModel } from "../network/models/User/UserModel";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
-import UsersComponentStore from "../stores/UsersComponentStore";
+import UsersComponentStore, {
+  UsersSearchParamsNames,
+} from "../stores/UsersComponentStore";
 
-type SelectableUser = {
-  user: UserModel;
-  isSelectable: boolean;
+export type UserPickerConfig = {
+  enableSelectAll?: boolean;
+  selectableWithoutBirthday?: boolean;
 };
 
-export type FriendsProps = {
+export interface UserPickerTabProps<
+  ParamsName extends UsersSearchParamsNames
+> extends UserPickerConfig {
   checkedUsersStore: CheckedUsersStore;
+  searchParamsName: ParamsName;
   onNextClick: () => void;
   onOpenChecked: () => void;
-};
+}
 
-const Friends = ({
+const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
   checkedUsersStore,
+  searchParamsName,
   onNextClick,
   onOpenChecked,
-}: FriendsProps) => {
-  const friendsFetchStore = useVkApiFetchStore(
-    "SearchFriendsByQuery"
-  );
+  enableSelectAll = true,
+  selectableWithoutBirthday = true,
+}: UserPickerTabProps<ParamsName>) => {
+  const fetchStore = useVkApiFetchStore(searchParamsName);
   const friendsStore = useLocalStore(
     UsersComponentStore,
     checkedUsersStore,
-    friendsFetchStore
+    fetchStore
   );
   const [debouncedSearchText, searchText, onSearchChange] =
     useSearchState();
 
-  console.log("FRIENDS RENDER", {
-    // areAllSelected,
-    // isManualEdit,
-    // checkedState,
+  console.log("UserPickerTab RENDER", {
+    areAllUsersChecked: toJS(friendsStore.areAllUsersChecked),
+    ignoreSelectable: toJS(friendsStore.ignoreSelectable),
+    checkedState: toJS(checkedUsersStore.checked),
   });
 
   useEffect(() => {
-    console.log("friends fetch", debouncedSearchText);
+    console.log("users fetch", debouncedSearchText);
     friendsStore.fetch({ query: debouncedSearchText });
   }, [debouncedSearchText, friendsStore]);
 
@@ -96,24 +102,28 @@ const Friends = ({
           Выбранные пользователи
         </Button>
       </FormItem>
-      <Checkbox
-        checked={friendsStore.areAllUsersChecked}
-        onChange={friendsStore.onSelectAllChanged}
-      >
-        Выбрать всех
-      </Checkbox>
-      <SimpleCell
-        sizeY={SizeType.COMPACT}
-        Component="label"
-        after={
-          <Switch
-            checked={friendsStore.ignoreSelectable}
-            onChange={friendsStore.toggleIgnoreSelectable}
-          />
-        }
-      >
-        Ручной выбор
-      </SimpleCell>
+      {enableSelectAll && (
+        <Checkbox
+          checked={friendsStore.areAllUsersChecked}
+          onChange={friendsStore.onSelectAllChanged}
+        >
+          Выбрать всех
+        </Checkbox>
+      )}
+      {selectableWithoutBirthday && (
+        <SimpleCell
+          sizeY={SizeType.COMPACT}
+          Component="label"
+          after={
+            <Switch
+              checked={friendsStore.ignoreSelectable}
+              onChange={friendsStore.toggleIgnoreSelectable}
+            />
+          }
+        >
+          Ручной выбор
+        </SimpleCell>
+      )}
       {userItems.length ? (
         <List style={{ marginBottom: 60 }}>{userItems}</List>
       ) : (
@@ -129,4 +139,4 @@ const Friends = ({
   );
 };
 
-export default observer(Friends);
+export default observer(UserPickerTab);

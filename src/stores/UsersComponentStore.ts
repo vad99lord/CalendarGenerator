@@ -7,20 +7,31 @@ import {
 import { Disposable } from "../utils/types";
 import CheckedUsersStore from "./CheckedUsersStore";
 import VkApiFetchStore from "./VkApiFetchStore";
-import { VkApiQueryParams } from "./VkApiParamsProviderMap";
+import {
+  VkApiMethodParamsNames,
+  VkApiQueryParams,
+} from "./VkApiParamsProviderMap";
 
-export default class UsersComponentStore implements Disposable {
+export type UsersSearchParamsNames = Extract<
+  VkApiMethodParamsNames,
+  "SearchFriendsByQuery" | "SearchUsersByQuery"
+>;
+
+export default class UsersComponentStore<
+  SearchParams extends UsersSearchParamsNames
+> implements Disposable
+{
   ignoreSelectable = false;
   private _checkedUsers: CheckedUsersStore;
-  private _friendsFetchStore: VkApiFetchStore<"SearchFriendsByQuery">;
+  private _friendsFetchStore: VkApiFetchStore<SearchParams>;
 
   constructor(
     checkedUsers: CheckedUsersStore,
-    friendsFetchStore: VkApiFetchStore<"SearchFriendsByQuery">
+    friendsFetchStore: VkApiFetchStore<SearchParams>
   ) {
     this._checkedUsers = checkedUsers;
     this._friendsFetchStore = friendsFetchStore;
-    makeObservable<UsersComponentStore>(this, {
+    makeObservable(this, {
       ignoreSelectable: observable,
       toggleIgnoreSelectable: action.bound,
       selectableUsers: computed,
@@ -36,7 +47,7 @@ export default class UsersComponentStore implements Disposable {
 
   get friends(): UserModel[] {
     const { data } = this._friendsFetchStore;
-    const modelFriends = data?.items.map(userApiToUser) ?? [];
+    const modelFriends = data?.items?.map(userApiToUser) ?? [];
     return modelFriends;
   }
 
@@ -44,7 +55,7 @@ export default class UsersComponentStore implements Disposable {
     return this._friendsFetchStore.loadState;
   }
 
-  fetch(params: VkApiQueryParams["SearchFriendsByQuery"]) {
+  fetch(params: VkApiQueryParams[SearchParams]) {
     this._friendsFetchStore.fetch(params);
   }
 

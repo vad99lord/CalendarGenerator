@@ -1,13 +1,23 @@
-import { Div, NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
+import { NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
 import { useCallback } from "react";
 import TabsList, { TabsMap } from "../components/TabsList/TabsList";
-import CheckedUsersStore from "../stores/CheckedUsersStore";
-import Friends, { FriendsProps } from "./Friends";
+import FriendsTab from "./FriendsTab";
+import {
+  UserPickerConfig,
+  UserPickerTabProps,
+} from "./UserPickerTab";
 import UsersTab from "./UsersTab";
 
 export type NavElementId = Required<Pick<NavIdProps, "nav">>;
 
-export interface ChooseUsersProps extends FriendsProps, NavElementId {
+type UserPickerTabOuterProps = Omit<
+  UserPickerTabProps<any>,
+  "searchParamsName" | keyof UserPickerConfig
+>;
+
+export interface ChooseUsersProps
+  extends UserPickerTabOuterProps,
+    NavElementId {
   onTabChange: (activeTab: ChooseUsersTabs) => void;
   selectedTab: ChooseUsersTabs;
 }
@@ -24,13 +34,15 @@ export const CHOOSE_USERS_TABS_ITEMS: TabsMap<ChooseUsersTabs> = {
   },
 };
 
-const getTabContent = (tab: ChooseUsersTabs, props: FriendsProps) => {
+const getTabContent = (
+  tab: ChooseUsersTabs,
+  props: UserPickerTabOuterProps
+) => {
   switch (tab) {
     case "FRIENDS":
-      return <Friends {...props} />;
+      return <FriendsTab {...props} />;
     case "USERS":
-      return <Div>todo</Div>
-      // return <UsersTab {...props} />;
+      return <UsersTab {...props} />;
   }
 };
 

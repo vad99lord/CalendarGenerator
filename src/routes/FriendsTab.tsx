@@ -1,19 +1,18 @@
 import UserPickerTab, { UserPickerTabProps } from "./UserPickerTab";
 
-interface UsersTabProps
+interface FriendsTabProps
   extends Pick<
     UserPickerTabProps<any>,
     "onNextClick" | "onOpenChecked" | "checkedUsersStore"
   > {}
 
-const UsersTab = ({ ...props }: UsersTabProps) => {
+const FriendsTab = ({ ...props }: FriendsTabProps) => {
   return (
     <UserPickerTab
-      enableSelectAll={false}
-      searchParamsName="SearchUsersByQuery"
+      searchParamsName="SearchFriendsByQuery"
       {...props}
     />
   );
 };
 
-export default UsersTab;
+export default FriendsTab;
