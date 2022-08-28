@@ -12,20 +12,15 @@ import {
   Switch,
 } from "@vkontakte/vkui";
 import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import BottomButton from "../components/BottomButton/BottomButton";
 import SelectableUser from "../components/User/SelectableUser";
-import { CheckedUsers } from "../hooks/useCheckedUsersState";
 import useLocalStore from "../hooks/useLocalStore";
 import useSearchState from "../hooks/useSearchState";
-import useSimpleCheckBoxState from "../hooks/useSimpleCheckBoxState";
 import useVkApiFetchStore from "../hooks/useVkApiFetchStore";
-import {
-  isUserSelectable,
-  UserModel,
-} from "../network/models/User/UserModel";
-import FriendsStore from "../stores/FriendsStore";
-import { isEmptyArray } from "../utils/utils";
+import { UserModel } from "../network/models/User/UserModel";
+import CheckedUsersStore from "../stores/CheckedUsersStore";
+import UsersComponentStore from "../stores/UsersComponentStore";
 
 type SelectableUser = {
   user: UserModel;
@@ -33,77 +28,31 @@ type SelectableUser = {
 };
 
 export type FriendsProps = {
-  checkedFriends: CheckedUsers;
+  checkedUsersStore: CheckedUsersStore;
   onNextClick: () => void;
   onOpenChecked: () => void;
 };
 
 const Friends = ({
-  checkedFriends: {
-    state: checkedState,
-    count: checkedCount,
-    onUserCheckChanged: onFriendCheckChanged,
-    setUsersCheckChanged: setFriendsCheckChanged,
-  },
+  checkedUsersStore,
   onNextClick,
   onOpenChecked,
 }: FriendsProps) => {
   const friendsFetchStore = useVkApiFetchStore(
     "SearchFriendsByQuery"
   );
-  const friendsStore = useLocalStore(FriendsStore, friendsFetchStore);
+  const friendsStore = useLocalStore(
+    UsersComponentStore,
+    checkedUsersStore,
+    friendsFetchStore
+  );
   const [debouncedSearchText, searchText, onSearchChange] =
     useSearchState();
-  const [isManualEdit, setIsManualEdit] =
-    useSimpleCheckBoxState(false);
-  const { friends } = friendsStore;
-
-  const selectableFriends = useMemo<SelectableUser[]>(
-    () =>
-      friends.map((user) => ({
-        user,
-        isSelectable: isManualEdit || isUserSelectable(user),
-      })),
-    [friends, isManualEdit]
-  );
-  const enabledFriends = useMemo(
-    () =>
-      selectableFriends
-        .filter((it) => it.isSelectable)
-        .map(({ user }) => user),
-    [selectableFriends]
-  );
-  const disabledFriends = useMemo(
-    () =>
-      selectableFriends
-        .filter((it) => !it.isSelectable)
-        .map(({ user }) => user),
-    [selectableFriends]
-  );
-
-  const areAllSelected = useMemo(
-    () => enabledFriends.every(({ id }) => checkedState[id]),
-    [checkedState, enabledFriends]
-  );
-
-  const onSelectAllChanged = useCallback(() => {
-    if (!areAllSelected) {
-      setFriendsCheckChanged(true, enabledFriends);
-    } else {
-      setFriendsCheckChanged(false, enabledFriends);
-    }
-  }, [areAllSelected, enabledFriends, setFriendsCheckChanged]);
-
-  useEffect(() => {
-    if (isManualEdit) return;
-    if (isEmptyArray(disabledFriends)) return;
-    setFriendsCheckChanged(false, disabledFriends);
-  }, [disabledFriends, isManualEdit, setFriendsCheckChanged]);
 
   console.log("FRIENDS RENDER", {
-    areAllSelected,
-    isManualEdit,
-    checkedState,
+    // areAllSelected,
+    // isManualEdit,
+    // checkedState,
   });
 
   useEffect(() => {
@@ -111,14 +60,14 @@ const Friends = ({
     friendsStore.fetch({ query: debouncedSearchText });
   }, [debouncedSearchText, friendsStore]);
 
-  const userItems = selectableFriends.map(
+  const userItems = friendsStore.selectableUsers.map(
     ({ user, isSelectable }) => (
       <SelectableUser
         key={user.id}
         user={user}
-        checked={Boolean(checkedState[user.id])}
+        checked={Boolean(checkedUsersStore.checked.get(user.id))}
         disabled={!isSelectable}
-        onUserCheckChanged={onFriendCheckChanged}
+        onUserCheckChanged={checkedUsersStore.toggleCheck}
         showBirthday
       />
     )
@@ -136,16 +85,20 @@ const Friends = ({
           size="m"
           appearance="accent"
           stretched={false}
-          disabled={checkedCount === 0}
-          after={<Counter size="s">{checkedCount}</Counter>}
+          disabled={checkedUsersStore.checkedCount === 0}
+          after={
+            <Counter size="s">
+              {checkedUsersStore.checkedCount}
+            </Counter>
+          }
           onClick={onOpenChecked}
         >
           Выбранные пользователи
         </Button>
       </FormItem>
       <Checkbox
-        checked={areAllSelected}
-        onChange={onSelectAllChanged}
+        checked={friendsStore.areAllUsersChecked}
+        onChange={friendsStore.onSelectAllChanged}
       >
         Выбрать всех
       </Checkbox>
@@ -153,7 +106,10 @@ const Friends = ({
         sizeY={SizeType.COMPACT}
         Component="label"
         after={
-          <Switch checked={isManualEdit} onChange={setIsManualEdit} />
+          <Switch
+            checked={friendsStore.ignoreSelectable}
+            onChange={friendsStore.toggleIgnoreSelectable}
+          />
         }
       >
         Ручной выбор
@@ -165,7 +121,7 @@ const Friends = ({
       )}
       <BottomButton
         onClick={onNextClick}
-        disabled={checkedCount === 0}
+        disabled={checkedUsersStore.checkedCount === 0}
       >
         Далее
       </BottomButton>

@@ -1,11 +1,12 @@
 import { SplitCol, View } from "@vkontakte/vkui";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
-import useCheckedUsersState from "../hooks/useCheckedUsersState";
+import useLocalStore from "../hooks/useLocalStore";
 import useNavigationStack from "../hooks/useNavigationStack";
 import { BirthDate } from "../network/models/Birthday/Birthday";
-import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
+import CheckedUsersStore from "../stores/CheckedUsersStore";
+import UsersPickerStore from "../stores/UsersPickerStore";
 import CalendarGenerator from "./CalendarGenerator";
 import ChooseUsers, { ChooseUsersTabs } from "./ChooseUsers";
 import EditDates from "./EditDates";
@@ -57,30 +58,14 @@ const UsersPicker = () => {
   });
   console.log("UsersPicker RENDER");
 
-  const checkedUsersState = useCheckedUsersState();
-  const {
-    state: checkedState,
-    removeUserCheck,
-    setUsersCheckChanged,
-    clearCheckedUsers,
-  } = checkedUsersState;
-  const [usersToAddDates, setUsersToAddDates] = useState<UserModel[]>(
-    []
-  );
-  const checkedUsers = useMemo(
-    () => Object.values(checkedState),
-    [checkedState]
-  );
+  const checkedUsersStore = useLocalStore(CheckedUsersStore);
 
   const setEditDatesPanel = useCallback(() => {
     onNextPanel((prevState) => ({
       ...prevState,
       activePanel: "edit_dates",
     }));
-    setUsersToAddDates(
-      checkedUsers.filter((user) => user.birthday === undefined)
-    );
-  }, [checkedUsers, onNextPanel]);
+  }, [onNextPanel]);
 
   const setGenerateCalendarPanel = useCallback(() => {
     onNextPanel((prevState) => ({
@@ -110,27 +95,12 @@ const UsersPicker = () => {
     [onReplacePanel]
   );
 
-  const checkedUsersWithoutDates = useMemo(
-    () =>
-      usersToAddDates
-        .map((user) => checkedState[user.id])
-        .filter(Boolean),
-    [checkedState, usersToAddDates]
-  );
-
-  const onUserRemove = useCallback(
-    (userId: UserID) => {
-      removeUserCheck(userId);
-    },
-    [removeUserCheck]
-  );
-
   const onUserDateChange = useCallback(
     (date: PickerDate, user: UserModel) => {
       const userWithDate = { ...user, birthday: new BirthDate(date) };
-      setUsersCheckChanged(true, [userWithDate]);
+      checkedUsersStore.setChecked(true, userWithDate);
     },
-    [setUsersCheckChanged]
+    [checkedUsersStore]
   );
   console.log({ navState });
   return (
@@ -138,28 +108,30 @@ const UsersPicker = () => {
       <View activePanel={navState.activePanel}>
         <ChooseUsers
           nav={UsersPickerPanels.ChooseUsers}
-          checkedFriends={checkedUsersState}
+          checkedUsersStore={checkedUsersStore}
           onNextClick={setEditDatesPanel}
           onOpenChecked={onOpenCheckedUsers}
           onTabChange={onChooseUserTabChange}
-          selectedTab={getPanelState("choose_users",navState).activeTab}
+          selectedTab={
+            getPanelState("choose_users", navState).activeTab
+          }
         />
         <EditDates
           nav={UsersPickerPanels.EditDates}
-          usersWithoutDates={checkedUsersWithoutDates}
-          onUserRemove={onUserRemove}
+          checkedUsersStore={checkedUsersStore}
+          onUserRemove={checkedUsersStore.uncheck}
           onUserDateChange={onUserDateChange}
           onNextClick={setGenerateCalendarPanel}
         />
         <CalendarGenerator
           nav={UsersPickerPanels.GenerateCalendar}
-          users={checkedUsers}
+          checkedUsersStore={checkedUsersStore}
         />
         <SelectedUsers
           nav={UsersPickerPanels.SelectedUsers}
-          selectedUsers={checkedUsers}
-          onAllUsersRemove={clearCheckedUsers}
-          onUserRemove={onUserRemove}
+          checkedUsersStore={checkedUsersStore}
+          onAllUsersRemove={checkedUsersStore.clear}
+          onUserRemove={checkedUsersStore.uncheck}
           onBackClick={onBackPanel}
         />
       </View>

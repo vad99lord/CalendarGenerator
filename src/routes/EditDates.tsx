@@ -1,41 +1,43 @@
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
-import { useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
 import BottomButton from "../components/BottomButton/BottomButton";
 import UserEditBirthday from "../components/User/UserEditBirthday";
+import useLocalStore from "../hooks/useLocalStore";
 import { UserID } from "../network/models/User/BaseUserModel";
 import { UserModel } from "../network/models/User/UserModel";
+import CheckedUsersStore from "../stores/CheckedUsersStore";
+import EditDatesStore from "../stores/EditDatesStore";
 import { NavElementId } from "./ChooseUsers";
 
 interface EditDatesProps extends NavElementId {
-  usersWithoutDates: UserModel[];
+  checkedUsersStore: CheckedUsersStore;
   onUserRemove: (userId: UserID) => void;
   onUserDateChange: (date: PickerDate, user: UserModel) => void;
   onNextClick: () => void;
 }
 
 const EditDates = ({
-  usersWithoutDates,
+  checkedUsersStore,
   nav: panelId,
   onUserRemove,
   onUserDateChange,
   onNextClick,
 }: EditDatesProps) => {
-  const allDatesProvided = useMemo(
-    () => usersWithoutDates.every((user) => Boolean(user.birthday)),
-    [usersWithoutDates]
+  const editDatesStore = useLocalStore(
+    EditDatesStore,
+    checkedUsersStore
   );
-  console.log({ allDatesProvided, usersWithoutDates });
 
-  const editDatesItems = usersWithoutDates.map((user) => (
-    <UserEditBirthday
-      key={user.id}
-      user={user}
-      onDateChange={onUserDateChange}
-      onRemoveUser={onUserRemove}
-      
-    />
-  ));
+  const editDatesItems =
+    editDatesStore.currentUsersWithoutBirthday.map((user) => (
+      <UserEditBirthday
+        key={user.id}
+        user={user}
+        onDateChange={onUserDateChange}
+        onRemoveUser={onUserRemove}
+      />
+    ));
 
   return (
     <Panel id={panelId}>
@@ -45,7 +47,7 @@ const EditDates = ({
       </Group>
       <BottomButton
         onClick={onNextClick}
-        disabled={!allDatesProvided}
+        disabled={!editDatesStore.allDatesProvided}
       >
         Далее
       </BottomButton>
@@ -53,4 +55,4 @@ const EditDates = ({
   );
 };
 
-export default EditDates;
+export default observer(EditDates);

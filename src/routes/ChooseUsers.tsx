@@ -1,6 +1,7 @@
-import { NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
+import { Div, NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
 import { useCallback } from "react";
 import TabsList, { TabsMap } from "../components/TabsList/TabsList";
+import CheckedUsersStore from "../stores/CheckedUsersStore";
 import Friends, { FriendsProps } from "./Friends";
 import UsersTab from "./UsersTab";
 
@@ -28,7 +29,8 @@ const getTabContent = (tab: ChooseUsersTabs, props: FriendsProps) => {
     case "FRIENDS":
       return <Friends {...props} />;
     case "USERS":
-      return <UsersTab {...props} />;
+      return <Div>todo</Div>
+      // return <UsersTab {...props} />;
   }
 };
 

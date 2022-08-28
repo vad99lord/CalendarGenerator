@@ -1,13 +1,14 @@
 import { Button, Div, Panel, Text } from "@vkontakte/vkui";
 import saveAs from "file-saver";
-import { useCallback, useMemo, useState } from "react";
-import { UserModel } from "../network/models/User/UserModel";
+import { useCallback, useState } from "react";
 
 import { CalendarUserApi } from "@shared/models/CalendarUser";
+import CheckedUsersStore from "../stores/CheckedUsersStore";
 import { NavElementId } from "./ChooseUsers";
+import { observer } from "mobx-react-lite";
 
 interface CalendarGeneratorProps extends NavElementId {
-  users: UserModel[];
+  checkedUsersStore: CheckedUsersStore;
 }
 
 export enum FetchState {
@@ -18,20 +19,19 @@ export enum FetchState {
 }
 
 const CalendarGenerator = ({
-  users,
+  checkedUsersStore,
   nav: panelId,
 }: CalendarGeneratorProps) => {
-  const calendarUsers: CalendarUserApi[] = useMemo(
-    () =>
-      users.map((user) => ({
-        name: `${user.firstName} ${user.lastName}`,
-        birthday: user.birthday?.toDate().toJSON() ?? "",
-      })),
-    [users]
-  );
   const [genState, setGenState] = useState<FetchState>(
     FetchState.INITIAL
   );
+
+  const users = Array.from(checkedUsersStore.checked.values());
+
+  const calendarUsers: CalendarUserApi[] = users.map((user) => ({
+    name: `${user.firstName} ${user.lastName}`,
+    birthday: user.birthday?.toDate().toJSON() ?? "",
+  }));
 
   const onGenerate = useCallback(async () => {
     setGenState(FetchState.LOADING);
@@ -66,4 +66,4 @@ const CalendarGenerator = ({
   );
 };
 
-export default CalendarGenerator;
+export default observer(CalendarGenerator);

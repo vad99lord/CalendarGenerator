@@ -9,22 +9,23 @@ import {
   PanelHeaderBack,
   Search,
 } from "@vkontakte/vkui";
+import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import RemovableUser from "../components/User/RemovableUser";
 import useSearchState from "../hooks/useSearchState";
 import { UserID } from "../network/models/User/BaseUserModel";
-import { UserModel } from "../network/models/User/UserModel";
+import CheckedUsersStore from "../stores/CheckedUsersStore";
 import { NavElementId } from "./ChooseUsers";
 
 interface SelectedUsersProps extends NavElementId {
-  selectedUsers: UserModel[];
+  checkedUsersStore: CheckedUsersStore;
   onUserRemove: (userId: UserID) => void;
   onAllUsersRemove: () => void;
   onBackClick: () => void;
 }
 
 const SelectedUsers = ({
-  selectedUsers,
+  checkedUsersStore,
   nav: panelId,
   onUserRemove,
   onAllUsersRemove,
@@ -32,6 +33,8 @@ const SelectedUsers = ({
 }: SelectedUsersProps) => {
   const [debouncedSearchText, searchText, onSearchChange] =
     useSearchState();
+  const selectedUsers = Array.from(checkedUsersStore.checked.values())
+  console.log(selectedUsers);
   const filteredSelectedUsers = useMemo(
     () =>
       selectedUsers.filter(({ firstName, lastName }) =>
@@ -88,4 +91,4 @@ const SelectedUsers = ({
   );
 };
 
-export default SelectedUsers;
+export default observer(SelectedUsers);
