@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CacheProvider } from "./contexts/CacheContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
 import { fetchVkBridge } from "./network/vk/fetchVkBridge";
 import reportWebVitals from "./reportWebVitals";
@@ -11,11 +12,13 @@ fetchVkBridge("VKWebAppInit", {});
 
 ReactDOM.render(
   <React.StrictMode>
-    <ConfigProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ConfigProvider>
+    <CacheProvider>
+      <ConfigProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ConfigProvider>
+    </CacheProvider>
   </React.StrictMode>,
   document.getElementById("root") as HTMLElement
 );
