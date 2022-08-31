@@ -17,6 +17,7 @@ export default class CheckedUsersStore implements Disposable {
       setChecked: action.bound,
       setCheckedMany: action.bound,
       toggleCheck: action.bound,
+      clear: action.bound,
     });
   }
 

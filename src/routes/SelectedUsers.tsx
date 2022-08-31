@@ -10,11 +10,11 @@ import {
   Search,
 } from "@vkontakte/vkui";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
 import RemovableUser from "../components/User/RemovableUser";
-import useSearchState from "../hooks/useSearchState";
+import useLocalStore from "../hooks/useLocalStore";
 import { UserID } from "../network/models/User/BaseUserModel";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
+import SelectedUsersStore from "../stores/SelectedUsersStore";
 import { NavElementId } from "./ChooseUsers";
 
 interface SelectedUsersProps extends NavElementId {
@@ -31,32 +31,20 @@ const SelectedUsers = ({
   onAllUsersRemove,
   onBackClick,
 }: SelectedUsersProps) => {
-  const [debouncedSearchText, searchText, onSearchChange] =
-    useSearchState();
-  const selectedUsers = Array.from(checkedUsersStore.checked.values())
-  console.log(selectedUsers);
-  const filteredSelectedUsers = useMemo(
-    () =>
-      selectedUsers.filter(({ firstName, lastName }) =>
-        `${firstName} ${lastName}`
-          .toLocaleLowerCase()
-          .includes(debouncedSearchText.toLocaleLowerCase())
-      ),
-    [debouncedSearchText, selectedUsers]
+  const selectedUsersStore = useLocalStore(
+    SelectedUsersStore,
+    checkedUsersStore
   );
 
-  const selectedUsersItems = useMemo(
-    () =>
-      filteredSelectedUsers.map((user) => (
-        <RemovableUser
-          key={user.id}
-          user={user}
-          onRemoveUser={onUserRemove}
-          showBirthday
-        />
-      )),
-    [onUserRemove, filteredSelectedUsers]
-  );
+  const selectedUsersItems =
+    selectedUsersStore.filteredSelectedUsers.map((user) => (
+      <RemovableUser
+        key={user.id}
+        user={user}
+        onRemoveUser={onUserRemove}
+        showBirthday
+      />
+    ));
 
   return (
     <Panel id={panelId}>
@@ -68,8 +56,8 @@ const SelectedUsers = ({
       </PanelHeader>
       <Group>
         <Search
-          value={searchText}
-          onChange={onSearchChange}
+          value={selectedUsersStore.searchText}
+          onChange={selectedUsersStore.onSearchTextChange}
           after={null}
         />
         <Div style={{ display: "flex", justifyContent: "end" }}>
@@ -81,7 +69,7 @@ const SelectedUsers = ({
             Очистить все
           </Button>
         </Div>
-        {filteredSelectedUsers.length ? (
+        {selectedUsersStore.filteredSelectedUsers.length ? (
           <List>{selectedUsersItems}</List>
         ) : (
           <Footer>Ничего не выбрано</Footer>
