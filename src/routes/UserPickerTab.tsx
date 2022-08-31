@@ -13,11 +13,11 @@ import {
 } from "@vkontakte/vkui";
 import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
 import BottomButton from "../components/BottomButton/BottomButton";
 import SelectableUser from "../components/User/SelectableUser";
+import { CacheContext } from "../contexts/CacheContext";
+import { useLateInitContext } from "../hooks/useLateInitContext";
 import useLocalStore from "../hooks/useLocalStore";
-import useSearchState from "../hooks/useSearchState";
 import useVkApiFetchStore from "../hooks/useVkApiFetchStore";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
 import UsersComponentStore, {
@@ -29,6 +29,11 @@ export type UserPickerConfig = {
   selectableWithoutBirthday?: boolean;
 };
 
+export type UserPickerTabOuterProps = Pick<
+  UserPickerTabProps<any>,
+  "onNextClick" | "onOpenChecked" | "checkedUsersStore"
+>;
+
 export interface UserPickerTabProps<
   ParamsName extends UsersSearchParamsNames
 > extends UserPickerConfig {
@@ -36,6 +41,7 @@ export interface UserPickerTabProps<
   searchParamsName: ParamsName;
   onNextClick: () => void;
   onOpenChecked: () => void;
+  componentId: symbol;
 }
 
 const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
@@ -43,30 +49,27 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
   searchParamsName,
   onNextClick,
   onOpenChecked,
+  componentId,
   enableSelectAll = true,
   selectableWithoutBirthday = true,
 }: UserPickerTabProps<ParamsName>) => {
   const fetchStore = useVkApiFetchStore(searchParamsName);
-  const friendsStore = useLocalStore(
+  const cacheStore = useLateInitContext(CacheContext);
+  const usersStore = useLocalStore(
     UsersComponentStore,
+    componentId,
     checkedUsersStore,
-    fetchStore
+    fetchStore,
+    cacheStore
   );
-  const [debouncedSearchText, searchText, onSearchChange] =
-    useSearchState();
 
   console.log("UserPickerTab RENDER", {
-    areAllUsersChecked: toJS(friendsStore.areAllUsersChecked),
-    ignoreSelectable: toJS(friendsStore.ignoreSelectable),
+    areAllUsersChecked: toJS(usersStore.areAllUsersChecked),
+    ignoreSelectable: toJS(usersStore.ignoreSelectable),
     checkedState: toJS(checkedUsersStore.checked),
   });
 
-  useEffect(() => {
-    console.log("users fetch", debouncedSearchText);
-    friendsStore.fetch({ query: debouncedSearchText });
-  }, [debouncedSearchText, friendsStore]);
-
-  const userItems = friendsStore.selectableUsers.map(
+  const userItems = usersStore.selectableUsers.map(
     ({ user, isSelectable }) => (
       <SelectableUser
         key={user.id}
@@ -82,8 +85,8 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
   return (
     <Group>
       <Search
-        value={searchText}
-        onChange={onSearchChange}
+        value={usersStore.query}
+        onChange={usersStore.onSearchTextChange}
         after={null}
       />
       <FormItem>
@@ -104,8 +107,8 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
       </FormItem>
       {enableSelectAll && (
         <Checkbox
-          checked={friendsStore.areAllUsersChecked}
-          onChange={friendsStore.onSelectAllChanged}
+          checked={usersStore.areAllUsersChecked}
+          onChange={usersStore.onSelectAllChanged}
         >
           Выбрать всех
         </Checkbox>
@@ -116,8 +119,8 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
           Component="label"
           after={
             <Switch
-              checked={friendsStore.ignoreSelectable}
-              onChange={friendsStore.toggleIgnoreSelectable}
+              checked={usersStore.ignoreSelectable}
+              onChange={usersStore.toggleIgnoreSelectable}
             />
           }
         >

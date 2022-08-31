@@ -2,18 +2,10 @@ import { NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
 import { useCallback } from "react";
 import TabsList, { TabsMap } from "../components/TabsList/TabsList";
 import FriendsTab from "./FriendsTab";
-import {
-  UserPickerConfig,
-  UserPickerTabProps,
-} from "./UserPickerTab";
+import { UserPickerTabOuterProps } from "./UserPickerTab";
 import UsersTab from "./UsersTab";
 
 export type NavElementId = Required<Pick<NavIdProps, "nav">>;
-
-type UserPickerTabOuterProps = Omit<
-  UserPickerTabProps<any>,
-  "searchParamsName" | keyof UserPickerConfig
->;
 
 export interface ChooseUsersProps
   extends UserPickerTabOuterProps,

@@ -48,7 +48,10 @@ export default abstract class FetchBaseStore<
         const checkedDeps = this._checkFetchDeps(deps);
         if (!checkedDeps) return;
         this._fetch(checkedDeps);
-      }
+      },
+      // trigger reaction even when fetch deps are not changed
+      // and fetch starts during init phase in dependant stores
+      { fireImmediately: true }
     );
   }
 
