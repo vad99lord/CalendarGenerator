@@ -2,10 +2,15 @@ import { Button, Div, Panel, Text } from "@vkontakte/vkui";
 import saveAs from "file-saver";
 import { useCallback, useState } from "react";
 
-import { CalendarUserApi } from "@shared/models/CalendarUser";
+import {
+  CalendarUserApi,
+  CalendarUserApiRequest,
+} from "@shared/models/CalendarUser";
+import axios, { AxiosResponse } from "axios";
+import { observer } from "mobx-react-lite";
+import { isDevEnv } from "../../shared/src/utils/utils";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
 import { NavElementId } from "./ChooseUsers";
-import { observer } from "mobx-react-lite";
 
 interface CalendarGeneratorProps extends NavElementId {
   checkedUsersStore: CheckedUsersStore;
@@ -36,23 +41,44 @@ const CalendarGenerator = ({
   const onGenerate = useCallback(async () => {
     setGenState(FetchState.LOADING);
     try {
-      const response = await fetch("api/calendar", {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "Content-Type": "application/json",
+      const response = await axios.post<
+        Blob,
+        AxiosResponse<Blob>,
+        CalendarUserApiRequest
+      >(
+        "api/calendar",
+        {
+          birthdays: calendarUsers,
         },
-        body: JSON.stringify({ birthdays: calendarUsers }),
-      });
-      if (!response.ok) {
-        console.log(response.body);
-        throw Error();
-      }
-      const blob = await response.blob();
-      saveAs(blob, "birthdays");
+        {
+          responseType: "blob",
+        }
+      );
+      const blob = response.data;
       setGenState(FetchState.FINISHED);
+      saveAs(blob, "birthdays");
     } catch (err) {
       setGenState(FetchState.ERROR);
+      if (axios.isAxiosError(err)) {
+        const reqUrl = err.config.url;
+        console.log(`${reqUrl ? reqUrl + ": " : ""}${err.message}`);
+        if (isDevEnv()) {
+          const isBlob = (data: unknown): data is Blob =>
+            data instanceof Blob;
+          const responseData = isBlob(err.response?.data)
+            ? await err.response?.data?.text()
+            : err.response?.data || {};
+          console.log("request:\n", err?.response?.request);
+          console.log("response data:\n", responseData);
+          console.log("response headers:\n", err?.response?.headers);
+        }
+      } else {
+        if (isDevEnv()) {
+          console.log("Unknown error occurred during fetch", err);
+        } else {
+          console.log("Unknown error occurred during fetch");
+        }
+      }
     }
   }, [calendarUsers]);
 

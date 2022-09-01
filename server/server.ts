@@ -18,6 +18,7 @@ app.use(express.json());
 
 app.post(
   "/api/calendar",
+  check("birthdays").isArray(),
   check("birthdays.*.name").notEmpty(),
   check("birthdays.*.birthday").isISO8601({
     strict: true,
