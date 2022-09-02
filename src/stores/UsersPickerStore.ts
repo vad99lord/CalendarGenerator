@@ -1,4 +1,4 @@
-import { action, computed, makeObservable } from "mobx";
+import { action, makeObservable } from "mobx";
 import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
 import { BirthDate } from "../network/models/Birthday/Birthday";
 import { UserModel } from "../network/models/User/UserModel";

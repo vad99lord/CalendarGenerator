@@ -9,7 +9,7 @@ import {
   PanelHeaderBack,
   Search,
 } from "@vkontakte/vkui";
-import { observer } from "mobx-react-lite";
+import { Observer, observer } from "mobx-react-lite";
 import RemovableUser from "../components/User/RemovableUser";
 import useLocalStore from "../hooks/useLocalStore";
 import { UserID } from "../network/models/User/BaseUserModel";
@@ -55,11 +55,15 @@ const SelectedUsers = ({
         Выбранные пользователи
       </PanelHeader>
       <Group>
-        <Search
-          value={selectedUsersStore.searchText}
-          onChange={selectedUsersStore.onSearchTextChange}
-          after={null}
-        />
+        <Observer>
+          {() => (
+            <Search
+              value={selectedUsersStore.searchText}
+              onChange={selectedUsersStore.onSearchTextChange}
+              after={null}
+            />
+          )}
+        </Observer>
         <Div style={{ display: "flex", justifyContent: "end" }}>
           <Button
             size="m"

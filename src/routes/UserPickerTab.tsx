@@ -12,7 +12,7 @@ import {
   Switch,
 } from "@vkontakte/vkui";
 import { toJS } from "mobx";
-import { observer } from "mobx-react-lite";
+import { Observer, observer } from "mobx-react-lite";
 import BottomButton from "../components/BottomButton/BottomButton";
 import SelectableUser from "../components/User/SelectableUser";
 import { CacheContext } from "../contexts/CacheContext";
@@ -63,6 +63,7 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
     cacheStore
   );
 
+  // console.log("UserPickerTab RENDER");
   console.log("UserPickerTab RENDER", {
     areAllUsersChecked: toJS(usersStore.areAllUsersChecked),
     ignoreSelectable: toJS(usersStore.ignoreSelectable),
@@ -71,57 +72,76 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
 
   const userItems = usersStore.selectableUsers.map(
     ({ user, isSelectable }) => (
-      <SelectableUser
-        key={user.id}
-        user={user}
-        checked={Boolean(checkedUsersStore.checked.get(user.id))}
-        disabled={!isSelectable}
-        onUserCheckChanged={checkedUsersStore.toggleCheck}
-        showBirthday
-      />
+      <Observer key={user.id}>
+        {() => (
+          <SelectableUser
+            user={user}
+            checked={Boolean(checkedUsersStore.checked.get(user.id))}
+            disabled={!isSelectable}
+            onUserCheckChanged={checkedUsersStore.toggleCheck}
+            showBirthday
+          />
+        )}
+      </Observer>
     )
   );
 
   return (
     <Group>
-      <Search
-        value={usersStore.query}
-        onChange={usersStore.onSearchTextChange}
-        after={null}
-      />
+      <Observer>
+        {() => (
+          <Search
+            value={usersStore.query}
+            onChange={usersStore.onSearchTextChange}
+            after={null}
+          />
+        )}
+      </Observer>
       <FormItem>
-        <Button
-          size="m"
-          appearance="accent"
-          stretched={false}
-          disabled={checkedUsersStore.checkedCount === 0}
-          after={
-            <Counter size="s">
-              {checkedUsersStore.checkedCount}
-            </Counter>
-          }
-          onClick={onOpenChecked}
-        >
-          Выбранные пользователи
-        </Button>
+        <Observer>
+          {() => (
+            <Button
+              size="m"
+              appearance="accent"
+              stretched={false}
+              disabled={checkedUsersStore.checkedCount === 0}
+              after={
+                <Counter size="s">
+                  {checkedUsersStore.checkedCount}
+                </Counter>
+              }
+              onClick={onOpenChecked}
+            >
+              Выбранные пользователи
+            </Button>
+          )}
+        </Observer>
       </FormItem>
       {enableSelectAll && (
-        <Checkbox
-          checked={usersStore.areAllUsersChecked}
-          onChange={usersStore.onSelectAllChanged}
-        >
-          Выбрать всех
-        </Checkbox>
+        <Observer>
+          {() => (
+            <Checkbox
+              checked={usersStore.areAllUsersChecked}
+              onChange={usersStore.onSelectAllChanged}
+            >
+              Выбрать всех
+            </Checkbox>
+          )}
+        </Observer>
       )}
       {selectableWithoutBirthday && (
         <SimpleCell
           sizeY={SizeType.COMPACT}
           Component="label"
           after={
-            <Switch
-              checked={usersStore.ignoreSelectable}
-              onChange={usersStore.toggleIgnoreSelectable}
-            />
+            <Observer>
+              {() => (
+                <Switch
+                  checked={usersStore.ignoreSelectable}
+                  onChange={usersStore.toggleIgnoreSelectable}
+                />
+              )}
+            </Observer>
           }
         >
           Ручной выбор
@@ -132,12 +152,16 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
       ) : (
         <Footer>Ничего не найдено</Footer>
       )}
-      <BottomButton
-        onClick={onNextClick}
-        disabled={checkedUsersStore.checkedCount === 0}
-      >
-        Далее
-      </BottomButton>
+      <Observer>
+        {() => (
+          <BottomButton
+            onClick={onNextClick}
+            disabled={checkedUsersStore.checkedCount === 0}
+          >
+            Далее
+          </BottomButton>
+        )}
+      </Observer>
     </Group>
   );
 };

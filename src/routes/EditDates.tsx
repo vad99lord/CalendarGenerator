@@ -1,5 +1,5 @@
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
-import { observer } from "mobx-react-lite";
+import { Observer, observer } from "mobx-react-lite";
 import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
 import BottomButton from "../components/BottomButton/BottomButton";
 import UserEditBirthday from "../components/User/UserEditBirthday";
@@ -45,12 +45,16 @@ const EditDates = ({
       <Group>
         <List>{editDatesItems}</List>
       </Group>
-      <BottomButton
-        onClick={onNextClick}
-        disabled={!editDatesStore.allDatesProvided}
-      >
-        Далее
-      </BottomButton>
+      <Observer>
+        {() => (
+          <BottomButton
+            onClick={onNextClick}
+            disabled={!editDatesStore.allDatesProvided}
+          >
+            Далее
+          </BottomButton>
+        )}
+      </Observer>
     </Panel>
   );
 };
