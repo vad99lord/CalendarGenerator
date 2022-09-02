@@ -1,11 +1,8 @@
 import { SplitCol, View } from "@vkontakte/vkui";
-import { useCallback } from "react";
-import { PickerDate } from "../components/BirthdayPicker/BirthdayPicker";
+import { observer } from "mobx-react-lite";
 import useLocalStore from "../hooks/useLocalStore";
-import useNavigationStack from "../hooks/useNavigationStack";
-import { BirthDate } from "../network/models/Birthday/Birthday";
-import { UserModel } from "../network/models/User/UserModel";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
+import { NonEmptyNavStackStore } from "../stores/NavigationStackStore";
 import UsersPickerStore from "../stores/UsersPickerStore";
 import CalendarGenerator from "./CalendarGenerator";
 import ChooseUsers, { ChooseUsersTabs } from "./ChooseUsers";
@@ -35,93 +32,46 @@ export type ViewNavigation = {
   panelsState: PanelNavigationState;
 };
 
-const getPanelState = <Id extends keyof PanelNavigationState>(
-  panelId: Id,
-  navState: ViewNavigation
-): PanelNavigationState[Id] => {
-  return navState.panelsState[panelId];
-};
-
 const UsersPicker = () => {
-  const {
-    currentEntry: navState,
-    next: onNextPanel,
-    back: onBackPanel,
-    replace: onReplacePanel,
-  } = useNavigationStack<ViewNavigation>({
-    activePanel: "choose_users",
-    panelsState: {
-      choose_users: {
-        activeTab: "FRIENDS",
-      },
-    },
-  });
   console.log("UsersPicker RENDER");
-
   const checkedUsersStore = useLocalStore(CheckedUsersStore);
-
-  const setEditDatesPanel = useCallback(() => {
-    onNextPanel((prevState) => ({
-      ...prevState,
-      activePanel: "edit_dates",
-    }));
-  }, [onNextPanel]);
-
-  const setGenerateCalendarPanel = useCallback(() => {
-    onNextPanel((prevState) => ({
-      ...prevState,
-      activePanel: "generate_calendar",
-    }));
-  }, [onNextPanel]);
-
-  const onOpenCheckedUsers = useCallback(() => {
-    onNextPanel((prevState) => ({
-      ...prevState,
-      activePanel: "selected_users",
-    }));
-  }, [onNextPanel]);
-
-  const onChooseUserTabChange = useCallback(
-    (activeTab: ChooseUsersTabs) => {
-      onReplacePanel((prevState) => ({
-        ...prevState,
-        panelsState: {
-          choose_users: {
-            activeTab: activeTab,
-          },
+  const navStackStore = useLocalStore(
+    NonEmptyNavStackStore<ViewNavigation>,
+    {
+      activePanel: "choose_users",
+      panelsState: {
+        choose_users: {
+          activeTab: "FRIENDS",
         },
-      }));
-    },
-    [onReplacePanel]
+      },
+    }
   );
-
-  const onUserDateChange = useCallback(
-    (date: PickerDate, user: UserModel) => {
-      const userWithDate = { ...user, birthday: new BirthDate(date) };
-      checkedUsersStore.setChecked(true, userWithDate);
-    },
-    [checkedUsersStore]
+  const {
+    currentEntry: { activePanel, panelsState },
+  } = navStackStore;
+  const usersPickerStore = useLocalStore(
+    UsersPickerStore,
+    checkedUsersStore,
+    navStackStore
   );
-  console.log({ navState });
+  console.log({ navState: navStackStore.currentEntry });
   return (
     <SplitCol>
-      <View activePanel={navState.activePanel}>
+      <View activePanel={activePanel}>
         <ChooseUsers
           nav={UsersPickerPanels.ChooseUsers}
           checkedUsersStore={checkedUsersStore}
-          onNextClick={setEditDatesPanel}
-          onOpenChecked={onOpenCheckedUsers}
-          onTabChange={onChooseUserTabChange}
-          selectedTab={
-            getPanelState("choose_users", navState).activeTab
-          }
+          onNextClick={usersPickerStore.setEditDatesPanel}
+          onOpenChecked={usersPickerStore.onOpenCheckedUsers}
+          onTabChange={usersPickerStore.onChooseUserTabChange}
+          selectedTab={panelsState["choose_users"].activeTab}
         />
         <EditDates
           nav={UsersPickerPanels.EditDates}
           checkedUsersStore={checkedUsersStore}
           onUserRemove={checkedUsersStore.uncheck}
-          onUserDateChange={onUserDateChange}
-          onNextClick={setGenerateCalendarPanel}
+          onUserDateChange={usersPickerStore.onUserDateChange}
+          onNextClick={usersPickerStore.setGenerateCalendarPanel}
         />
         <CalendarGenerator
           nav={UsersPickerPanels.GenerateCalendar}
@@ -132,10 +82,11 @@ const UsersPicker = () => {
           checkedUsersStore={checkedUsersStore}
           onAllUsersRemove={checkedUsersStore.clear}
           onUserRemove={checkedUsersStore.uncheck}
-          onBackClick={onBackPanel}
+          onBackClick={navStackStore.back}
         />
       </View>
     </SplitCol>
   );
 };
-export default UsersPicker;
+
+export default observer(UsersPicker);

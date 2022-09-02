@@ -25,6 +25,7 @@ app.post(
     strictSeparator: true,
   }),
   (req: RequestTypedBody<CalendarUserApiRequest>, res: Response) => {
+    //TODO: make validation MiddleWare?
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res
