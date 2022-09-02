@@ -1,14 +1,11 @@
 import { Button, Div, Panel, Text } from "@vkontakte/vkui";
-import saveAs from "file-saver";
 import { useCallback, useState } from "react";
 
-import {
-  CalendarUserApi,
-  CalendarUserApiRequest,
-} from "@shared/models/CalendarUser";
-import axios, { AxiosResponse } from "axios";
+import { CalendarUserApi } from "@shared/models/CalendarUser";
+import saveAs from "file-saver";
 import { observer } from "mobx-react-lite";
-import { isDevEnv } from "../../shared/src/utils/utils";
+import { API_ENDPOINTS } from "../network/api/ApiConfig";
+import fetchAxios from "../network/api/fetchAxios";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
 import { NavElementId } from "./ChooseUsers";
 
@@ -40,45 +37,23 @@ const CalendarGenerator = ({
 
   const onGenerate = useCallback(async () => {
     setGenState(FetchState.LOADING);
-    try {
-      const response = await axios.post<
-        Blob,
-        AxiosResponse<Blob>,
-        CalendarUserApiRequest
-      >(
-        "api/calendar",
+    const url = API_ENDPOINTS.GenerateCalendar();
+    const { isError, data: blob } =
+      await fetchAxios<"GenerateCalendar">(
+        url,
+        "POST",
         {
           birthdays: calendarUsers,
         },
-        {
+        { 
           responseType: "blob",
         }
       );
-      const blob = response.data;
+    if (!isError) {
       setGenState(FetchState.FINISHED);
       saveAs(blob, "birthdays");
-    } catch (err) {
+    } else {
       setGenState(FetchState.ERROR);
-      if (axios.isAxiosError(err)) {
-        const reqUrl = err.config.url;
-        console.log(`${reqUrl ? reqUrl + ": " : ""}${err.message}`);
-        if (isDevEnv()) {
-          const isBlob = (data: unknown): data is Blob =>
-            data instanceof Blob;
-          const responseData = isBlob(err.response?.data)
-            ? await err.response?.data?.text()
-            : err.response?.data || {};
-          console.log("request:\n", err?.response?.request);
-          console.log("response data:\n", responseData);
-          console.log("response headers:\n", err?.response?.headers);
-        }
-      } else {
-        if (isDevEnv()) {
-          console.log("Unknown error occurred during fetch", err);
-        } else {
-          console.log("Unknown error occurred during fetch");
-        }
-      }
     }
   }, [calendarUsers]);
 
