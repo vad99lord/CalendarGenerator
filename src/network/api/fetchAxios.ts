@@ -7,21 +7,28 @@ import { isDevEnv } from "../../../shared/src/utils/utils";
 import { ApiResponse } from "../types/ApiResponse";
 import { ApiEndpoints, ApiMethodsData } from "./ApiConfig";
 
-type RequestConfig<D = any> = Omit<
+export type RequestConfig<D = any> = Omit<
   AxiosRequestConfig<D>,
   "method" | "url" | "data"
 >;
 
 const UNKNOWN_ERROR_TEXT = "Unknown error occurred during fetch";
 
-type AxiosFetchError = string;
+export type AxiosFetchError = string;
 
-const fetchAxios = async <E extends ApiEndpoints>(
-  apiEndpoint: string,
-  method: RequestMethod,
-  data: ApiMethodsData[E]["request"],
-  config: RequestConfig<ApiMethodsData[E]["request"]> = {}
-): Promise<
+export type FetchAxiosParams<E extends ApiEndpoints> = {
+  apiEndpoint: string;
+  method: RequestMethod;
+  data: ApiMethodsData[E]["request"];
+  config?: RequestConfig<ApiMethodsData[E]["request"]>;
+};
+
+const fetchAxios = async <E extends ApiEndpoints>({
+  apiEndpoint,
+  method,
+  data,
+  config = {},
+}: FetchAxiosParams<E>): Promise<
   ApiResponse<ApiMethodsData[E]["response"], AxiosFetchError>
 > => {
   const requestConfig: AxiosRequestConfig<
