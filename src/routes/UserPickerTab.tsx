@@ -63,7 +63,6 @@ const UserPickerTab = <ParamsName extends UsersSearchParamsNames>({
     cacheStore
   );
 
-  // console.log("UserPickerTab RENDER");
   console.log("UserPickerTab RENDER", {
     areAllUsersChecked: toJS(usersStore.areAllUsersChecked),
     ignoreSelectable: toJS(usersStore.ignoreSelectable),

@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import useLocalStore from "../hooks/useLocalStore";
 import CalendarGeneratorStore from "../stores/CalendarGeneratorStore";
 import CheckedUsersStore from "../stores/CheckedUsersStore";
+import { mapValues } from "../utils/utils";
 import { NavElementId } from "./ChooseUsers";
 
 interface CalendarGeneratorProps extends NavElementId {
@@ -23,13 +24,15 @@ const CalendarGenerator = ({
   nav: panelId,
 }: CalendarGeneratorProps) => {
   const calendarStore = useLocalStore(CalendarGeneratorStore);
-  const users = Array.from(checkedUsersStore.checked.values());
 
-  const calendarUsers: CalendarUserApi[] = users.map((user) => ({
-    name: `${user.firstName} ${user.lastName}`,
-    //TODO birthday should be non-nullable here already
-    birthday: user.birthday?.toDate().toJSON() ?? "",
-  }));
+  const calendarUsers: CalendarUserApi[] = mapValues(
+    checkedUsersStore.checked,
+    (user) => ({
+      name: `${user.firstName} ${user.lastName}`,
+      //TODO birthday should be non-nullable here already
+      birthday: user.birthday?.toDate().toJSON() ?? "",
+    })
+  );
 
   const onGenerate = () => {
     calendarStore.fetch({ birthdays: calendarUsers });

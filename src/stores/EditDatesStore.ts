@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { UserModel } from "../network/models/User/UserModel";
 import { Disposable } from "../utils/types";
+import { filterValues } from "../utils/utils";
 import CheckedUsersStore from "./CheckedUsersStore";
 
 export default class EditDatesStore implements Disposable {
@@ -23,13 +24,10 @@ export default class EditDatesStore implements Disposable {
   }
 
   private _getUsersWithoutBirthday() {
-    const usersWithoutBirthday: UserModel[] = [];
-    this._checkedUsersStore.checked.forEach((user) => {
-      if (user.birthday === undefined) {
-        usersWithoutBirthday.push(user);
-      }
-    });
-    return usersWithoutBirthday;
+    return filterValues(
+      this._checkedUsersStore.checked,
+      (user) => user.birthday === undefined
+    );
   }
 
   get currentUsersWithoutBirthday() {
