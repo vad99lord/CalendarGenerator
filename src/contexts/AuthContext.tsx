@@ -4,10 +4,10 @@ import {
   useLateInitContext,
 } from "../hooks/useLateInitContext";
 import { useLocalStoreCreator } from "../hooks/useLocalStore";
-import { AuthStore } from "../stores/AuthStore";
-import { FetchDepsProvider } from "../stores/VkApiFetchDepsProvider";
-import { VkBridgeParamsProvider } from "../stores/VkApiParamsProvider";
-import VkBridgeFetchStore from "../stores/VkBridgeFetchStore";
+import FetchDepsProvider from "../stores/FetchStores/FetchDepsProvider/FetchDepsProvider";
+import VkBridgeFetchStore from "../stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
+import VkBridgeParamsProvider from "../stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
+import { AuthStore } from "../stores/types/AuthStore";
 import { ChildrenProps } from "../utils/types";
 import { ConfigContext } from "./ConfigContext";
 

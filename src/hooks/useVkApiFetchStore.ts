@@ -1,11 +1,11 @@
 import { AuthContext } from "../contexts/AuthContext";
 import { ConfigContext } from "../contexts/ConfigContext";
-import { VkApiFetchDepsProviderImpl } from "../stores/VkApiFetchDepsProviderImpl";
-import VkApiFetchStore from "../stores/VkApiFetchStore";
+import { VkApiFetchDepsProviderImpl } from "../stores/FetchStores/VkApiFetchStore/VkApiFetchDepsProvider/VkApiFetchDepsProviderImpl";
+import VkApiFetchStore from "../stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
 import {
   VkApiMethodParamsNames,
   VK_API_PARAMS_PROVIDER_MAP,
-} from "../stores/VkApiParamsProviderMap";
+} from "../stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import { useLateInitContext } from "./useLateInitContext";
 import useLocalStore from "./useLocalStore";
 
