@@ -8,6 +8,7 @@ import fetchAxios, {
 } from "../network/api/fetchAxios";
 import { ApiResponse } from "../network/types/ApiResponse";
 import FetchBaseStore from "./FetchBaseStore";
+import { emptyDepsProvider } from "./VkApiFetchDepsProvider";
 
 export type AxiosFetchStoreParams<E extends ApiEndpoints> =
   FetchAxiosParams<E>;
@@ -16,12 +17,13 @@ export default class AxiosFetchStore<
   E extends ApiEndpoints
 > extends FetchBaseStore<
   AxiosFetchStoreParams<E>,
-  {},
+  void,
   ApiResponse<ApiMethodsData[E]["response"], AxiosFetchError>
 > {
-  protected _getFetchDeps(): {} {
-    return {};
+  constructor() {
+    super(emptyDepsProvider);
   }
+
   protected async _fetchApi(
     params: AxiosFetchStoreParams<E>
   ): Promise<ApiResponse<ApiMethodsData[E]["response"], string>> {

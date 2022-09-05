@@ -9,8 +9,8 @@ import CheckedUsersStore from "./CheckedUsersStore";
 import { NonEmptyNavStackStore } from "./NavigationStackStore";
 
 export default class UsersPickerStore implements Disposable {
-  private _checkedUsersStore: CheckedUsersStore;
-  private _navStackStore: NonEmptyNavStackStore<ViewNavigation>;
+  private readonly _checkedUsersStore: CheckedUsersStore;
+  private readonly _navStackStore: NonEmptyNavStackStore<ViewNavigation>;
 
   constructor(
     checkedUsersStore: CheckedUsersStore,

@@ -7,6 +7,11 @@ export const toStringOrEmpty = (
 
 export const isEmptyArray = (arr: any[]) => arr.length === 0;
 
+export const isObject = (it: unknown): it is object => {
+  const type = typeof it;
+  return type === "function" || (type === "object" && it !== null);
+};
+
 export const peek = <Item>(arr: Item[]): Item | undefined =>
   arr[arr.length - 1];
 

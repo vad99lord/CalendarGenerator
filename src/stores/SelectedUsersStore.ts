@@ -6,8 +6,8 @@ import CheckedUsersStore from "./CheckedUsersStore";
 import SearchStore from "./SearchStore";
 
 export default class SelectedUsersStore implements Disposable {
-  private _checkedUsers: CheckedUsersStore;
-  private _searchStore: SearchStore;
+  private readonly _checkedUsers: CheckedUsersStore;
+  private readonly _searchStore: SearchStore;
 
   constructor(checkedUsers: CheckedUsersStore) {
     this._checkedUsers = checkedUsers;

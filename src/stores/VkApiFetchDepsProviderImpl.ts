@@ -1,6 +1,9 @@
-import AuthStore from "./AuthStore";
-import ConfigStore from "./ConfigStore";
-import { VkApiFetchDeps, VkApiFetchDepsProvider } from "./VkApiFetchDepsProvider";
+import { AuthStore } from "./AuthStore";
+import { ConfigStore } from "./ConfigStore";
+import {
+  VkApiFetchDeps,
+  VkApiFetchDepsProvider,
+} from "./VkApiFetchDepsProvider";
 
 export class VkApiFetchDepsProviderImpl
   implements VkApiFetchDepsProvider
@@ -11,10 +14,10 @@ export class VkApiFetchDepsProviderImpl
     this._configStore = configStore;
     this._authStore = authStore;
   }
-  getVkApiFetchDeps(): VkApiFetchDeps {
+  getFetchDeps(): VkApiFetchDeps {
     return {
-      launchParams: this._configStore.launchParams,
-      token: this._authStore.token,
+      launchParams: this._configStore.data,
+      token: this._authStore.data?.access_token,
     };
   }
 }

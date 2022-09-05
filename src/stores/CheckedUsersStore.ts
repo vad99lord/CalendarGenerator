@@ -4,10 +4,10 @@ import { UserModel } from "../network/models/User/UserModel";
 import { Disposable } from "../utils/types";
 
 export default class CheckedUsersStore implements Disposable {
-  _checked = new Map<UserID, UserModel>();
+  private readonly _checked = new Map<UserID, UserModel>();
 
   constructor() {
-    makeObservable(this, {
+    makeObservable<CheckedUsersStore, "_checked">(this, {
       _checked: observable,
       checked: computed,
       uncheck: action.bound,

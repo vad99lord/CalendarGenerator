@@ -5,6 +5,15 @@ export type VkApiFetchDeps = {
   launchParams?: LaunchParams;
 };
 
-export interface VkApiFetchDepsProvider {
-  getVkApiFetchDeps(): VkApiFetchDeps;
+export type VkApiFetchDepsProvider =
+  FetchDepsProvider<VkApiFetchDeps>;
+
+export interface FetchDepsProvider<Deps> {
+  getFetchDeps(): Deps;
 }
+
+export const emptyDepsProvider: FetchDepsProvider<void> = {
+  getFetchDeps() {
+    return null;
+  },
+};

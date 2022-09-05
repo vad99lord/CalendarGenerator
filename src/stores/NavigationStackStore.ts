@@ -37,7 +37,7 @@ abstract class NavigationStackStore<Item> implements Disposable {
   private readonly _stackMode: NavigationStackMode;
   private readonly _navStack: Item[];
 
-  private _assertCurrentEntryReaction: IReactionDisposer;
+  private readonly _assertCurrentEntryReaction: IReactionDisposer;
 
   constructor(
     initialItem?: Item,

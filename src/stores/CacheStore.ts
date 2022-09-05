@@ -2,15 +2,13 @@ import { action, makeObservable, observable } from "mobx";
 import { Disposable } from "../utils/types";
 
 export default class CacheStore implements Disposable {
-  private _cache = new Map<symbol, any>();
-  state: Pick<ReadonlyMap<symbol, any>, "has" | "get"> = this._cache;
+  private readonly _cache = new Map<symbol, any>();
 
   constructor() {
     makeObservable<CacheStore, "_cache">(this, {
       _cache: observable,
       delete: action.bound,
       cache: action.bound,
-      state: observable,
     });
   }
 

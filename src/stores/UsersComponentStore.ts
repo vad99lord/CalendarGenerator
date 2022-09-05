@@ -35,15 +35,15 @@ export default class UsersComponentStore<
   SearchParams extends UsersSearchParamsNames
 > implements Disposable
 {
-  private _id: symbol;
-  private _checkedUsers: CheckedUsersStore;
-  private _friendsFetchStore: VkApiFetchStore<SearchParams>;
-  private _cacheStore: CacheStore;
+  private readonly _id: symbol;
+  private readonly _checkedUsers: CheckedUsersStore;
+  private readonly _friendsFetchStore: VkApiFetchStore<SearchParams>;
+  private readonly _cacheStore: CacheStore;
   private _users: UsersUserFull[] = [];
   private _searchStore!: SearchStore;
   ignoreSelectable = false;
-  private _debouncedSearchTextReaction: IReactionDisposer;
-  private _fetchDataReaction: IReactionDisposer;
+  private readonly _debouncedSearchTextReaction: IReactionDisposer;
+  private readonly _fetchDataReaction: IReactionDisposer;
 
   constructor(
     id: symbol, //id should be shared between instances of the same type

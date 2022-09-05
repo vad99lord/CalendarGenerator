@@ -18,8 +18,8 @@ type InitialState = {
 export default class SearchStore implements Disposable {
   private _searchText!: string;
   private _debouncedSearchText!: string;
-  private _debouncedSearchTextReaction: IReactionDisposer;
-  private _waitTime: number;
+  private readonly _debouncedSearchTextReaction: IReactionDisposer;
+  private readonly _waitTime: number;
 
   constructor({
     initialText = "",

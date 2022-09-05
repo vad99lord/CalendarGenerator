@@ -5,7 +5,7 @@ import { filterValues } from "../utils/utils";
 import CheckedUsersStore from "./CheckedUsersStore";
 
 export default class EditDatesStore implements Disposable {
-  private _checkedUsersStore: CheckedUsersStore;
+  private readonly _checkedUsersStore: CheckedUsersStore;
 
   initialUsersWithoutBirthday: UserModel[] = [];
 

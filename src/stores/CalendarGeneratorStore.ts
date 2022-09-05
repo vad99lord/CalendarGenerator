@@ -13,30 +13,23 @@ import AxiosFetchStore, {
 } from "./AxiosFetchStore";
 
 export default class CalendarGeneratorStore implements Disposable {
-  private _fetchStore: AxiosFetchStore<"GenerateCalendar">;
-  private static CALENDAR_FILENAME = "birthdays";
-  private _saveCalendarReaction: IReactionDisposer;
+  private readonly _fetchStore: AxiosFetchStore<"GenerateCalendar">;
+  private static readonly CALENDAR_FILENAME = "birthdays";
+  private readonly _saveCalendarReaction: IReactionDisposer;
 
   constructor() {
     this._fetchStore = new AxiosFetchStore();
     makeObservable(this, {
       fetch: action.bound,
-      calendarBlob: computed,
       loadState: computed,
     });
     this._saveCalendarReaction = reaction(
-      () => this.calendarBlob,
+      () => this._fetchStore.data,
       (blob) => {
         if (!blob) return;
         saveAs(blob, CalendarGeneratorStore.CALENDAR_FILENAME);
       }
     );
-  }
-
-  get calendarBlob() {
-    const response = this._fetchStore.response;
-    if (!response || response.isError) return undefined;
-    return response.data;
   }
 
   get loadState() {
