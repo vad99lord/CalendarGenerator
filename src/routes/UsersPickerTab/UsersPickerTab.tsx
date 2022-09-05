@@ -1,3 +1,10 @@
+import BottomButton from "@components/BottomButton/BottomButton";
+import SelectableUser from "@components/User/SelectableUser";
+import { CacheContext } from "@contexts/CacheContext";
+import { useLateInitContext } from "@hooks/useLateInitContext";
+import useLocalStore from "@hooks/useLocalStore";
+import useVkApiFetchStore from "@hooks/useVkApiFetchStore";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
 import {
   Button,
   Checkbox,
@@ -13,13 +20,6 @@ import {
 } from "@vkontakte/vkui";
 import { toJS } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
-import BottomButton from "../../components/BottomButton/BottomButton";
-import SelectableUser from "../../components/User/SelectableUser";
-import { CacheContext } from "../../contexts/CacheContext";
-import { useLateInitContext } from "../../hooks/useLateInitContext";
-import useLocalStore from "../../hooks/useLocalStore";
-import useVkApiFetchStore from "../../hooks/useVkApiFetchStore";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
 import UsersPickerTabStore, {
   UsersSearchParamsNames,
 } from "./UsersPickerTabStore";

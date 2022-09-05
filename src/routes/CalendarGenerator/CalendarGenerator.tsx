@@ -1,12 +1,12 @@
 import { Button, Div, Panel, Text } from "@vkontakte/vkui";
 
+import useLocalStore from "@hooks/useLocalStore";
 import { CalendarUserApi } from "@shared/models/CalendarUser";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import { mapValues } from "@utils/utils";
 import { observer } from "mobx-react-lite";
-import useLocalStore from "../../hooks/useLocalStore";
-import CalendarGeneratorStore from "./CalendarGeneratorStore";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
-import { mapValues } from "../../utils/utils";
 import { NavElementId } from "../ChooseUsers/ChooseUsers";
+import CalendarGeneratorStore from "./CalendarGeneratorStore";
 
 interface CalendarGeneratorProps extends NavElementId {
   checkedUsersStore: CheckedUsersStore;

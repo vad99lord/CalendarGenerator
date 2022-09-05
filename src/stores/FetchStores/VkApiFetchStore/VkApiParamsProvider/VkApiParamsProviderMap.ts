@@ -1,4 +1,4 @@
-import { MethodsNames } from "../../../../network/vk/types/VkApi";
+import { MethodsNames } from "@network/vk/types/VkApi";
 import { VkApiParamsProvider } from "./VkApiParamsProvider";
 
 const VK_API_METHOD_PARAMS_NAMES = [

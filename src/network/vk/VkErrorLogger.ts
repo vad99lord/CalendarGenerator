@@ -1,9 +1,8 @@
+import { toStringOrEmpty } from "@utils/utils";
 import {
   AnyRequestMethodName,
   ErrorData,
 } from "@vkontakte/vk-bridge";
-import { toStringOrEmpty } from "../../utils/utils";
-
 
 type VkErrorTypes = Pick<ErrorData, "error_type">["error_type"];
 type VkErrorPrintableTypes = Record<VkErrorTypes, string>;

@@ -1,14 +1,14 @@
+import { Disposable } from "@utils/types";
 import debounce from "lodash.debounce";
 import {
-  action,
-  computed,
-  IReactionDisposer,
-  makeObservable,
-  observable,
-  reaction,
+    action,
+    computed,
+    IReactionDisposer,
+    makeObservable,
+    observable,
+    reaction
 } from "mobx";
 import { ChangeEvent } from "react";
-import { Disposable } from "../../utils/types";
 
 type InitialState = {
   initialText?: string;

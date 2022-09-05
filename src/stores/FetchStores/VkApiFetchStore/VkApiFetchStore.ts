@@ -1,15 +1,15 @@
-import { fetchVkApi } from "../../../network/vk/fetchVkApi";
-import { VkApiFetchResponse } from "../../../network/vk/types/VkApi";
+import { fetchVkApi } from "@network/vk/fetchVkApi";
+import { VkApiFetchResponse } from "@network/vk/types/VkApi";
 import FetchBaseStore from "../FetchBaseStore/FetchBaseStore";
 import {
-  VkApiFetchDeps,
-  VkApiFetchDepsProvider,
+    VkApiFetchDeps,
+    VkApiFetchDepsProvider
 } from "./VkApiFetchDepsProvider/VkApiFetchDepsProvider";
 import {
-  VkApiMethodParamsNames,
-  VkApiParamsMethod,
-  VkApiParamsProviderMap,
-  VkApiQueryParams,
+    VkApiMethodParamsNames,
+    VkApiParamsMethod,
+    VkApiParamsProviderMap,
+    VkApiQueryParams
 } from "./VkApiParamsProvider/VkApiParamsProviderMap";
 
 export default class VkApiFetchStore<

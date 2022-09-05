@@ -1,9 +1,9 @@
+import { isDevEnv } from "@shared/utils/utils";
 import axios, {
   AxiosRequestConfig,
   AxiosResponse,
   Method as RequestMethod,
 } from "axios";
-import { isDevEnv } from "../../../shared/src/utils/utils";
 import { ApiResponse } from "../types/ApiResponse";
 import { ApiEndpoints, ApiMethodsData } from "./ApiConfig";
 

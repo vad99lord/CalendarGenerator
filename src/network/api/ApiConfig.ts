@@ -1,4 +1,4 @@
-import { CalendarUserApiRequest } from "../../../shared/src/models/CalendarUser";
+import { CalendarUserApiRequest } from "@shared/models/CalendarUser";
 
 const BASE_URL = "api";
 

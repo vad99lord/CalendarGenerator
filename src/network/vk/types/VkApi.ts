@@ -1,10 +1,10 @@
+import { DeepIndexSignature } from "@utils/types";
 import {
   FriendsSearchParams,
   FriendsSearchResponse,
   UsersSearchParams,
   UsersSearchResponse,
 } from "@vkontakte/api-schema-typescript";
-import { DeepIndexSignature } from "../../../utils/types";
 import { ApiMethod } from "../../types/ApiMethod";
 import {
   ApiError,

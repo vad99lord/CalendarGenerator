@@ -1,9 +1,9 @@
+import { ClassConstructor, Disposable } from "@utils/types";
 import { useEffect, useState } from "react";
-import { ClassConstructor, Disposable } from "../utils/types";
 
 const useDisposableStore = <Store extends Disposable>(
   store: Store
-) : Store => {
+): Store => {
   useEffect(() => {
     return () => {
       store.destroy();

@@ -1,6 +1,6 @@
+import { fetchVkBridge } from "@network/vk/fetchVkBridge";
+import { VkBridgeFetchResponse } from "@network/vk/types/VkBridgeFetch";
 import { AnyRequestMethodName } from "@vkontakte/vk-bridge";
-import { fetchVkBridge } from "../../../network/vk/fetchVkBridge";
-import { VkBridgeFetchResponse } from "../../../network/vk/types/VkBridgeFetch";
 import FetchBaseStore from "../FetchBaseStore/FetchBaseStore";
 import FetchDepsProvider from "../FetchDepsProvider/FetchDepsProvider";
 import VkBridgeParamsProvider from "./VkBridgeParamsProvider/VkBridgeParamsProvider";

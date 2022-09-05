@@ -1,11 +1,11 @@
+import { createLateInitContext } from "@hooks/useLateInitContext";
+import { useLocalStoreCreator } from "@hooks/useLocalStore";
+import emptyDepsProvider from "@stores/FetchStores/FetchDepsProvider/EmptyFetchDepsProvider";
+import VkBridgeFetchStore from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
+import VkBridgeParamsProvider from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
+import { ConfigStore } from "@stores/types/ConfigStore";
+import { ChildrenProps } from "@utils/types";
 import { useCallback, useEffect } from "react";
-import { createLateInitContext } from "../hooks/useLateInitContext";
-import { useLocalStoreCreator } from "../hooks/useLocalStore";
-import emptyDepsProvider from "../stores/FetchStores/FetchDepsProvider/EmptyFetchDepsProvider";
-import VkBridgeFetchStore from "../stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
-import VkBridgeParamsProvider from "../stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
-import { ConfigStore } from "../stores/types/ConfigStore";
-import { ChildrenProps } from "../utils/types";
 
 export const ConfigContext = createLateInitContext<ConfigStore>();
 

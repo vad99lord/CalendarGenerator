@@ -1,13 +1,15 @@
+import useLocalStore from "@hooks/useLocalStore";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import { NonEmptyNavStackStore } from "@stores/NavigationStackStore/NavigationStackStore";
 import { SplitCol, View } from "@vkontakte/vkui";
 import { observer } from "mobx-react-lite";
-import useLocalStore from "../../hooks/useLocalStore";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
-import { NonEmptyNavStackStore } from "../../stores/NavigationStackStore/NavigationStackStore";
-import UsersPickerStore from "./UsersPickerStore";
 import CalendarGenerator from "../CalendarGenerator/CalendarGenerator";
-import ChooseUsers, { ChooseUsersTabs } from "../ChooseUsers/ChooseUsers";
+import ChooseUsers, {
+  ChooseUsersTabs,
+} from "../ChooseUsers/ChooseUsers";
 import EditDates from "../EditDates/EditDates";
 import SelectedUsers from "../SelectedUsers/SelectedUsers";
+import UsersPickerStore from "./UsersPickerStore";
 
 const UsersPickerPanels = {
   ChooseUsers: "choose_users",

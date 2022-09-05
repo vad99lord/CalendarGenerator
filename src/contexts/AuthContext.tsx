@@ -1,14 +1,14 @@
-import { useCallback, useEffect } from "react";
 import {
   createLateInitContext,
   useLateInitContext,
-} from "../hooks/useLateInitContext";
-import { useLocalStoreCreator } from "../hooks/useLocalStore";
-import FetchDepsProvider from "../stores/FetchStores/FetchDepsProvider/FetchDepsProvider";
-import VkBridgeFetchStore from "../stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
-import VkBridgeParamsProvider from "../stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
-import { AuthStore } from "../stores/types/AuthStore";
-import { ChildrenProps } from "../utils/types";
+} from "@hooks/useLateInitContext";
+import { useLocalStoreCreator } from "@hooks/useLocalStore";
+import FetchDepsProvider from "@stores/FetchStores/FetchDepsProvider/FetchDepsProvider";
+import VkBridgeFetchStore from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
+import VkBridgeParamsProvider from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
+import { AuthStore } from "@stores/types/AuthStore";
+import { ChildrenProps } from "@utils/types";
+import { useCallback, useEffect } from "react";
 import { ConfigContext } from "./ConfigContext";
 
 export const AuthContext = createLateInitContext<AuthStore>();

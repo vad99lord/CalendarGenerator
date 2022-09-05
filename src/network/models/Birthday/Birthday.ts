@@ -1,9 +1,9 @@
-import { createUTCDate } from "@shared/utils/utils";
 import {
   isFullDate,
   PickerDate,
-} from "../../../components/BirthdayPicker/BirthdayPicker";
-import { Optional } from "../../../utils/types";
+} from "@components/BirthdayPicker/BirthdayPicker";
+import { createUTCDate } from "@shared/utils/utils";
+import { Optional } from "@utils/types";
 
 const DATE_PARTS = ["day", "month", "year"] as const;
 

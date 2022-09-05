@@ -1,14 +1,14 @@
+import { PickerDate } from "@components/BirthdayPicker/BirthdayPicker";
+import BottomButton from "@components/BottomButton/BottomButton";
+import UserEditBirthday from "@components/User/UserEditBirthday";
+import useLocalStore from "@hooks/useLocalStore";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
-import { PickerDate } from "../../components/BirthdayPicker/BirthdayPicker";
-import BottomButton from "../../components/BottomButton/BottomButton";
-import UserEditBirthday from "../../components/User/UserEditBirthday";
-import useLocalStore from "../../hooks/useLocalStore";
 import { UserID } from "../../network/models/User/BaseUserModel";
 import { UserModel } from "../../network/models/User/UserModel";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
-import EditDatesStore from "./EditDatesStore";
 import { NavElementId } from "../ChooseUsers/ChooseUsers";
+import EditDatesStore from "./EditDatesStore";
 
 interface EditDatesProps extends NavElementId {
   checkedUsersStore: CheckedUsersStore;

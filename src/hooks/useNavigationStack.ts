@@ -1,5 +1,5 @@
+import { peek } from "@utils/utils";
 import { useCallback, useRef, useState } from "react";
-import { peek } from "../utils/utils";
 
 export type Updater<Item> = (prevState: Item) => Item;
 

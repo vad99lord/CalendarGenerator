@@ -1,4 +1,4 @@
-import { MethodsNames, MethodsParamsMap } from "../../../../network/vk/types/VkApi";
+import { MethodsNames, MethodsParamsMap } from "@network/vk/types/VkApi";
 import { VkApiFetchDeps } from "../VkApiFetchDepsProvider/VkApiFetchDepsProvider";
 
 export interface VkApiParamsProvider<

@@ -1,25 +1,25 @@
+import userApiToUser from "@network/models/User/userApiToUser";
+import { isUserSelectable } from "@network/models/User/UserModel";
+import CacheStore from "@stores/CacheStore/CacheStore";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import VkApiFetchStore from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
+import {
+    VkApiMethodParamsNames,
+    VkApiQueryParams
+} from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import SearchStore from "@stores/SearchStore/SearchStore";
+import { Disposable } from "@utils/types";
 import { UsersUserFull } from "@vkontakte/api-schema-typescript";
 import {
-  action,
-  computed,
-  IReactionDisposer,
-  makeObservable,
-  observable,
-  reaction,
-  toJS,
+    action,
+    computed,
+    IReactionDisposer,
+    makeObservable,
+    observable,
+    reaction,
+    toJS
 } from "mobx";
 import { ChangeEvent } from "react";
-import userApiToUser from "../../network/models/User/userApiToUser";
-import { isUserSelectable } from "../../network/models/User/UserModel";
-import CacheStore from "../../stores/CacheStore/CacheStore";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
-import VkApiFetchStore from "../../stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
-import {
-  VkApiMethodParamsNames,
-  VkApiQueryParams,
-} from "../../stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
-import SearchStore from "../../stores/SearchStore/SearchStore";
-import { Disposable } from "../../utils/types";
 
 export type UsersSearchParamsNames = Extract<
   VkApiMethodParamsNames,

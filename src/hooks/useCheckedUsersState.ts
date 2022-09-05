@@ -1,6 +1,6 @@
+import { UserID } from "@network/models/User/BaseUserModel";
+import { UserModel } from "@network/models/User/UserModel";
 import { useCallback, useRef, useState } from "react";
-import { UserID } from "../network/models/User/BaseUserModel";
-import { UserModel } from "../network/models/User/UserModel";
 
 export type CheckedUsersMap = Record<UserID, UserModel>;
 

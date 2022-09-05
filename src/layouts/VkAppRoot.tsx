@@ -1,10 +1,10 @@
+import useAppearance from "@hooks/useAppearance";
+import { ChildrenProps } from "@utils/types";
 import {
   AdaptivityProvider,
   AppRoot,
   ConfigProvider,
 } from "@vkontakte/vkui";
-import useAppearance from "../hooks/useAppearance";
-import { ChildrenProps } from "../utils/types";
 
 type VkAppRootProps = ChildrenProps;
 

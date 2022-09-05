@@ -1,12 +1,12 @@
+import { PickerDate } from "@components/BirthdayPicker/BirthdayPicker";
+import { BirthDate } from "@network/models/Birthday/Birthday";
+import { UserModel } from "@network/models/User/UserModel";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import { NonEmptyNavStackStore } from "@stores/NavigationStackStore/NavigationStackStore";
+import { Disposable } from "@utils/types";
 import { action, makeObservable } from "mobx";
-import { PickerDate } from "../../components/BirthdayPicker/BirthdayPicker";
-import { BirthDate } from "../../network/models/Birthday/Birthday";
-import { UserModel } from "../../network/models/User/UserModel";
 import { ChooseUsersTabs } from "../ChooseUsers/ChooseUsers";
 import { ViewNavigation } from "./UsersPicker";
-import { Disposable } from "../../utils/types";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
-import { NonEmptyNavStackStore } from "../../stores/NavigationStackStore/NavigationStackStore";
 
 export default class UsersPickerStore implements Disposable {
   private readonly _checkedUsersStore: CheckedUsersStore;

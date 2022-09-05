@@ -1,5 +1,5 @@
+import { ChildrenProps } from "@utils/types";
 import { SplitLayout } from "@vkontakte/vkui";
-import { ChildrenProps } from "../utils/types";
 
 type AppLayoutProps = ChildrenProps;
 

@@ -1,5 +1,5 @@
+import { Disposable } from "@utils/types";
 import { action, makeObservable, observable } from "mobx";
-import { Disposable } from "../../utils/types";
 
 export default class CacheStore implements Disposable {
   private readonly _cache = new Map<symbol, any>();

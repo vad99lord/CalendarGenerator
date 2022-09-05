@@ -1,9 +1,9 @@
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import SearchStore from "@stores/SearchStore/SearchStore";
+import { Disposable } from "@utils/types";
+import { filterValues } from "@utils/utils";
 import { action, computed, makeObservable } from "mobx";
 import { ChangeEvent } from "react";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
-import SearchStore from "../../stores/SearchStore/SearchStore";
-import { Disposable } from "../../utils/types";
-import { filterValues } from "../../utils/utils";
 
 export default class SelectedUsersStore implements Disposable {
   private readonly _checkedUsers: CheckedUsersStore;

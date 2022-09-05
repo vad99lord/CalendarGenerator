@@ -1,10 +1,10 @@
+import { AuthProvider } from "@contexts/AuthContext";
+import { CacheProvider } from "@contexts/CacheContext";
+import { ConfigProvider } from "@contexts/ConfigContext";
 import "@vkontakte/vkui/dist/vkui.css";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import { AuthProvider } from "./contexts/AuthContext";
-import { CacheProvider } from "./contexts/CacheContext";
-import { ConfigProvider } from "./contexts/ConfigContext";
 import { fetchVkBridge } from "./network/vk/fetchVkBridge";
 import reportWebVitals from "./reportWebVitals";
 

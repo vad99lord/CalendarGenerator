@@ -1,8 +1,8 @@
+import { UserModel } from "@network/models/User/UserModel";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import { Disposable } from "@utils/types";
+import { filterValues } from "@utils/utils";
 import { action, computed, makeObservable, observable } from "mobx";
-import { UserModel } from "../../network/models/User/UserModel";
-import { Disposable } from "../../utils/types";
-import { filterValues } from "../../utils/utils";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
 
 export default class EditDatesStore implements Disposable {
   private readonly _checkedUsersStore: CheckedUsersStore;

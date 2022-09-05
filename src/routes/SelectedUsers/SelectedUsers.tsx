@@ -1,3 +1,6 @@
+import RemovableUser from "@components/User/RemovableUser";
+import useLocalStore from "@hooks/useLocalStore";
+import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
 import {
   Button,
   Div,
@@ -10,10 +13,7 @@ import {
   Search,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
-import RemovableUser from "../../components/User/RemovableUser";
-import useLocalStore from "../../hooks/useLocalStore";
 import { UserID } from "../../network/models/User/BaseUserModel";
-import CheckedUsersStore from "../../stores/CheckedUsersStore/CheckedUsersStore";
 import { NavElementId } from "../ChooseUsers/ChooseUsers";
 import SelectedUsersStore from "./SelectedUsersStore";
 

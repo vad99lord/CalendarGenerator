@@ -1,14 +1,14 @@
+import { Disposable } from "@utils/types";
+import { peek } from "@utils/utils";
 import {
-  action,
-  computed,
-  IReactionDisposer,
-  makeObservable,
-  observable,
-  override,
-  reaction,
+    action,
+    computed,
+    IReactionDisposer,
+    makeObservable,
+    observable,
+    override,
+    reaction
 } from "mobx";
-import { Disposable } from "../../utils/types";
-import { peek } from "../../utils/utils";
 
 export type Updater<Item> = (prevState: Item) => Item;
 

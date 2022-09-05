@@ -1,19 +1,19 @@
 import {
-  action,
-  computed,
-  IReactionDisposer,
-  makeObservable,
-  observable,
-  reaction,
-  runInAction,
-} from "mobx";
+    ApiErrorData,
+    ApiResponse,
+    ApiSuccessData
+} from "@network/types/ApiResponse";
+import { Disposable } from "@utils/types";
+import { isObject } from "@utils/utils";
 import {
-  ApiErrorData,
-  ApiResponse,
-  ApiSuccessData,
-} from "../../../network/types/ApiResponse";
-import { Disposable } from "../../../utils/types";
-import { isObject } from "../../../utils/utils";
+    action,
+    computed,
+    IReactionDisposer,
+    makeObservable,
+    observable,
+    reaction,
+    runInAction
+} from "mobx";
 import { LoadState, StartState } from "../../LoadState";
 import FetchDepsProvider from "../FetchDepsProvider/FetchDepsProvider";
 

@@ -1,5 +1,5 @@
+import { QueryParams } from "@network/vk/types/VkBridgeFetch";
 import { AnyRequestMethodName } from "@vkontakte/vk-bridge";
-import { QueryParams } from "../../../../network/vk/types/VkBridgeFetch";
 
 export default interface VkBridgeParamsProvider<
   Method extends AnyRequestMethodName,
