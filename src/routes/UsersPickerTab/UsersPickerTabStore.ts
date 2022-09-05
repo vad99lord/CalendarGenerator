@@ -1,23 +1,24 @@
 import userApiToUser from "@network/models/User/userApiToUser";
 import { isUserSelectable } from "@network/models/User/UserModel";
-import CacheStore from "@stores/CacheStore/CacheStore";
-import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
-import VkApiFetchStore from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
+import ICacheStore from "@stores/CacheStore/ICacheStore";
+import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
+import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
 import {
-    VkApiMethodParamsNames,
-    VkApiQueryParams
+  VkApiMethodParamsNames,
+  VkApiQueryParams,
 } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
 import { Disposable } from "@utils/types";
 import { UsersUserFull } from "@vkontakte/api-schema-typescript";
 import {
-    action,
-    computed,
-    IReactionDisposer,
-    makeObservable,
-    observable,
-    reaction,
-    toJS
+  action,
+  computed,
+  IReactionDisposer,
+  makeObservable,
+  observable,
+  reaction,
+  toJS,
 } from "mobx";
 import { ChangeEvent } from "react";
 
@@ -36,20 +37,20 @@ export default class UsersPickerTabStore<
 > implements Disposable
 {
   private readonly _id: symbol;
-  private readonly _checkedUsers: CheckedUsersStore;
-  private readonly _friendsFetchStore: VkApiFetchStore<SearchParams>;
-  private readonly _cacheStore: CacheStore;
+  private readonly _checkedUsers: ICheckedUsersStore;
+  private readonly _friendsFetchStore: IVkApiFetchStore<SearchParams>;
+  private readonly _cacheStore: ICacheStore;
   private _users: UsersUserFull[] = [];
-  private _searchStore!: SearchStore;
+  private _searchStore!: ISearchStore;
   ignoreSelectable = false;
   private readonly _debouncedSearchTextReaction: IReactionDisposer;
   private readonly _fetchDataReaction: IReactionDisposer;
 
   constructor(
     id: symbol, //id should be shared between instances of the same type
-    checkedUsers: CheckedUsersStore,
-    friendsFetchStore: VkApiFetchStore<SearchParams>,
-    cacheStore: CacheStore
+    checkedUsers: ICheckedUsersStore,
+    friendsFetchStore: IVkApiFetchStore<SearchParams>,
+    cacheStore: ICacheStore
   ) {
     this._id = id;
     this._checkedUsers = checkedUsers;

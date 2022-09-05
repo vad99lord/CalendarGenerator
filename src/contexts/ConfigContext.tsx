@@ -1,7 +1,9 @@
 import { createLateInitContext } from "@hooks/useLateInitContext";
 import { useLocalStoreCreator } from "@hooks/useLocalStore";
 import emptyDepsProvider from "@stores/FetchStores/FetchDepsProvider/EmptyFetchDepsProvider";
-import VkBridgeFetchStore from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
+import VkBridgeFetchStore, {
+  IVkBridgeFetchStore,
+} from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
 import VkBridgeParamsProvider from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
 import { ConfigStore } from "@stores/types/ConfigStore";
 import { ChildrenProps } from "@utils/types";
@@ -19,10 +21,11 @@ const configParams: VkBridgeParamsProvider<"VKWebAppGetLaunchParams"> =
   };
 
 export const ConfigProvider = ({ children }: ConfigProviderProps) => {
-  const configStoreCreator = useCallback(
-    () => new VkBridgeFetchStore(emptyDepsProvider, configParams),
-    []
-  );
+  const configStoreCreator = useCallback(() => {
+    const store: IVkBridgeFetchStore<"VKWebAppGetLaunchParams"> =
+      new VkBridgeFetchStore(emptyDepsProvider, configParams);
+    return store;
+  }, []);
   const configStore = useLocalStoreCreator(configStoreCreator);
   useEffect(() => {
     configStore.fetch();

@@ -1,19 +1,20 @@
 import { API_ENDPOINTS } from "@network/api/ApiConfig";
 import AxiosFetchStore, {
-    AxiosFetchStoreParams
+  AxiosFetchStoreParams,
+  IAxiosFetchStore,
 } from "@stores/FetchStores/AxiosFetchStore/AxiosFetchStore";
 import { Disposable } from "@utils/types";
 import saveAs from "file-saver";
 import {
-    action,
-    computed,
-    IReactionDisposer,
-    makeObservable,
-    reaction
+  action,
+  computed,
+  IReactionDisposer,
+  makeObservable,
+  reaction,
 } from "mobx";
 
 export default class CalendarGeneratorStore implements Disposable {
-  private readonly _fetchStore: AxiosFetchStore<"GenerateCalendar">;
+  private readonly _fetchStore: IAxiosFetchStore<"GenerateCalendar">;
   private static readonly CALENDAR_FILENAME = "birthdays";
   private readonly _saveCalendarReaction: IReactionDisposer;
 

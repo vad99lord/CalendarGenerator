@@ -1,4 +1,6 @@
 import { CalendarUserApiRequest } from "@shared/models/CalendarUser";
+import { ApiResponse } from "../types/ApiResponse";
+import { AxiosFetchError } from "./fetchAxios";
 
 const BASE_URL = "api";
 
@@ -24,4 +26,9 @@ export type ApiMethodsData = ApiMethodData<
   "GenerateCalendar",
   CalendarUserApiRequest,
   Blob
+>;
+
+export type AxiosApiResponse<E extends ApiEndpoints> = ApiResponse<
+  ApiMethodsData[E]["response"],
+  AxiosFetchError
 >;

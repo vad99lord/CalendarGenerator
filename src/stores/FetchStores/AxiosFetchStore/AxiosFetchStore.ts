@@ -1,21 +1,32 @@
-import { ApiEndpoints, ApiMethodsData } from "@network/api/ApiConfig";
+import {
+  ApiEndpoints,
+  ApiMethodsData,
+  AxiosApiResponse,
+} from "@network/api/ApiConfig";
 import fetchAxios, {
-  AxiosFetchError,
   FetchAxiosParams,
 } from "@network/api/fetchAxios";
 import { ApiResponse } from "@network/types/ApiResponse";
 import FetchBaseStore from "../FetchBaseStore/FetchBaseStore";
 import emptyDepsProvider from "../FetchDepsProvider/EmptyFetchDepsProvider";
+import IFetchStore from "../IFetchStore";
+
 export type AxiosFetchStoreParams<E extends ApiEndpoints> =
   FetchAxiosParams<E>;
 
-export default class AxiosFetchStore<
-  E extends ApiEndpoints
-> extends FetchBaseStore<
+export type IAxiosFetchStore<E extends ApiEndpoints> = IFetchStore<
   AxiosFetchStoreParams<E>,
-  void,
-  ApiResponse<ApiMethodsData[E]["response"], AxiosFetchError>
-> {
+  AxiosApiResponse<E>
+>;
+
+export default class AxiosFetchStore<E extends ApiEndpoints>
+  extends FetchBaseStore<
+    AxiosFetchStoreParams<E>,
+    void,
+    AxiosApiResponse<E>
+  >
+  implements IAxiosFetchStore<E>
+{
   constructor() {
     super(emptyDepsProvider);
   }

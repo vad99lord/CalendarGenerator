@@ -1,21 +1,21 @@
-import { Disposable } from "@utils/types";
 import debounce from "lodash.debounce";
 import {
-    action,
-    computed,
-    IReactionDisposer,
-    makeObservable,
-    observable,
-    reaction
+  action,
+  computed,
+  IReactionDisposer,
+  makeObservable,
+  observable,
+  reaction,
 } from "mobx";
 import { ChangeEvent } from "react";
+import ISearchStore from "./ISearchStore";
 
 type InitialState = {
   initialText?: string;
   waitTime?: number;
 };
 
-export default class SearchStore implements Disposable {
+export default class SearchStore implements ISearchStore {
   private _searchText!: string;
   private _debouncedSearchText!: string;
   private readonly _debouncedSearchTextReaction: IReactionDisposer;

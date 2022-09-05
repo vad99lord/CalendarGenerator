@@ -1,37 +1,23 @@
 import { Disposable } from "@utils/types";
 import { peek } from "@utils/utils";
 import {
-    action,
-    computed,
-    IReactionDisposer,
-    makeObservable,
-    observable,
-    override,
-    reaction
+  action,
+  computed,
+  IReactionDisposer,
+  makeObservable,
+  observable,
+  override,
+  reaction,
 } from "mobx";
+import {
+  INavigationStackStore,
+  INonEmptyNavigationStackStore,
+  ItemUpdate,
+  Updater,
+} from "./INavigationStackStore";
+import NavigationStackError from "./NavigationStackError";
 
-export type Updater<Item> = (prevState: Item) => Item;
-
-export type ItemUpdate<Item> = Item | Updater<Item>;
-
-export interface NavigationActions<Item> {
-  next: (item: ItemUpdate<Item>) => void;
-  back: () => Item;
-  replace: (item: ItemUpdate<Item>) => void;
-}
-
-export type NavigationStackMode = "Empty" | "NonEmpty";
-
-export class NavigationStackError extends Error {
-  name = "NavigationStackError";
-
-  constructor(message: string) {
-    super(`Navigation stack error: ${message}`);
-
-    //extending a built-in class
-    Object.setPrototypeOf(this, NavigationStackError.prototype);
-  }
-}
+type NavigationStackMode = "Empty" | "NonEmpty";
 
 abstract class NavigationStackStore<Item> implements Disposable {
   private readonly _stackMode: NavigationStackMode;
@@ -155,9 +141,10 @@ abstract class NavigationStackStore<Item> implements Disposable {
   }
 }
 
-export class EmptyNavStackStore<
-  Item
-> extends NavigationStackStore<Item> {
+export class EmptyNavStackStore<Item>
+  extends NavigationStackStore<Item>
+  implements INavigationStackStore<Item>
+{
   get currentEntry(): Item | undefined {
     return this._currentEntry;
   }
@@ -169,9 +156,10 @@ export class EmptyNavStackStore<
   }
 }
 
-export class NonEmptyNavStackStore<
-  Item
-> extends NavigationStackStore<Item> {
+export class NonEmptyNavStackStore<Item>
+  extends NavigationStackStore<Item>
+  implements INonEmptyNavigationStackStore<Item>
+{
   constructor(initialItem: Item) {
     super(initialItem, "NonEmpty");
     makeObservable(this, {

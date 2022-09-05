@@ -1,8 +1,10 @@
 import useLocalStore from "@hooks/useLocalStore";
 import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import { INonEmptyNavigationStackStore } from "@stores/NavigationStackStore/INavigationStackStore";
 import { NonEmptyNavStackStore } from "@stores/NavigationStackStore/NavigationStackStore";
 import { SplitCol, View } from "@vkontakte/vkui";
 import { observer } from "mobx-react-lite";
+import ICheckedUsersStore from "../../stores/CheckedUsersStore/ICheckedUsersStore";
 import CalendarGenerator from "../CalendarGenerator/CalendarGenerator";
 import ChooseUsers, {
   ChooseUsersTabs,
@@ -36,18 +38,17 @@ export type ViewNavigation = {
 
 const UsersPicker = () => {
   console.log("UsersPicker RENDER");
-  const checkedUsersStore = useLocalStore(CheckedUsersStore);
-  const navStackStore = useLocalStore(
-    NonEmptyNavStackStore<ViewNavigation>,
-    {
+  const checkedUsersStore: ICheckedUsersStore =
+    useLocalStore(CheckedUsersStore);
+  const navStackStore: INonEmptyNavigationStackStore<ViewNavigation> =
+    useLocalStore(NonEmptyNavStackStore<ViewNavigation>, {
       activePanel: "choose_users",
       panelsState: {
         choose_users: {
           activeTab: "FRIENDS",
         },
       },
-    }
-  );
+    });
   const {
     currentEntry: { activePanel, panelsState },
   } = navStackStore;

@@ -1,4 +1,5 @@
-import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
+import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
 import { Disposable } from "@utils/types";
 import { filterValues } from "@utils/utils";
@@ -6,10 +7,10 @@ import { action, computed, makeObservable } from "mobx";
 import { ChangeEvent } from "react";
 
 export default class SelectedUsersStore implements Disposable {
-  private readonly _checkedUsers: CheckedUsersStore;
-  private readonly _searchStore: SearchStore;
+  private readonly _checkedUsers: ICheckedUsersStore;
+  private readonly _searchStore: ISearchStore;
 
-  constructor(checkedUsers: CheckedUsersStore) {
+  constructor(checkedUsers: ICheckedUsersStore) {
     this._checkedUsers = checkedUsers;
     this._searchStore = new SearchStore();
     makeObservable(this, {

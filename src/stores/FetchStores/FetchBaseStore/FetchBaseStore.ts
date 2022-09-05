@@ -1,21 +1,21 @@
 import {
-    ApiErrorData,
-    ApiResponse,
-    ApiSuccessData
+  ApiErrorData,
+  ApiResponse,
+  ApiSuccessData,
 } from "@network/types/ApiResponse";
-import { Disposable } from "@utils/types";
 import { isObject } from "@utils/utils";
 import {
-    action,
-    computed,
-    IReactionDisposer,
-    makeObservable,
-    observable,
-    reaction,
-    runInAction
+  action,
+  computed,
+  IReactionDisposer,
+  makeObservable,
+  observable,
+  reaction,
+  runInAction,
 } from "mobx";
 import { LoadState, StartState } from "../../LoadState";
 import FetchDepsProvider from "../FetchDepsProvider/FetchDepsProvider";
+import IFetchStore from "../IFetchStore";
 
 type FetchParams<OwnParams, DepsParams> = OwnParams & DepsParams;
 type InternalLoadState = LoadState | StartState;
@@ -30,7 +30,7 @@ export default abstract class FetchBaseStore<
   OwnFetchParams extends object | void,
   DepsFetchParams extends object | void,
   Response extends ApiResponse
-> implements Disposable
+> implements IFetchStore<OwnFetchParams, Response>
 {
   response?: Response = undefined;
   private _loadState: InternalLoadState = LoadState.Initial;

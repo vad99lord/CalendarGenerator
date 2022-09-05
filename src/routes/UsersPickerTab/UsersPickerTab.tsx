@@ -4,7 +4,7 @@ import { CacheContext } from "@contexts/CacheContext";
 import { useLateInitContext } from "@hooks/useLateInitContext";
 import useLocalStore from "@hooks/useLocalStore";
 import useVkApiFetchStore from "@hooks/useVkApiFetchStore";
-import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import {
   Button,
   Checkbox,
@@ -37,7 +37,7 @@ export type UsersPickerTabOuterProps = Pick<
 export interface UsersPickerTabProps<
   ParamsName extends UsersSearchParamsNames
 > extends UsersPickerConfig {
-  checkedUsersStore: CheckedUsersStore;
+  checkedUsersStore: ICheckedUsersStore;
   searchParamsName: ParamsName;
   onNextClick: () => void;
   onOpenChecked: () => void;

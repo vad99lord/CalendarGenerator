@@ -1,7 +1,7 @@
-import { Disposable } from "@utils/types";
 import { action, makeObservable, observable } from "mobx";
+import ICacheStore from "./ICacheStore";
 
-export default class CacheStore implements Disposable {
+export default class CacheStore implements ICacheStore {
   private readonly _cache = new Map<symbol, any>();
 
   constructor() {

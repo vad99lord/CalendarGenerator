@@ -1,6 +1,6 @@
 import RemovableUser from "@components/User/RemovableUser";
 import useLocalStore from "@hooks/useLocalStore";
-import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import {
   Button,
   Div,
@@ -18,7 +18,7 @@ import { NavElementId } from "../ChooseUsers/ChooseUsers";
 import SelectedUsersStore from "./SelectedUsersStore";
 
 interface SelectedUsersProps extends NavElementId {
-  checkedUsersStore: CheckedUsersStore;
+  checkedUsersStore: ICheckedUsersStore;
   onUserRemove: (userId: UserID) => void;
   onAllUsersRemove: () => void;
   onBackClick: () => void;

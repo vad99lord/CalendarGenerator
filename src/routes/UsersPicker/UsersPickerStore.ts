@@ -1,20 +1,20 @@
 import { PickerDate } from "@components/BirthdayPicker/BirthdayPicker";
 import { BirthDate } from "@network/models/Birthday/Birthday";
 import { UserModel } from "@network/models/User/UserModel";
-import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
-import { NonEmptyNavStackStore } from "@stores/NavigationStackStore/NavigationStackStore";
+import { INonEmptyNavigationStackStore } from "@stores/NavigationStackStore/INavigationStackStore";
 import { Disposable } from "@utils/types";
 import { action, makeObservable } from "mobx";
+import ICheckedUsersStore from "../../stores/CheckedUsersStore/ICheckedUsersStore";
 import { ChooseUsersTabs } from "../ChooseUsers/ChooseUsers";
 import { ViewNavigation } from "./UsersPicker";
 
 export default class UsersPickerStore implements Disposable {
-  private readonly _checkedUsersStore: CheckedUsersStore;
-  private readonly _navStackStore: NonEmptyNavStackStore<ViewNavigation>;
+  private readonly _checkedUsersStore: ICheckedUsersStore;
+  private readonly _navStackStore: INonEmptyNavigationStackStore<ViewNavigation>;
 
   constructor(
-    checkedUsersStore: CheckedUsersStore,
-    navStackStore: NonEmptyNavStackStore<ViewNavigation>
+    checkedUsersStore: ICheckedUsersStore,
+    navStackStore: INonEmptyNavigationStackStore<ViewNavigation>
   ) {
     this._checkedUsersStore = checkedUsersStore;
     this._navStackStore = navStackStore;

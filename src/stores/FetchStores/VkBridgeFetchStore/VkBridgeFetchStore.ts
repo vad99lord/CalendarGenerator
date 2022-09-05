@@ -3,17 +3,25 @@ import { VkBridgeFetchResponse } from "@network/vk/types/VkBridgeFetch";
 import { AnyRequestMethodName } from "@vkontakte/vk-bridge";
 import FetchBaseStore from "../FetchBaseStore/FetchBaseStore";
 import FetchDepsProvider from "../FetchDepsProvider/FetchDepsProvider";
+import IFetchStore from "../IFetchStore";
 import VkBridgeParamsProvider from "./VkBridgeParamsProvider/VkBridgeParamsProvider";
 
-export default class VkBridgeFetchStore<
+export type IVkBridgeFetchStore<
   Method extends AnyRequestMethodName,
-  OuterParams extends object | void = void,
-  Deps extends object | void = void
-> extends FetchBaseStore<
-  OuterParams,
-  Deps,
-  VkBridgeFetchResponse<Method>
-> {
+  OuterParams extends object | void = void
+> = IFetchStore<OuterParams, VkBridgeFetchResponse<Method>>;
+export default class VkBridgeFetchStore<
+    Method extends AnyRequestMethodName,
+    OuterParams extends object | void = void,
+    Deps extends object | void = void
+  >
+  extends FetchBaseStore<
+    OuterParams,
+    Deps,
+    VkBridgeFetchResponse<Method>
+  >
+  implements IVkBridgeFetchStore<Method, OuterParams>
+{
   private readonly _paramsProvider: VkBridgeParamsProvider<
     Method,
     OuterParams,

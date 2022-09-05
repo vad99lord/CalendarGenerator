@@ -1,15 +1,15 @@
 import { UserModel } from "@network/models/User/UserModel";
-import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
+import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { Disposable } from "@utils/types";
 import { filterValues } from "@utils/utils";
 import { action, computed, makeObservable, observable } from "mobx";
 
 export default class EditDatesStore implements Disposable {
-  private readonly _checkedUsersStore: CheckedUsersStore;
+  private readonly _checkedUsersStore: ICheckedUsersStore;
 
   initialUsersWithoutBirthday: UserModel[] = [];
 
-  constructor(checkedUsersStore: CheckedUsersStore) {
+  constructor(checkedUsersStore: ICheckedUsersStore) {
     this._checkedUsersStore = checkedUsersStore;
     makeObservable<EditDatesStore, "_setInitialUsersWithoutBirthday">(
       this,
