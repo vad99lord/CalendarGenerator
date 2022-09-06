@@ -19,8 +19,11 @@ assumptions/constraints:
 2. fetching first item is always at the top of the page
 3. only last page may be partially full
 4. pages indices start at 1
-5. cached pages are reset on each new fetch
-6. pagination ui is blocked during fetch (can't change current page until loaded)
+5. load sizes should be multiple of itemsPerPage, with loadSize >= 3x itemsPerPage
+6. cached pages are reset on each new fetch
+7. pagination ui is blocked during fetch (can't change current page until loaded)
+8. first load fetches initialLoad items forward 
+9. subsequent loads fetch loadSize items centered across the current page
 */
 
 class Range {
@@ -61,8 +64,8 @@ export type IPaginationFetchStore<Item> = IFetchStore<
 
 export default class PaginationStore<Item> implements Disposable {
   private readonly _fetchStore: IPaginationFetchStore<Item>;
-  private _initialLoadSize: number = 20;
-  private _loadSize: number = 20;
+  private _initialLoadSize: number = 30;
+  private _loadSize: number = 25;
   private _itemsPerPage: number = 5;
   private _currentPage: number = 1; //undefined until first load??
   private _totalCount?: number; //or 0 default???
@@ -79,20 +82,19 @@ export default class PaginationStore<Item> implements Disposable {
       | "_offset"
       | "_initialLoad"
       | "_currentLoad"
-      // | "_pagesInLoad"
       | "_setLoadedPages"
       | "_currentPageInLoad"
       | "_offsetInLoad"
       | "_loadedPages"
       | "_totalCount"
       | "_currentPage"
+      | "_currentLoadPage"
     >(this, {
       _setTotalCount: action.bound,
       pagesCount: computed,
       _offset: computed,
       _initialLoad: action.bound,
       _currentLoad: computed,
-      // _pagesInLoad: computed,
       _setLoadedPages: action.bound,
       _currentPageInLoad: computed,
       _offsetInLoad: computed,
@@ -103,6 +105,7 @@ export default class PaginationStore<Item> implements Disposable {
       _loadedPages: observable,
       _totalCount: observable,
       _currentPage: observable,
+      _currentLoadPage: computed,
     });
     this._totalPagesCountReaction = when(
       () => this._currentLoad !== undefined,
@@ -135,12 +138,7 @@ export default class PaginationStore<Item> implements Disposable {
           toJS(currentLoad),
           toJS(this._pagesInLoad)
         );
-        const pagesInLoad = this._pagesInLoad;
-        if (pagesInLoad === 0) this._setLoadedPages(new Range(0, 0)); //no loaded pages yet
-        const loadStartPage = this._currentPage;
-        return this._setLoadedPages(
-          new Range(loadStartPage, loadStartPage + pagesInLoad - 1)
-        );
+        this._setLoadedPages()
       }
     );
     this._initialLoad();
@@ -159,6 +157,7 @@ export default class PaginationStore<Item> implements Disposable {
         currentPage: toJS(this.currentPage),
         loadState: toJS(this.loadState),
         loadedPages: toJS(this._loadedPages),
+        currentLoadPage: toJS(this._currentLoadPage),
       };
       console.log(state);
     });
@@ -173,9 +172,23 @@ export default class PaginationStore<Item> implements Disposable {
     return Math.ceil(this._totalCount / this._itemsPerPage);
   }
 
-  //points at the start of current page/page to be loaded
+  private get _loadSizePages() {
+    return Math.ceil(this._loadSize / this._itemsPerPage);
+  }
+
+  //offset from current page to fetch from
+  private get _currentLoadPage() {
+    //favor forward prefetch in case of even load pages count
+    const currentLoadPage =
+      this._currentPage - Math.floor((this._loadSizePages - 1) / 2);
+    return Math.max(1, currentLoadPage);
+  }
+
+  //points at the start of the page to be loaded
   private get _offset() {
-    return (this._currentPage - 1) * this._itemsPerPage;
+    return (
+      Math.max(0, this._currentLoadPage - 1) * this._itemsPerPage
+    );
   }
 
   private _initialLoad() {
@@ -198,8 +211,16 @@ export default class PaginationStore<Item> implements Disposable {
     return pagesInLoad;
   }
 
-  private _setLoadedPages(pages: Range) {
-    this._loadedPages = pages;
+  private _setLoadedPages() {
+    const pagesInLoad = this._pagesInLoad;
+    if (pagesInLoad === 0) {
+      this._loadedPages = new Range(0, 0); //no loaded pages yet
+    }
+    const loadStartPage = this._currentLoadPage;
+    this._loadedPages = new Range(
+      loadStartPage,
+      loadStartPage + pagesInLoad - 1
+    );
   }
 
   private get _currentPageInLoad() {
@@ -209,13 +230,19 @@ export default class PaginationStore<Item> implements Disposable {
       toJS(this._loadedPages)
     );
     //currentPage is out of loaded pages range => undefined
-    if (!this._loadedPages.contains(this._currentPage)) return 0;
-    return this._currentPage - this._loadedPages.start + 1;
+    if (!this._loadedPages.contains(this._currentPage))
+      return undefined;
+    return Math.max(
+      1,
+      this._currentPage - this._loadedPages.start + 1
+    );
   }
 
   private get _offsetInLoad() {
-    if (!this._currentPageInLoad) return undefined;
-    return (this._currentPageInLoad - 1) * this._itemsPerPage;
+    if (this._currentPageInLoad === undefined) return undefined;
+    return (
+      Math.max(0, this._currentPageInLoad - 1) * this._itemsPerPage
+    );
   }
 
   get pageItems() {
