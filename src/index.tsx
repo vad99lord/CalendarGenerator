@@ -11,15 +11,15 @@ import reportWebVitals from "./reportWebVitals";
 fetchVkBridge("VKWebAppInit", {});
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <CacheProvider>
       <ConfigProvider>
         <AuthProvider>
           <App />
         </AuthProvider>
       </ConfigProvider>
-    </CacheProvider>
-  </React.StrictMode>,
+    </CacheProvider>,
+  // </React.StrictMode>,
   document.getElementById("root") as HTMLElement
 );
 
