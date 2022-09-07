@@ -4,7 +4,7 @@ import { VkApiParamsProvider } from "./VkApiParamsProvider";
 const VK_API_METHOD_PARAMS_NAMES = [
   "SearchFriendsByQuery",
   "SearchUsersByQuery",
-  "PaginateFriends",
+  "PaginateFriendsByQuery",
 ] as const;
 export type VkApiMethodParamsNames =
   typeof VK_API_METHOD_PARAMS_NAMES[number];
@@ -16,12 +16,17 @@ type VkApiMethodQueryParams<
 
 export type SearchParams = { query: string };
 
+export type PaginationParams = { offset: number; count: number };
+
 export type VkApiQueryParams = VkApiMethodQueryParams<
   "SearchFriendsByQuery",
   SearchParams
 > &
   VkApiMethodQueryParams<"SearchUsersByQuery", SearchParams> &
-  VkApiMethodQueryParams<"PaginateFriends", {offset: number; count: number}>;
+  VkApiMethodQueryParams<
+    "PaginateFriendsByQuery",
+    PaginationParams & SearchParams
+  >;
 
 type VkApiMethodParamsMethod<
   N extends VkApiMethodParamsNames,
@@ -32,9 +37,8 @@ export type VkApiParamsMethod = VkApiMethodParamsMethod<
   "SearchFriendsByQuery",
   "friends.search"
 > &
-  VkApiMethodParamsMethod<"SearchUsersByQuery", "users.search">
-  &
-  VkApiMethodParamsMethod<"PaginateFriends", "friends.search">;
+  VkApiMethodParamsMethod<"SearchUsersByQuery", "users.search"> &
+  VkApiMethodParamsMethod<"PaginateFriendsByQuery", "friends.search">;
 
 export type VkApiParamsProviderMap = {
   [Name in VkApiMethodParamsNames]: VkApiParamsProvider<
@@ -69,12 +73,12 @@ export const VK_API_PARAMS_PROVIDER_MAP: VkApiParamsProviderMap = {
       };
     },
   },
-  PaginateFriends: {
+  PaginateFriendsByQuery: {
     method: "friends.search",
-    getVkApiParams: ({ launchParams, count, offset }) => {
+    getVkApiParams: ({ launchParams, query, count, offset }) => {
       return {
         user_id: launchParams.vk_user_id,
-        q: "",
+        q: query,
         count: count,
         offset: offset,
         //TODO extract to typed const somehow

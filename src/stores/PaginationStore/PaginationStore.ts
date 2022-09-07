@@ -1,5 +1,6 @@
 import { ApiResponse } from "@network/types/ApiResponse";
 import IFetchStore from "@stores/FetchStores/IFetchStore";
+import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import { Disposable } from "@utils/types";
 import {
   action,
@@ -10,12 +11,11 @@ import {
   observable,
   reaction,
   toJS,
-  when,
 } from "mobx";
 
 /*
 assumptions/constraints:
-1. count on initial load indicates total items for pagination
+1. count in loads is always stable and indicates total items for pagination
 2. fetching first item is always at the top of the page
 3. only last page may be partially full
 4. pages indices start at 1
@@ -52,33 +52,66 @@ export interface PaginationFetchResponse<Item> {
   items: Item[];
 }
 
-export interface PaginationFetchParams {
-  offset: number;
-  count: number;
+// type d = Omit<{test : number},"test">
+
+export type PaginationOwnFetchParams = PaginationParams;
+
+type PaginationOuterFetchParams<
+  Store extends IPaginationFetchStore<any, any>
+> = Store extends IFetchStore<infer Params, any>
+  ? Params extends PaginationOwnFetchParams
+    ? Omit<Params, keyof PaginationOwnFetchParams>
+    : never
+  : never;
+
+type PaginationItem<Store extends IPaginationFetchStore<any, any>> =
+  Store extends IPaginationFetchStore<any, infer Item> ? Item : never;
+
+export type IPaginationFetchStore<
+  Params extends PaginationOwnFetchParams,
+  Item
+> = IFetchStore<Params, ApiResponse<PaginationFetchResponse<Item>>>;
+
+export interface PaginationOuterFetchParamsProvider<
+  PaginationOuterFetchParams
+> {
+  getOuterFetchParams(): PaginationOuterFetchParams;
 }
 
-export type IPaginationFetchStore<Item> = IFetchStore<
-  PaginationFetchParams,
-  ApiResponse<PaginationFetchResponse<Item>>
->;
+export const EmptyOuterFetchParamsProvider: PaginationOuterFetchParamsProvider<{}> =
+  {
+    getOuterFetchParams() {
+      return {};
+    },
+  };
 
-export default class PaginationStore<Item> implements Disposable {
-  private readonly _fetchStore: IPaginationFetchStore<Item>;
+export default class PaginationStore<
+  FetchStore extends IPaginationFetchStore<any, any>,
+  Item extends PaginationItem<FetchStore>,
+  OuterFetchParams extends PaginationOuterFetchParams<FetchStore>
+> implements Disposable
+{
+  private readonly _fetchStore: IPaginationFetchStore<
+    PaginationOwnFetchParams & OuterFetchParams,
+    Item
+  >;
+  private _fetchParams!: OuterFetchParams;
   private _initialLoadSize: number = 30;
   private _loadSize: number = 25;
   private _itemsPerPage: number = 5;
-  private _currentPage: number = 1; //undefined until first load??
-  private _totalCount?: number; //or 0 default???
+  private _currentPage: number = 1;
   private _loadedPages: Range = new Range(0, 0);
   private _fetchNewPagesReaction: IReactionDisposer;
   private _loadedPagesReaction: IReactionDisposer;
-  private _totalPagesCountReaction: IReactionDisposer;
+  private _fetchParamsLoadReaction: IReactionDisposer;
 
-  constructor(fetchStore: IPaginationFetchStore<Item>) {
+  constructor(
+    fetchStore: FetchStore,
+    fetchParamsProvider: PaginationOuterFetchParamsProvider<OuterFetchParams>
+  ) {
     this._fetchStore = fetchStore;
     makeObservable<
-      PaginationStore<any>,
-      | "_setTotalCount"
+      PaginationStore<any, any, never>,
       | "_offset"
       | "_initialLoad"
       | "_currentLoad"
@@ -86,11 +119,9 @@ export default class PaginationStore<Item> implements Disposable {
       | "_currentPageInLoad"
       | "_offsetInLoad"
       | "_loadedPages"
-      | "_totalCount"
       | "_currentPage"
       | "_currentLoadPage"
     >(this, {
-      _setTotalCount: action.bound,
       pagesCount: computed,
       _offset: computed,
       _initialLoad: action.bound,
@@ -103,21 +134,9 @@ export default class PaginationStore<Item> implements Disposable {
       loadState: computed,
       currentPage: computed,
       _loadedPages: observable,
-      _totalCount: observable,
       _currentPage: observable,
       _currentLoadPage: computed,
     });
-    this._totalPagesCountReaction = when(
-      () => this._currentLoad !== undefined,
-      () => {
-        console.log(
-          "_totalPagesCountReaction",
-          toJS(this._currentLoad)
-        );
-        const totalCount = this._currentLoad!.count;
-        this._setTotalCount(totalCount);
-      }
-    );
     this._fetchNewPagesReaction = reaction(
       () => this._currentPage,
       (currentPage) => {
@@ -126,6 +145,7 @@ export default class PaginationStore<Item> implements Disposable {
           this._fetchStore.fetch({
             offset: this._offset,
             count: this._loadSize,
+            ...this._fetchParams,
           });
         }
       }
@@ -138,10 +158,20 @@ export default class PaginationStore<Item> implements Disposable {
           toJS(currentLoad),
           toJS(this._pagesInLoad)
         );
-        this._setLoadedPages()
+        this._setLoadedPages();
       }
     );
-    this._initialLoad();
+    this._fetchParamsLoadReaction = reaction(
+      () => fetchParamsProvider.getOuterFetchParams(),
+      (fetchParams) => {
+        console.log("fetchParamsReaction", fetchParams);
+        this._setFetchParams(fetchParams);
+        this._initialLoad();
+      },
+      {
+        fireImmediately: true,
+      }
+    );
     autorun(() => {
       const state = {
         initialLoadSize: toJS(this._initialLoadSize),
@@ -163,13 +193,13 @@ export default class PaginationStore<Item> implements Disposable {
     });
   }
 
-  private _setTotalCount(count: number) {
-    this._totalCount = count;
+  private _setFetchParams(params: OuterFetchParams) {
+    this._fetchParams = params;
   }
 
   get pagesCount() {
-    if (!this._totalCount) return 0; //undefined??
-    return Math.ceil(this._totalCount / this._itemsPerPage);
+    if (!this._currentLoad) return 0; //undefined??
+    return Math.ceil(this._currentLoad.count / this._itemsPerPage);
   }
 
   private get _loadSizePages() {
@@ -192,11 +222,12 @@ export default class PaginationStore<Item> implements Disposable {
   }
 
   private _initialLoad() {
+    this.setCurrentPage(1);
     this._fetchStore.fetch({
       offset: this._offset,
       count: this._initialLoadSize,
+      ...this._fetchParams,
     });
-    // this.setCurrentPage(1);
   }
 
   private get _currentLoad() {
@@ -260,7 +291,7 @@ export default class PaginationStore<Item> implements Disposable {
   }
 
   setCurrentPage(page: number) {
-    //todo check page in valid range
+    //TODO check page in valid range
     this._currentPage = page;
   }
 
@@ -273,7 +304,7 @@ export default class PaginationStore<Item> implements Disposable {
   }
 
   destroy() {
-    this._totalPagesCountReaction();
+    this._fetchParamsLoadReaction();
     this._fetchNewPagesReaction();
     this._loadedPagesReaction();
   }

@@ -1,26 +1,52 @@
 import userApiToUser from "@network/models/User/userApiToUser";
-import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
+import {
+  SearchParams,
+  VkApiMethodParamsNames,
+} from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import PaginationStore, {
-  IPaginationFetchStore,
+  PaginationOuterFetchParamsProvider,
 } from "@stores/PaginationStore/PaginationStore";
+import ISearchStore from "@stores/SearchStore/ISearchStore";
+import SearchStore from "@stores/SearchStore/SearchStore";
 import { Disposable } from "@utils/types";
-import { UsersUserFull } from "@vkontakte/api-schema-typescript";
 import { action, computed, makeObservable } from "mobx";
+import { ChangeEvent } from "react";
 
 export type UsersPaginateParamsNames = Extract<
   VkApiMethodParamsNames,
-  "PaginateFriends"
+  "PaginateFriendsByQuery"
 >;
 
-export default class UsersPaginationStore<Item extends UsersUserFull>
+function createQueryParamsProvider(
+  searchStore: ISearchStore
+): PaginationOuterFetchParamsProvider<SearchParams> {
+  return {
+    getOuterFetchParams() {
+      return {
+        query: searchStore.debouncedSearchText,
+      };
+    },
+  };
+}
+
+export default class UsersPaginationStore
   implements Disposable
 {
-  private readonly _usersFetchStore: IPaginationFetchStore<Item>;
-  private readonly _usersPaginationStore: PaginationStore<Item>;
-  constructor(friendsFetchStore: IPaginationFetchStore<Item>) {
+  private readonly _usersFetchStore;
+  private readonly _usersPaginationStore;
+  private readonly _searchStore: ISearchStore;
+
+  constructor(
+    friendsFetchStore: IVkApiFetchStore<UsersPaginateParamsNames>
+  ) {
     this._usersFetchStore = friendsFetchStore;
+    this._searchStore = new SearchStore({
+      initialText: "",
+    });
     this._usersPaginationStore = new PaginationStore(
-      this._usersFetchStore
+      this._usersFetchStore,
+      createQueryParamsProvider(this._searchStore)
     );
     makeObservable(this, {
       // fetch: action.bound,
@@ -28,6 +54,8 @@ export default class UsersPaginationStore<Item extends UsersUserFull>
       users: computed,
       setCurrentPage: action.bound,
       totalPagesCount: computed,
+      query: computed,
+      onSearchTextChange: action.bound,
     });
   }
 
@@ -56,6 +84,14 @@ export default class UsersPaginationStore<Item extends UsersUserFull>
   // fetch(params: PaginationFetchParams) {
   //   this._usersPaginationStore.fetch(params);
   // }
+
+  get query() {
+    return this._searchStore.searchText;
+  }
+
+  onSearchTextChange(e: ChangeEvent<HTMLInputElement>) {
+    this._searchStore.onSearchTextChange(e);
+  }
 
   destroy() {}
 }

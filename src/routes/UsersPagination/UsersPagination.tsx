@@ -1,21 +1,21 @@
 import SelectableUser from "@components/User/SelectableUser";
 import useLocalStore from "@hooks/useLocalStore";
 import useVkApiFetchStore from "@hooks/useVkApiFetchStore";
-import { Footer, Group, List, Pagination } from "@vkontakte/vkui";
-import { observer } from "mobx-react-lite";
+import {
+  Footer,
+  Group,
+  List,
+  Pagination,
+  Search,
+} from "@vkontakte/vkui";
+import { Observer, observer } from "mobx-react-lite";
 import UsersPaginationStore from "./UsersPaginationStore";
 
 type UsersPaginationProps = {};
 
 const UsersPagination = ({}: UsersPaginationProps) => {
-  const fetchStore = useVkApiFetchStore("PaginateFriends");
+  const fetchStore = useVkApiFetchStore("PaginateFriendsByQuery");
   const usersStore = useLocalStore(UsersPaginationStore, fetchStore);
-
-  // console.log("UserPickerTab RENDER", {
-  //   areAllUsersChecked: toJS(usersStore.areAllUsersChecked),
-  //   ignoreSelectable: toJS(usersStore.ignoreSelectable),
-  //   checkedState: toJS(checkedUsersStore.checked),
-  // });
 
   const userItems = usersStore.users.map((user) => (
     <SelectableUser
@@ -30,6 +30,15 @@ const UsersPagination = ({}: UsersPaginationProps) => {
 
   return (
     <Group>
+      <Observer>
+        {() => (
+          <Search
+            value={usersStore.query}
+            onChange={usersStore.onSearchTextChange}
+            after={null}
+          />
+        )}
+      </Observer>
       {userItems.length ? (
         <List style={{ marginBottom: 60 }}>{userItems}</List>
       ) : (
