@@ -12,6 +12,37 @@ import {
   reaction,
   toJS,
 } from "mobx";
+import { PaginationOuterFetchParamsProvider } from "./PaginationOuterFetchParams";
+import Range from "./Range";
+
+type PaginationOwnFetchParams = PaginationParams;
+
+type PaginationOuterFetchParams<
+  Store extends IPaginationFetchStore<any, any>
+> = Store extends IFetchStore<infer Params, any>
+  ? Params extends PaginationOwnFetchParams
+    ? Omit<Params, keyof PaginationOwnFetchParams>
+    : never
+  : never;
+
+type PaginationItem<Store extends IPaginationFetchStore<any, any>> =
+  Store extends IPaginationFetchStore<any, infer Item> ? Item : never;
+
+export interface PaginationFetchResponse<Item> {
+  count: number;
+  items: Item[];
+}
+
+export type IPaginationFetchStore<
+  Params extends PaginationOwnFetchParams,
+  Item
+> = IFetchStore<Params, ApiResponse<PaginationFetchResponse<Item>>>;
+
+export type PaginationConfig = {
+  initialLoadSize?: number;
+  loadSize?: number;
+  itemsPerPage?: number;
+};
 
 /*
 assumptions/constraints:
@@ -25,66 +56,6 @@ assumptions/constraints:
 8. first load fetches initialLoad items forward 
 9. subsequent loads fetch loadSize items centered across the current page
 */
-
-class Range {
-  private readonly _start: number;
-  private readonly _end: number;
-  constructor(start: number, end: number) {
-    if (start < 0 || end < start) throw new RangeError("end < start");
-    this._start = start;
-    this._end = end;
-  }
-  get start() {
-    return this._start;
-  }
-
-  get end() {
-    return this._end;
-  }
-
-  contains(num: number) {
-    return num >= this._start && num <= this._end;
-  }
-}
-
-export interface PaginationFetchResponse<Item> {
-  count: number;
-  items: Item[];
-}
-
-// type d = Omit<{test : number},"test">
-
-export type PaginationOwnFetchParams = PaginationParams;
-
-type PaginationOuterFetchParams<
-  Store extends IPaginationFetchStore<any, any>
-> = Store extends IFetchStore<infer Params, any>
-  ? Params extends PaginationOwnFetchParams
-    ? Omit<Params, keyof PaginationOwnFetchParams>
-    : never
-  : never;
-
-type PaginationItem<Store extends IPaginationFetchStore<any, any>> =
-  Store extends IPaginationFetchStore<any, infer Item> ? Item : never;
-
-export type IPaginationFetchStore<
-  Params extends PaginationOwnFetchParams,
-  Item
-> = IFetchStore<Params, ApiResponse<PaginationFetchResponse<Item>>>;
-
-export interface PaginationOuterFetchParamsProvider<
-  PaginationOuterFetchParams
-> {
-  getOuterFetchParams(): PaginationOuterFetchParams;
-}
-
-export const EmptyOuterFetchParamsProvider: PaginationOuterFetchParamsProvider<{}> =
-  {
-    getOuterFetchParams() {
-      return {};
-    },
-  };
-
 export default class PaginationStore<
   FetchStore extends IPaginationFetchStore<any, any>,
   Item extends PaginationItem<FetchStore>,
@@ -96,20 +67,28 @@ export default class PaginationStore<
     Item
   >;
   private _fetchParams!: OuterFetchParams;
-  private _initialLoadSize: number = 30;
-  private _loadSize: number = 25;
-  private _itemsPerPage: number = 5;
+  private readonly _initialLoadSize: number;
+  private readonly _loadSize: number;
+  private readonly _itemsPerPage: number;
   private _currentPage: number = 1;
-  private _loadedPages: Range = new Range(0, 0);
+  private _loadedPages: Range = Range.EMPTY;
   private _fetchNewPagesReaction: IReactionDisposer;
   private _loadedPagesReaction: IReactionDisposer;
   private _fetchParamsLoadReaction: IReactionDisposer;
-
   constructor(
     fetchStore: FetchStore,
-    fetchParamsProvider: PaginationOuterFetchParamsProvider<OuterFetchParams>
+    fetchParamsProvider: PaginationOuterFetchParamsProvider<OuterFetchParams>,
+    {
+      initialLoadSize = 30,
+      loadSize = 25,
+      itemsPerPage = 5,
+    }: PaginationConfig = {}
   ) {
     this._fetchStore = fetchStore;
+    this._initialLoadSize = initialLoadSize;
+    this._loadSize = loadSize;
+    this._itemsPerPage = itemsPerPage;
+
     makeObservable<
       PaginationStore<any, any, never>,
       | "_offset"
@@ -231,12 +210,12 @@ export default class PaginationStore<
   }
 
   private get _currentLoad() {
-    return this._fetchStore.data; // ?? [];
+    return this._fetchStore.data;
   }
 
   private get _pagesInLoad() {
     if (!this._currentLoad || !this._currentLoad.items.length)
-      return 0; //undefined ???;
+      return 0;
     const itemsCount = this._currentLoad.items.length;
     const pagesInLoad = Math.ceil(itemsCount / this._itemsPerPage);
     return pagesInLoad;
@@ -245,7 +224,7 @@ export default class PaginationStore<
   private _setLoadedPages() {
     const pagesInLoad = this._pagesInLoad;
     if (pagesInLoad === 0) {
-      this._loadedPages = new Range(0, 0); //no loaded pages yet
+      this._loadedPages = Range.EMPTY; //no loaded pages yet
     }
     const loadStartPage = this._currentLoadPage;
     this._loadedPages = new Range(
@@ -290,8 +269,20 @@ export default class PaginationStore<
     );
   }
 
+  private get _pagesRange() {
+    return new Range(0, this.pagesCount);
+  }
+
   setCurrentPage(page: number) {
-    //TODO check page in valid range
+    const pagesRange = this._pagesRange;
+    if (
+      !pagesRange.equals(Range.EMPTY) &&
+      !pagesRange.contains(page)
+    ) {
+      throw new RangeError(
+        `page ${page} is out of valid range ${pagesRange}`
+      );
+    }
     this._currentPage = page;
   }
 
