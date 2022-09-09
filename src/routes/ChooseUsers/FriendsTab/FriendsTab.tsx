@@ -12,7 +12,7 @@ const FriendsTab = ({ ...props }: FriendsTabProps) => {
     //   searchParamsName="SearchFriendsByQuery"
     //   {...props}
     // />
-    <UsersPagination />
+    <UsersPagination {...props}/>
   );
 };
 

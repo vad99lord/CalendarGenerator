@@ -1,26 +1,32 @@
 import userApiToUser from "@network/models/User/userApiToUser";
+import { isUserSelectable } from "@network/models/User/UserModel";
+import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
-import {
-  SearchParams,
-  VkApiMethodParamsNames,
-} from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { PaginationOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
 import PaginationStore, {
-  PaginationOuterFetchParamsProvider,
+  PaginationOuterFetchParams,
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
-import { Disposable } from "@utils/types";
-import { action, computed, makeObservable } from "mobx";
+import { Disposable, UnionToIntersection } from "@utils/types";
+import { action, computed, makeObservable, observable } from "mobx";
 import { ChangeEvent } from "react";
 
-export type UsersPaginateParamsNames = Extract<
+export type UsersPaginationParamsNames = Extract<
   VkApiMethodParamsNames,
-  "PaginateFriendsByQuery"
+  "PaginateFriendsByQuery" | "PaginateUsersByQuery"
 >;
 
-function createQueryParamsProvider(
+type PaginationStoresUnion = UnionToIntersection<
+  IVkApiFetchStore<UsersPaginationParamsNames>
+>;
+
+const createQueryParamsProvider = (
   searchStore: ISearchStore
-): PaginationOuterFetchParamsProvider<SearchParams> {
+): PaginationOuterFetchParamsProvider<
+  PaginationOuterFetchParams<PaginationStoresUnion>
+> => {
   return {
     getOuterFetchParams() {
       return {
@@ -28,41 +34,48 @@ function createQueryParamsProvider(
       };
     },
   };
-}
+};
 
-export default class UsersPaginationStore
-  implements Disposable
+export default class UsersPaginationStore<
+  ParamsNames extends UsersPaginationParamsNames
+> implements Disposable
 {
-  private readonly _usersFetchStore;
   private readonly _usersPaginationStore;
   private readonly _searchStore: ISearchStore;
+  private readonly _checkedUsers: ICheckedUsersStore;
+  ignoreSelectable = false;
 
   constructor(
-    friendsFetchStore: IVkApiFetchStore<UsersPaginateParamsNames>
+    checkedUsers: ICheckedUsersStore,
+    usersFetchStore: IVkApiFetchStore<ParamsNames>
   ) {
-    this._usersFetchStore = friendsFetchStore;
     this._searchStore = new SearchStore({
       initialText: "",
     });
+    this._checkedUsers = checkedUsers;
     this._usersPaginationStore = new PaginationStore(
-      this._usersFetchStore,
+      usersFetchStore as PaginationStoresUnion,
       createQueryParamsProvider(this._searchStore)
     );
     makeObservable(this, {
-      // fetch: action.bound,
       loadState: computed,
       users: computed,
       setCurrentPage: action.bound,
       totalPagesCount: computed,
       query: computed,
       onSearchTextChange: action.bound,
+      ignoreSelectable: observable,
+      toggleIgnoreSelectable: action.bound,
+      selectableUsers: computed,
+      enabledUsers: computed,
+      disabledUsers: computed,
+      areAllUsersChecked: computed,
+      onSelectAllChanged: action.bound,
     });
   }
 
   get users() {
-    return (
-      this._usersPaginationStore.pageItems?.map(userApiToUser) ?? []
-    );
+    return this._usersPaginationStore.pageItems.map(userApiToUser);
   }
 
   get loadState() {
@@ -81,10 +94,6 @@ export default class UsersPaginationStore
     return this._usersPaginationStore.currentPage;
   }
 
-  // fetch(params: PaginationFetchParams) {
-  //   this._usersPaginationStore.fetch(params);
-  // }
-
   get query() {
     return this._searchStore.searchText;
   }
@@ -93,5 +102,48 @@ export default class UsersPaginationStore
     this._searchStore.onSearchTextChange(e);
   }
 
-  destroy() {}
+  toggleIgnoreSelectable() {
+    this.ignoreSelectable = !this.ignoreSelectable;
+    if (!this.ignoreSelectable && this.disabledUsers.length > 0) {
+      this._checkedUsers.setCheckedMany(false, this.disabledUsers);
+    }
+  }
+
+  get selectableUsers() {
+    return this.users.map((user) => ({
+      user,
+      isSelectable: this.ignoreSelectable || isUserSelectable(user),
+    }));
+  }
+
+  get enabledUsers() {
+    return this.selectableUsers
+      .filter((it) => it.isSelectable)
+      .map(({ user }) => user);
+  }
+
+  get disabledUsers() {
+    return this.selectableUsers
+      .filter((it) => !it.isSelectable)
+      .map(({ user }) => user);
+  }
+
+  get areAllUsersChecked() {
+    return this.enabledUsers.every(({ id }) =>
+      this._checkedUsers.checked.get(id)
+    );
+  }
+
+  onSelectAllChanged() {
+    if (!this.areAllUsersChecked) {
+      this._checkedUsers.setCheckedMany(true, this.enabledUsers);
+    } else {
+      this._checkedUsers.setCheckedMany(false, this.enabledUsers);
+    }
+  }
+
+  destroy() {
+    this._searchStore.destroy();
+    this._usersPaginationStore.destroy();
+  }
 }

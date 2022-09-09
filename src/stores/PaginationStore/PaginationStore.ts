@@ -10,14 +10,14 @@ import {
   makeObservable,
   observable,
   reaction,
-  toJS,
+  toJS
 } from "mobx";
 import { PaginationOuterFetchParamsProvider } from "./PaginationOuterFetchParams";
 import Range from "./Range";
 
 type PaginationOwnFetchParams = PaginationParams;
 
-type PaginationOuterFetchParams<
+export type PaginationOuterFetchParams<
   Store extends IPaginationFetchStore<any, any>
 > = Store extends IFetchStore<infer Params, any>
   ? Params extends PaginationOwnFetchParams
@@ -25,12 +25,12 @@ type PaginationOuterFetchParams<
     : never
   : never;
 
-type PaginationItem<Store extends IPaginationFetchStore<any, any>> =
+export type PaginationItem<Store extends IPaginationFetchStore<any, any>> =
   Store extends IPaginationFetchStore<any, infer Item> ? Item : never;
 
 export interface PaginationFetchResponse<Item> {
-  count: number;
-  items: Item[];
+  count?: number;
+  items?: Item[];
 }
 
 export type IPaginationFetchStore<
@@ -209,8 +209,14 @@ export default class PaginationStore<
     });
   }
 
-  private get _currentLoad() {
-    return this._fetchStore.data;
+  private get _currentLoad():
+    | Required<PaginationFetchResponse<Item>>
+    | undefined {
+    if (!this._fetchStore.data) return undefined;
+    return {
+      count: this._fetchStore.data.count ?? 0,
+      items: this._fetchStore.data.items ?? [],
+    }
   }
 
   private get _pagesInLoad() {
