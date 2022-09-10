@@ -13,6 +13,7 @@ import {
   Group,
   List,
   Pagination,
+  PaginationProps,
   Search,
   SimpleCell,
   SizeType,
@@ -20,33 +21,47 @@ import {
   Switch,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
-import UsersPaginationStore from "./UsersPaginationStore";
+import UsersPaginationStore, {
+  UsersPaginationParamsNames,
+} from "./UsersPaginationStore";
 
 export type UsersPickerConfig = {
   enableSelectAll?: boolean;
   selectableWithoutBirthday?: boolean;
 };
 
-export interface UsersPaginationProps extends UsersPickerConfig {
+export interface PaginationConfig
+  extends Pick<PaginationProps, "siblingCount" | "boundaryCount"> {}
+
+export interface UsersPaginationProps<
+  ParamsName extends UsersPaginationParamsNames
+> extends UsersPickerConfig,
+    PaginationConfig {
   checkedUsersStore: ICheckedUsersStore;
   onNextClick: () => void;
   onOpenChecked: () => void;
+  pagingParamsName: ParamsName;
 }
 
-const UsersPagination = ({
+const UsersPagination = <
+  ParamsName extends UsersPaginationParamsNames
+>({
   checkedUsersStore,
   onNextClick,
   onOpenChecked,
+  pagingParamsName,
   enableSelectAll = true,
   selectableWithoutBirthday = true,
-}: UsersPaginationProps) => {
-  const fetchStore = useVkApiFetchStore("PaginateFriendsByQuery");
+  siblingCount = 1,
+  boundaryCount = 1,
+}: UsersPaginationProps<ParamsName>) => {
+  const fetchStore = useVkApiFetchStore(pagingParamsName);
   const usersStore = useLocalStore(
     UsersPaginationStore,
     checkedUsersStore,
-    fetchStore
+    fetchStore,
+    pagingParamsName
   );
-
   const userItems = usersStore.selectableUsers.map(
     ({ user, isSelectable }) => (
       <Observer key={user.id}>
@@ -135,8 +150,8 @@ const UsersPagination = ({
         style={{ marginBottom: 60 }}
         currentPage={usersStore.currentPage}
         onChange={usersStore.setCurrentPage}
-        siblingCount={1}
-        boundaryCount={1}
+        siblingCount={siblingCount}
+        boundaryCount={boundaryCount}
         totalPages={usersStore.totalPagesCount}
       />
       <Observer>

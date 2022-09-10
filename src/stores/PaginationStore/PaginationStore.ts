@@ -1,6 +1,7 @@
 import { ApiResponse } from "@network/types/ApiResponse";
 import IFetchStore from "@stores/FetchStores/IFetchStore";
 import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { LoadState } from "@stores/LoadState";
 import { Disposable } from "@utils/types";
 import {
   action,
@@ -10,7 +11,7 @@ import {
   makeObservable,
   observable,
   reaction,
-  toJS
+  toJS,
 } from "mobx";
 import { PaginationOuterFetchParamsProvider } from "./PaginationOuterFetchParams";
 import Range from "./Range";
@@ -25,8 +26,11 @@ export type PaginationOuterFetchParams<
     : never
   : never;
 
-export type PaginationItem<Store extends IPaginationFetchStore<any, any>> =
-  Store extends IPaginationFetchStore<any, infer Item> ? Item : never;
+export type PaginationItem<
+  Store extends IPaginationFetchStore<any, any>
+> = Store extends IPaginationFetchStore<any, infer Item>
+  ? Item
+  : never;
 
 export interface PaginationFetchResponse<Item> {
   count?: number;
@@ -44,6 +48,14 @@ export type PaginationConfig = {
   itemsPerPage?: number;
 };
 
+export interface IPaginationStore<Item> extends Disposable {
+  pagesCount: number;
+  pageItems: Item[];
+  currentPage: number;
+  loadState: LoadState;
+  setCurrentPage(page: number): void;
+}
+
 /*
 assumptions/constraints:
 1. count in loads is always stable and indicates total items for pagination
@@ -60,7 +72,7 @@ export default class PaginationStore<
   FetchStore extends IPaginationFetchStore<any, any>,
   Item extends PaginationItem<FetchStore>,
   OuterFetchParams extends PaginationOuterFetchParams<FetchStore>
-> implements Disposable
+> implements IPaginationStore<Item>
 {
   private readonly _fetchStore: IPaginationFetchStore<
     PaginationOwnFetchParams & OuterFetchParams,
@@ -85,6 +97,7 @@ export default class PaginationStore<
     }: PaginationConfig = {}
   ) {
     this._fetchStore = fetchStore;
+    this._validateConfig({ initialLoadSize, loadSize, itemsPerPage });
     this._initialLoadSize = initialLoadSize;
     this._loadSize = loadSize;
     this._itemsPerPage = itemsPerPage;
@@ -172,12 +185,31 @@ export default class PaginationStore<
     });
   }
 
+  private _validateConfig(config: Required<PaginationConfig>) {
+    //Rules:
+    //1. should be positive values
+    //2. load sizes should be multiple of itemsPerPage
+    //3. loadSize >= 3x itemsPerPage
+    if (Object.values(config).some((it) => it <= 0)) {
+      throw Error("should be positive");
+    }
+    const { initialLoadSize, loadSize, itemsPerPage } = config;
+    if (
+      loadSize % itemsPerPage !== 0 ||
+      initialLoadSize % itemsPerPage !== 0
+    ) {
+      throw new Error("not multiple");
+    }
+    if (Math.floor(loadSize / itemsPerPage) < 3)
+      throw new Error("less than 3x times bigger");
+  }
+
   private _setFetchParams(params: OuterFetchParams) {
     this._fetchParams = params;
   }
 
   get pagesCount() {
-    if (!this._currentLoad) return 0; //undefined??
+    if (!this._currentLoad) return 0;
     return Math.ceil(this._currentLoad.count / this._itemsPerPage);
   }
 
@@ -216,7 +248,7 @@ export default class PaginationStore<
     return {
       count: this._fetchStore.data.count ?? 0,
       items: this._fetchStore.data.items ?? [],
-    }
+    };
   }
 
   private get _pagesInLoad() {

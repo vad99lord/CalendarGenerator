@@ -5,6 +5,9 @@ import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetch
 import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import { PaginationOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
 import PaginationStore, {
+  IPaginationStore,
+  PaginationConfig,
+  PaginationItem,
   PaginationOuterFetchParams,
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
@@ -36,18 +39,39 @@ const createQueryParamsProvider = (
   };
 };
 
+const USER_PAGINATION_CONFIG: Record<
+  UsersPaginationParamsNames,
+  PaginationConfig
+> = {
+  PaginateFriendsByQuery: {
+    loadSize: 30,
+    initialLoadSize: 40,
+    itemsPerPage: 10,
+  },
+  PaginateUsersByQuery: {
+    loadSize: 40,
+    initialLoadSize: 100,
+    itemsPerPage: 10,
+  },
+};
+
+type _UsersPaginationStore = IPaginationStore<
+  PaginationItem<PaginationStoresUnion>
+>;
+
 export default class UsersPaginationStore<
   ParamsNames extends UsersPaginationParamsNames
 > implements Disposable
 {
-  private readonly _usersPaginationStore;
+  private readonly _usersPaginationStore: _UsersPaginationStore;
   private readonly _searchStore: ISearchStore;
   private readonly _checkedUsers: ICheckedUsersStore;
   ignoreSelectable = false;
 
   constructor(
     checkedUsers: ICheckedUsersStore,
-    usersFetchStore: IVkApiFetchStore<ParamsNames>
+    usersFetchStore: IVkApiFetchStore<ParamsNames>,
+    pagingParamsName: ParamsNames
   ) {
     this._searchStore = new SearchStore({
       initialText: "",
@@ -55,7 +79,8 @@ export default class UsersPaginationStore<
     this._checkedUsers = checkedUsers;
     this._usersPaginationStore = new PaginationStore(
       usersFetchStore as PaginationStoresUnion,
-      createQueryParamsProvider(this._searchStore)
+      createQueryParamsProvider(this._searchStore),
+      USER_PAGINATION_CONFIG[pagingParamsName]
     );
     makeObservable(this, {
       loadState: computed,
