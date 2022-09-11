@@ -6,10 +6,14 @@ import FriendsTab from "./FriendsTab/FriendsTab";
 import UsersTab from "./UsersTab/UsersTab";
 
 export type NavElementId = Required<Pick<NavIdProps, "nav">>;
+export type ScopeId = {
+  scopeId: symbol | undefined;
+};
 
 export interface ChooseUsersProps
   extends UsersPickerTabOuterProps,
-    NavElementId {
+    NavElementId,
+    ScopeId {
   onTabChange: (activeTab: ChooseUsersTabs) => void;
   selectedTab: ChooseUsersTabs;
 }

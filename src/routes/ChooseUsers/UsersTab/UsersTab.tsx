@@ -17,6 +17,7 @@ const UsersTab = ({ ...props }: UsersTabProps) => {
     <UsersPagination
       pagingParamsName="PaginateUsersByQuery"
       boundaryCount={0}
+      storeId={USER_STORE_PICKER_ID}
       {...props}
     />
   );

@@ -51,3 +51,5 @@ export type UnionToIntersection<Union> =
   (mergedIntersection: infer Intersection) => void
     ? Intersection
     : never;
+
+export type Callback<T> = () => T;

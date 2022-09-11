@@ -20,6 +20,7 @@ import {
 } from "@vkontakte/vkui";
 import { toJS } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
+import { ScopeId } from "../ChooseUsers/ChooseUsers";
 import UsersPickerTabStore, {
   UsersSearchParamsNames,
 } from "./UsersPickerTabStore";
@@ -32,7 +33,8 @@ export type UsersPickerConfig = {
 export type UsersPickerTabOuterProps = Pick<
   UsersPickerTabProps<any>,
   "onNextClick" | "onOpenChecked" | "checkedUsersStore"
->;
+> &
+  ScopeId;
 
 export interface UsersPickerTabProps<
   ParamsName extends UsersSearchParamsNames
@@ -53,116 +55,117 @@ const UsersPickerTab = <ParamsName extends UsersSearchParamsNames>({
   enableSelectAll = true,
   selectableWithoutBirthday = true,
 }: UsersPickerTabProps<ParamsName>) => {
-  const fetchStore = useVkApiFetchStore(searchParamsName);
-  const cacheStore = useLateInitContext(CacheContext);
-  const usersStore = useLocalStore(
-    UsersPickerTabStore,
-    componentId,
-    checkedUsersStore,
-    fetchStore,
-    cacheStore
-  );
+  return null;
+  // const fetchStore = useVkApiFetchStore(searchParamsName);
+  // const cacheStore = useLateInitContext(CacheContext);
+  // const usersStore = useLocalStore(
+  //   UsersPickerTabStore,
+  //   componentId,
+  //   checkedUsersStore,
+  //   fetchStore,
+  //   // cacheStore
+  // );
 
-  console.log("UserPickerTab RENDER", {
-    areAllUsersChecked: toJS(usersStore.areAllUsersChecked),
-    ignoreSelectable: toJS(usersStore.ignoreSelectable),
-    checkedState: toJS(checkedUsersStore.checked),
-  });
+  // console.log("UserPickerTab RENDER", {
+  //   areAllUsersChecked: toJS(usersStore.areAllUsersChecked),
+  //   ignoreSelectable: toJS(usersStore.ignoreSelectable),
+  //   checkedState: toJS(checkedUsersStore.checked),
+  // });
 
-  const userItems = usersStore.selectableUsers.map(
-    ({ user, isSelectable }) => (
-      <Observer key={user.id}>
-        {() => (
-          <SelectableUser
-            user={user}
-            checked={Boolean(checkedUsersStore.checked.get(user.id))}
-            disabled={!isSelectable}
-            onUserCheckChanged={checkedUsersStore.toggleCheck}
-            showBirthday
-          />
-        )}
-      </Observer>
-    )
-  );
+  // const userItems = usersStore.selectableUsers.map(
+  //   ({ user, isSelectable }) => (
+  //     <Observer key={user.id}>
+  //       {() => (
+  //         <SelectableUser
+  //           user={user}
+  //           checked={Boolean(checkedUsersStore.checked.get(user.id))}
+  //           disabled={!isSelectable}
+  //           onUserCheckChanged={checkedUsersStore.toggleCheck}
+  //           showBirthday
+  //         />
+  //       )}
+  //     </Observer>
+  //   )
+  // );
 
-  return (
-    <Group>
-      <Observer>
-        {() => (
-          <Search
-            value={usersStore.query}
-            onChange={usersStore.onSearchTextChange}
-            after={null}
-          />
-        )}
-      </Observer>
-      <FormItem>
-        <Observer>
-          {() => (
-            <Button
-              size="m"
-              appearance="accent"
-              stretched={false}
-              disabled={checkedUsersStore.checkedCount === 0}
-              after={
-                <Counter size="s">
-                  {checkedUsersStore.checkedCount}
-                </Counter>
-              }
-              onClick={onOpenChecked}
-            >
-              Выбранные пользователи
-            </Button>
-          )}
-        </Observer>
-      </FormItem>
-      {enableSelectAll && (
-        <Observer>
-          {() => (
-            <Checkbox
-              checked={usersStore.areAllUsersChecked}
-              onChange={usersStore.onSelectAllChanged}
-            >
-              Выбрать всех
-            </Checkbox>
-          )}
-        </Observer>
-      )}
-      {selectableWithoutBirthday && (
-        <SimpleCell
-          sizeY={SizeType.COMPACT}
-          Component="label"
-          after={
-            <Observer>
-              {() => (
-                <Switch
-                  checked={usersStore.ignoreSelectable}
-                  onChange={usersStore.toggleIgnoreSelectable}
-                />
-              )}
-            </Observer>
-          }
-        >
-          Ручной выбор
-        </SimpleCell>
-      )}
-      {userItems.length ? (
-        <List style={{ marginBottom: 60 }}>{userItems}</List>
-      ) : (
-        <Footer>Ничего не найдено</Footer>
-      )}
-      <Observer>
-        {() => (
-          <BottomButton
-            onClick={onNextClick}
-            disabled={checkedUsersStore.checkedCount === 0}
-          >
-            Далее
-          </BottomButton>
-        )}
-      </Observer>
-    </Group>
-  );
+  // return (
+  //   <Group>
+  //     <Observer>
+  //       {() => (
+  //         <Search
+  //           value={usersStore.query}
+  //           onChange={usersStore.onSearchTextChange}
+  //           after={null}
+  //         />
+  //       )}
+  //     </Observer>
+  //     <FormItem>
+  //       <Observer>
+  //         {() => (
+  //           <Button
+  //             size="m"
+  //             appearance="accent"
+  //             stretched={false}
+  //             disabled={checkedUsersStore.checkedCount === 0}
+  //             after={
+  //               <Counter size="s">
+  //                 {checkedUsersStore.checkedCount}
+  //               </Counter>
+  //             }
+  //             onClick={onOpenChecked}
+  //           >
+  //             Выбранные пользователи
+  //           </Button>
+  //         )}
+  //       </Observer>
+  //     </FormItem>
+  //     {enableSelectAll && (
+  //       <Observer>
+  //         {() => (
+  //           <Checkbox
+  //             checked={usersStore.areAllUsersChecked}
+  //             onChange={usersStore.onSelectAllChanged}
+  //           >
+  //             Выбрать всех
+  //           </Checkbox>
+  //         )}
+  //       </Observer>
+  //     )}
+  //     {selectableWithoutBirthday && (
+  //       <SimpleCell
+  //         sizeY={SizeType.COMPACT}
+  //         Component="label"
+  //         after={
+  //           <Observer>
+  //             {() => (
+  //               <Switch
+  //                 checked={usersStore.ignoreSelectable}
+  //                 onChange={usersStore.toggleIgnoreSelectable}
+  //               />
+  //             )}
+  //           </Observer>
+  //         }
+  //       >
+  //         Ручной выбор
+  //       </SimpleCell>
+  //     )}
+  //     {userItems.length ? (
+  //       <List style={{ marginBottom: 60 }}>{userItems}</List>
+  //     ) : (
+  //       <Footer>Ничего не найдено</Footer>
+  //     )}
+  //     <Observer>
+  //       {() => (
+  //         <BottomButton
+  //           onClick={onNextClick}
+  //           disabled={checkedUsersStore.checkedCount === 0}
+  //         >
+  //           Далее
+  //         </BottomButton>
+  //       )}
+  //     </Observer>
+  //   </Group>
+  // );
 };
 
 export default observer(UsersPickerTab);

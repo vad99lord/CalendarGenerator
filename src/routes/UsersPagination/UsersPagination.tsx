@@ -1,7 +1,7 @@
 import BottomButton from "@components/BottomButton/BottomButton";
 import SelectableUser from "@components/User/SelectableUser";
-import useLocalStore from "@hooks/useLocalStore";
-import useVkApiFetchStore from "@hooks/useVkApiFetchStore";
+import useLocalCachedStore from "@hooks/useLocalCachedStore";
+import { useVkApiFetchStoreCallback } from "@hooks/useVkApiFetchStore";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { LoadState } from "@stores/LoadState";
 import {
@@ -21,6 +21,7 @@ import {
   Switch,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
+import { ScopeId } from "../ChooseUsers/ChooseUsers";
 import UsersPaginationStore, {
   UsersPaginationParamsNames,
 } from "./UsersPaginationStore";
@@ -33,10 +34,16 @@ export type UsersPickerConfig = {
 export interface PaginationConfig
   extends Pick<PaginationProps, "siblingCount" | "boundaryCount"> {}
 
+export type StoreId = {
+  storeId: symbol;
+};
+
 export interface UsersPaginationProps<
   ParamsName extends UsersPaginationParamsNames
 > extends UsersPickerConfig,
-    PaginationConfig {
+    PaginationConfig,
+    ScopeId,
+    StoreId {
   checkedUsersStore: ICheckedUsersStore;
   onNextClick: () => void;
   onOpenChecked: () => void;
@@ -54,9 +61,14 @@ const UsersPagination = <
   selectableWithoutBirthday = true,
   siblingCount = 1,
   boundaryCount = 1,
+  scopeId,
+  storeId,
 }: UsersPaginationProps<ParamsName>) => {
-  const fetchStore = useVkApiFetchStore(pagingParamsName);
-  const usersStore = useLocalStore(
+  //using callback to avoid recreation of store each mount
+  const fetchStore = useVkApiFetchStoreCallback(pagingParamsName);
+  const usersStore = useLocalCachedStore(
+    scopeId,
+    storeId,
     UsersPaginationStore,
     checkedUsersStore,
     fetchStore,

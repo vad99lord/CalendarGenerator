@@ -1,4 +1,5 @@
 import useLocalStore from "@hooks/useLocalStore";
+import useScope from "@hooks/useScope";
 import CheckedUsersStore from "@stores/CheckedUsersStore/CheckedUsersStore";
 import { INonEmptyNavigationStackStore } from "@stores/NavigationStackStore/INavigationStackStore";
 import { NonEmptyNavStackStore } from "@stores/NavigationStackStore/NavigationStackStore";
@@ -49,6 +50,7 @@ const UsersPicker = () => {
         },
       },
     });
+  const scope = useScope();
   const {
     currentEntry: { activePanel, panelsState },
   } = navStackStore;
@@ -68,6 +70,7 @@ const UsersPicker = () => {
           onOpenChecked={usersPickerStore.onOpenCheckedUsers}
           onTabChange={usersPickerStore.onChooseUserTabChange}
           selectedTab={panelsState["choose_users"].activeTab}
+          scopeId={scope}
         />
         <EditDates
           nav={UsersPickerPanels.EditDates}

@@ -12,7 +12,11 @@ import PaginationStore, {
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
-import { Disposable, UnionToIntersection } from "@utils/types";
+import {
+  Callback,
+  Disposable,
+  UnionToIntersection,
+} from "@utils/types";
 import { action, computed, makeObservable, observable } from "mobx";
 import { ChangeEvent } from "react";
 
@@ -63,6 +67,7 @@ export default class UsersPaginationStore<
   ParamsNames extends UsersPaginationParamsNames
 > implements Disposable
 {
+  private readonly _usersFetchStore: IVkApiFetchStore<ParamsNames>;
   private readonly _usersPaginationStore: _UsersPaginationStore;
   private readonly _searchStore: ISearchStore;
   private readonly _checkedUsers: ICheckedUsersStore;
@@ -70,15 +75,16 @@ export default class UsersPaginationStore<
 
   constructor(
     checkedUsers: ICheckedUsersStore,
-    usersFetchStore: IVkApiFetchStore<ParamsNames>,
+    usersFetchStore: Callback<IVkApiFetchStore<ParamsNames>>,
     pagingParamsName: ParamsNames
   ) {
     this._searchStore = new SearchStore({
       initialText: "",
     });
     this._checkedUsers = checkedUsers;
+    this._usersFetchStore = usersFetchStore();
     this._usersPaginationStore = new PaginationStore(
-      usersFetchStore as PaginationStoresUnion,
+      this._usersFetchStore as PaginationStoresUnion,
       createQueryParamsProvider(this._searchStore),
       USER_PAGINATION_CONFIG[pagingParamsName]
     );
@@ -170,5 +176,6 @@ export default class UsersPaginationStore<
   destroy() {
     this._searchStore.destroy();
     this._usersPaginationStore.destroy();
+    this._usersFetchStore.destroy();
   }
 }
