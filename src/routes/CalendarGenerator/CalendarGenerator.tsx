@@ -1,12 +1,14 @@
-import { Button, Div, Panel, Text } from "@vkontakte/vkui";
+import { Button, Group, Panel, Spinner } from "@vkontakte/vkui";
 
 import useLocalStore from "@hooks/useLocalStore";
 import { CalendarUserApi } from "@shared/models/CalendarUser";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
+import { LoadState } from "@stores/LoadState";
 import { mapValues } from "@utils/utils";
+import { Icon56CalendarOutline } from "@vkontakte/icons";
 import { observer } from "mobx-react-lite";
-import CalendarGeneratorStore from "./CalendarGeneratorStore";
 import { NavElementId } from "../types";
+import CalendarGeneratorStore from "./CalendarGeneratorStore";
 
 interface CalendarGeneratorProps extends NavElementId {
   checkedUsersStore: ICheckedUsersStore;
@@ -40,10 +42,22 @@ const CalendarGenerator = ({
 
   return (
     <Panel id={panelId}>
-      <Div>
-        <Button onClick={onGenerate}>Gen cal</Button>
-        <Text>{calendarStore.loadState}</Text>
-      </Div>
+      {calendarStore.loadState === LoadState.Loading ? (
+        <Spinner size="large" />
+      ) : (
+        <Group>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Icon56CalendarOutline />
+            <Button onClick={onGenerate}>Создать календарь</Button>
+          </div>
+        </Group>
+      )}
     </Panel>
   );
 };

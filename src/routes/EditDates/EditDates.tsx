@@ -4,7 +4,9 @@ import UserEditBirthday from "@components/User/UserEditBirthday";
 import useLocalStore from "@hooks/useLocalStore";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
+import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
+import { useEffect } from "react";
 import { UserID } from "../../network/models/User/BaseUserModel";
 import { UserModel } from "../../network/models/User/UserModel";
 import { NavElementId } from "../types";
@@ -38,6 +40,13 @@ const EditDates = ({
         onRemoveUser={onUserRemove}
       />
     ));
+
+  useEffect(() => {
+    return when(
+      () => editDatesStore.currentUsersWithoutBirthday.length === 0,
+      () => onNextClick()
+    );
+  }, [editDatesStore, onNextClick]);
 
   return (
     <Panel id={panelId}>

@@ -12,7 +12,9 @@ import {
   PanelHeaderBack,
   Search,
 } from "@vkontakte/vkui";
+import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
+import { useEffect } from "react";
 import { UserID } from "../../network/models/User/BaseUserModel";
 import { NavElementId } from "../types";
 import SelectedUsersStore from "./SelectedUsersStore";
@@ -45,6 +47,13 @@ const SelectedUsers = ({
         showBirthday
       />
     ));
+
+  useEffect(() => {
+    return when(
+      () => selectedUsersStore.filteredSelectedUsers.length === 0,
+      () => onBackClick()
+    );
+  }, [onBackClick, selectedUsersStore]);
 
   return (
     <Panel id={panelId}>
