@@ -1,122 +1,128 @@
 import userApiToUser from "@network/models/User/userApiToUser";
 import { isUserSelectable } from "@network/models/User/UserModel";
-import ICacheStore from "@stores/CacheStore/ICacheStore";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
-import {
-  VkApiMethodParamsNames,
-  VkApiQueryParams,
-} from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { PaginationOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
+import PaginationStore, {
+  IPaginationStore,
+  PaginationConfig,
+  PaginationItem,
+  PaginationOuterFetchParams,
+} from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
-import { Disposable } from "@utils/types";
-import { UsersUserFull } from "@vkontakte/api-schema-typescript";
 import {
-  action,
-  computed,
-  IReactionDisposer,
-  makeObservable,
-  observable,
-  reaction,
-  toJS,
-} from "mobx";
+  Callback,
+  Disposable,
+  UnionToIntersection,
+} from "@utils/types";
+import { action, computed, makeObservable, observable } from "mobx";
 import { ChangeEvent } from "react";
 
-export type UsersSearchParamsNames = Extract<
+export type UsersPaginationParamsNames = Extract<
   VkApiMethodParamsNames,
-  "SearchFriendsByQuery" | "SearchUsersByQuery"
+  "PaginateFriendsByQuery" | "PaginateUsersByQuery"
 >;
 
-type CachedState = {
-  searchText: string;
-  users: UsersUserFull[];
+type PaginationStoresUnion = UnionToIntersection<
+  IVkApiFetchStore<UsersPaginationParamsNames>
+>;
+
+const createQueryParamsProvider = (
+  searchStore: ISearchStore
+): PaginationOuterFetchParamsProvider<
+  PaginationOuterFetchParams<PaginationStoresUnion>
+> => {
+  return {
+    getOuterFetchParams() {
+      return {
+        query: searchStore.debouncedSearchText,
+      };
+    },
+  };
 };
 
+const USER_PAGINATION_CONFIG: Record<
+  UsersPaginationParamsNames,
+  PaginationConfig
+> = {
+  PaginateFriendsByQuery: {
+    loadSize: 30,
+    initialLoadSize: 40,
+    itemsPerPage: 10,
+  },
+  PaginateUsersByQuery: {
+    loadSize: 40,
+    initialLoadSize: 100,
+    itemsPerPage: 10,
+  },
+};
+
+type UsersPaginationStore = IPaginationStore<
+  PaginationItem<PaginationStoresUnion>
+>;
+
 export default class UsersPickerTabStore<
-  SearchParams extends UsersSearchParamsNames
+  ParamsNames extends UsersPaginationParamsNames
 > implements Disposable
 {
-  private readonly _id: symbol;
+  private readonly _usersFetchStore: IVkApiFetchStore<ParamsNames>;
+  private readonly _usersPaginationStore: UsersPaginationStore;
+  private readonly _searchStore: ISearchStore;
   private readonly _checkedUsers: ICheckedUsersStore;
-  private readonly _friendsFetchStore: IVkApiFetchStore<SearchParams>;
-  private readonly _cacheStore: ICacheStore;
-  private _users: UsersUserFull[] = [];
-  private _searchStore!: ISearchStore;
   ignoreSelectable = false;
-  private readonly _debouncedSearchTextReaction: IReactionDisposer;
-  private readonly _fetchDataReaction: IReactionDisposer;
 
   constructor(
-    id: symbol, //id should be shared between instances of the same type
     checkedUsers: ICheckedUsersStore,
-    friendsFetchStore: IVkApiFetchStore<SearchParams>,
-    cacheStore: ICacheStore
+    usersFetchStore: Callback<IVkApiFetchStore<ParamsNames>>,
+    pagingParamsName: ParamsNames
   ) {
-    this._id = id;
+    this._searchStore = new SearchStore({
+      initialText: "",
+    });
     this._checkedUsers = checkedUsers;
-    this._friendsFetchStore = friendsFetchStore;
-    this._cacheStore = cacheStore;
-    makeObservable<
-      UsersPickerTabStore<any>,
-      "_users" | "_setUsers" | "_hydrate"
-    >(this, {
+    this._usersFetchStore = usersFetchStore();
+    this._usersPaginationStore = new PaginationStore(
+      this._usersFetchStore as PaginationStoresUnion,
+      createQueryParamsProvider(this._searchStore),
+      USER_PAGINATION_CONFIG[pagingParamsName]
+    );
+    makeObservable(this, {
+      loadState: computed,
+      users: computed,
+      setCurrentPage: action.bound,
+      totalPagesCount: computed,
+      query: computed,
+      onSearchTextChange: action.bound,
       ignoreSelectable: observable,
       toggleIgnoreSelectable: action.bound,
       selectableUsers: computed,
       enabledUsers: computed,
       disabledUsers: computed,
       areAllUsersChecked: computed,
-      fetch: action.bound,
       onSelectAllChanged: action.bound,
-      loadState: computed,
-      _users: observable,
-      _setUsers: action.bound,
-      query: computed,
-      onSearchTextChange: action.bound,
-      users: computed,
-      _hydrate: action.bound,
     });
-    this._hydrate();
-    this._debouncedSearchTextReaction = reaction(
-      () => this._searchStore.debouncedSearchText,
-      (query) => {
-        console.log("QUERY REACTION", toJS(query));
-        this.fetch({ query });
-      }
-    );
-    this._fetchDataReaction = reaction(
-      () => this._friendsFetchStore.data,
-      (data) => {
-        console.log("FETCH REACTION", toJS(data));
-        if (!data) return;
-        this._setUsers(data.items ?? []);
-      }
-    );
   }
 
-  private _hydrate() {
-    const hydratedState = this._cacheStore.cached<CachedState>(
-      this._id
-    );
-    console.log({ hydratedState });
-    if (!hydratedState) {
-      const defaultText = "";
-      this._searchStore = new SearchStore({
-        initialText: defaultText,
-      });
-      this._users = [];
-      this.fetch({ query: defaultText });
-    } else {
-      const { searchText, users } = hydratedState;
-      this._searchStore = new SearchStore({
-        initialText: searchText,
-      });
-      this._users = users;
-    }
+  get users() {
+    return this._usersPaginationStore.pageItems.map(userApiToUser);
   }
 
-  private _setUsers(users: UsersUserFull[]) {
-    this._users = users;
+  get loadState() {
+    return this._usersPaginationStore.loadState;
+  }
+
+  setCurrentPage(page: number) {
+    this._usersPaginationStore.setCurrentPage(page);
+  }
+
+  get totalPagesCount() {
+    return this._usersPaginationStore.pagesCount;
+  }
+
+  get currentPage() {
+    return this._usersPaginationStore.currentPage;
   }
 
   get query() {
@@ -125,18 +131,6 @@ export default class UsersPickerTabStore<
 
   onSearchTextChange(e: ChangeEvent<HTMLInputElement>) {
     this._searchStore.onSearchTextChange(e);
-  }
-
-  get users() {
-    return this._users.map(userApiToUser);
-  }
-
-  get loadState() {
-    return this._friendsFetchStore.loadState;
-  }
-
-  fetch(params: VkApiQueryParams[SearchParams]) {
-    this._friendsFetchStore.fetch(params);
   }
 
   toggleIgnoreSelectable() {
@@ -180,12 +174,8 @@ export default class UsersPickerTabStore<
   }
 
   destroy() {
-    this._cacheStore.cache<CachedState>(this._id, {
-      searchText: this._searchStore.searchText,
-      users: this._users,
-    });
     this._searchStore.destroy();
-    this._debouncedSearchTextReaction();
-    this._fetchDataReaction();
+    this._usersPaginationStore.destroy();
+    this._usersFetchStore.destroy();
   }
 }

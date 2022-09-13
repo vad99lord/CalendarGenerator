@@ -7,7 +7,7 @@ import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
 import { UserID } from "../../network/models/User/BaseUserModel";
 import { UserModel } from "../../network/models/User/UserModel";
-import { NavElementId } from "../ChooseUsers/ChooseUsers";
+import { NavElementId } from "../types";
 import EditDatesStore from "./EditDatesStore";
 
 interface EditDatesProps extends NavElementId {

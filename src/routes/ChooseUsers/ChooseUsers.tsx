@@ -1,19 +1,14 @@
 import TabsList, { TabsMap } from "@components/TabsList/TabsList";
-import { NavIdProps, Panel, PanelHeader } from "@vkontakte/vkui";
+import { Panel, PanelHeader } from "@vkontakte/vkui";
 import { useCallback } from "react";
+import { NavElementId } from "../types";
 import { UsersPickerTabOuterProps } from "../UsersPickerTab/UsersPickerTab";
 import FriendsTab from "./FriendsTab/FriendsTab";
 import UsersTab from "./UsersTab/UsersTab";
 
-export type NavElementId = Required<Pick<NavIdProps, "nav">>;
-export type ScopeId = {
-  scopeId: symbol | undefined;
-};
-
 export interface ChooseUsersProps
   extends UsersPickerTabOuterProps,
-    NavElementId,
-    ScopeId {
+    NavElementId {
   onTabChange: (activeTab: ChooseUsersTabs) => void;
   selectedTab: ChooseUsersTabs;
 }

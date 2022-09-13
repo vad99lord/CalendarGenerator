@@ -14,7 +14,7 @@ import {
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
 import { UserID } from "../../network/models/User/BaseUserModel";
-import { NavElementId } from "../ChooseUsers/ChooseUsers";
+import { NavElementId } from "../types";
 import SelectedUsersStore from "./SelectedUsersStore";
 
 interface SelectedUsersProps extends NavElementId {

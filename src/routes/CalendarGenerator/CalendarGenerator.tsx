@@ -5,8 +5,8 @@ import { CalendarUserApi } from "@shared/models/CalendarUser";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { mapValues } from "@utils/utils";
 import { observer } from "mobx-react-lite";
-import { NavElementId } from "../ChooseUsers/ChooseUsers";
 import CalendarGeneratorStore from "./CalendarGeneratorStore";
+import { NavElementId } from "../types";
 
 interface CalendarGeneratorProps extends NavElementId {
   checkedUsersStore: ICheckedUsersStore;

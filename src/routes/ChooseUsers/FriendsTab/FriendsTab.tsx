@@ -1,6 +1,7 @@
-import UsersPagination from "../../UsersPagination/UsersPagination";
-import { UsersPickerTabOuterProps } from "../../UsersPickerTab/UsersPickerTab";
-import { ScopeId } from "../ChooseUsers";
+import { ScopeId } from "src/routes/types";
+import UsersPickerTab, {
+  UsersPickerTabOuterProps,
+} from "../../UsersPickerTab/UsersPickerTab";
 
 interface FriendsTabProps extends UsersPickerTabOuterProps, ScopeId {}
 
@@ -9,15 +10,10 @@ const USER_STORE_PICKER_ID = Symbol("FriendsTab");
 const FriendsTab = ({ ...props }: FriendsTabProps) => {
   console.log("FriendsTab render");
   return (
-    // <UsersPickerTab
-    //   componentId={USER_STORE_PICKER_ID}
-    //   searchParamsName="SearchFriendsByQuery"
-    //   {...props}
-    // />
-    <UsersPagination
+    <UsersPickerTab
       pagingParamsName="PaginateFriendsByQuery"
-      {...props}
       storeId={USER_STORE_PICKER_ID}
+      {...props}
     />
   );
 };
