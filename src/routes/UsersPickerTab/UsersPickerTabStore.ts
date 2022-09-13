@@ -3,9 +3,9 @@ import { isUserSelectable } from "@network/models/User/UserModel";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
 import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { IPaginationStore } from "@stores/PaginationStore/IPaginationStore";
 import { PaginationOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
 import PaginationStore, {
-  IPaginationStore,
   PaginationConfig,
   PaginationItem,
   PaginationOuterFetchParams,

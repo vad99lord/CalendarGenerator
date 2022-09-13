@@ -1,8 +1,6 @@
 import { ApiResponse } from "@network/types/ApiResponse";
 import IFetchStore from "@stores/FetchStores/IFetchStore";
 import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
-import { LoadState } from "@stores/LoadState";
-import { Disposable } from "@utils/types";
 import {
   action,
   autorun,
@@ -13,6 +11,7 @@ import {
   reaction,
   toJS,
 } from "mobx";
+import { IPaginationStore } from "./IPaginationStore";
 import { PaginationOuterFetchParamsProvider } from "./PaginationOuterFetchParams";
 import Range from "./Range";
 
@@ -47,14 +46,6 @@ export type PaginationConfig = {
   loadSize?: number;
   itemsPerPage?: number;
 };
-
-export interface IPaginationStore<Item> extends Disposable {
-  pagesCount: number;
-  pageItems: Item[];
-  currentPage: number;
-  loadState: LoadState;
-  setCurrentPage(page: number): void;
-}
 
 /*
 assumptions/constraints:
