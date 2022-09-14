@@ -35,7 +35,7 @@ export const fetchVkApi = async <M extends MethodsNames>(
         data: `Received response for ${method} of unexpected shape: ${response}`,
       };
   } else {
-    return { isError, data: null };
+    return { isError, data };
   }
 };
 

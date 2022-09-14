@@ -1,6 +1,7 @@
 import {
   Button,
   Group,
+  Headline,
   Panel,
   Spinner,
   Title,
@@ -19,15 +20,6 @@ interface CalendarGeneratorProps extends NavElementId {
   checkedUsersStore: ICheckedUsersStore;
   onNextClick: () => void;
 }
-
-export enum FetchState {
-  INITIAL,
-  LOADING,
-  FINISHED,
-  ERROR,
-}
-
-// const calendarGeneratorContent = (loadState: LoadState)
 
 const CalendarGenerator = ({
   checkedUsersStore,
@@ -57,6 +49,25 @@ const CalendarGenerator = ({
               <Title level="3">Календарь создан</Title>
               <Button onClick={onNextClick}>
                 Создать еще один календарь
+              </Button>
+            </div>
+          </Group>
+        );
+      }
+      case LoadState.Error: {
+        return (
+          <Group>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Title level="3">Произошла ошибка(</Title>
+              <Headline level="2">{calendarStore.error}</Headline>
+              <Button onClick={calendarStore.fetch}>
+                Попробовать еще раз
               </Button>
             </div>
           </Group>

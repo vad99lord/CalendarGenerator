@@ -18,7 +18,7 @@ import Range from "./Range";
 type PaginationOwnFetchParams = PaginationParams;
 
 export type PaginationOuterFetchParams<
-  Store extends IPaginationFetchStore<any, any>
+  Store extends IPaginationFetchStore<any, any, any>
 > = Store extends IFetchStore<infer Params, any>
   ? Params extends PaginationOwnFetchParams
     ? Omit<Params, keyof PaginationOwnFetchParams>
@@ -26,9 +26,15 @@ export type PaginationOuterFetchParams<
   : never;
 
 export type PaginationItem<
-  Store extends IPaginationFetchStore<any, any>
-> = Store extends IPaginationFetchStore<any, infer Item>
+  Store extends IPaginationFetchStore<any, any, any>
+> = Store extends IPaginationFetchStore<any, infer Item, any>
   ? Item
+  : never;
+
+export type PaginationError<
+  Store extends IPaginationFetchStore<any, any, any>
+> = Store extends IPaginationFetchStore<any, any, infer ErrorData>
+  ? ErrorData
   : never;
 
 export interface PaginationFetchResponse<Item> {
@@ -38,8 +44,12 @@ export interface PaginationFetchResponse<Item> {
 
 export type IPaginationFetchStore<
   Params extends PaginationOwnFetchParams,
-  Item
-> = IFetchStore<Params, ApiResponse<PaginationFetchResponse<Item>>>;
+  Item,
+  ErrorData
+> = IFetchStore<
+  Params,
+  ApiResponse<PaginationFetchResponse<Item>, ErrorData>
+>;
 
 export type PaginationConfig = {
   initialLoadSize?: number;
@@ -60,14 +70,16 @@ assumptions/constraints:
 9. subsequent loads fetch loadSize items centered across the current page
 */
 export default class PaginationStore<
-  FetchStore extends IPaginationFetchStore<any, any>,
+  FetchStore extends IPaginationFetchStore<any, any, any>,
   Item extends PaginationItem<FetchStore>,
-  OuterFetchParams extends PaginationOuterFetchParams<FetchStore>
-> implements IPaginationStore<Item>
+  OuterFetchParams extends PaginationOuterFetchParams<FetchStore>,
+  ErrorData extends PaginationError<FetchStore>
+> implements IPaginationStore<Item, ErrorData>
 {
   private readonly _fetchStore: IPaginationFetchStore<
     PaginationOwnFetchParams & OuterFetchParams,
-    Item
+    Item,
+    ErrorData
   >;
   private _fetchParams!: OuterFetchParams;
   private readonly _initialLoadSize: number;
@@ -94,9 +106,10 @@ export default class PaginationStore<
     this._itemsPerPage = itemsPerPage;
 
     makeObservable<
-      PaginationStore<any, any, never>,
+      PaginationStore<any, any, never, any>,
       | "_offset"
       | "_initialLoad"
+      | "_load"
       | "_currentLoad"
       | "_setLoadedPages"
       | "_currentPageInLoad"
@@ -108,6 +121,7 @@ export default class PaginationStore<
       pagesCount: computed,
       _offset: computed,
       _initialLoad: action.bound,
+      _load: action.bound,
       _currentLoad: computed,
       _setLoadedPages: action.bound,
       _currentPageInLoad: computed,
@@ -119,17 +133,15 @@ export default class PaginationStore<
       _loadedPages: observable,
       _currentPage: observable,
       _currentLoadPage: computed,
+      refresh: action.bound,
+      retry: action.bound,
     });
     this._fetchNewPagesReaction = reaction(
       () => this._currentPage,
       (currentPage) => {
         console.log("_fetchNewPagesReaction", currentPage);
         if (!this._loadedPages.contains(currentPage)) {
-          this._fetchStore.fetch({
-            offset: this._offset,
-            count: this._loadSize,
-            ...this._fetchParams,
-          });
+          this._load();
         }
       }
     );
@@ -232,6 +244,26 @@ export default class PaginationStore<
     });
   }
 
+  private _load() {
+    this._fetchStore.fetch({
+      offset: this._offset,
+      count: this._loadSize,
+      ...this._fetchParams,
+    });
+  }
+
+  retry() {
+    if (this.currentPage === 1) {
+      this._initialLoad();
+    } else {
+      this._load();
+    }
+  }
+
+  refresh() {
+    this._initialLoad();
+  }
+
   private get _currentLoad():
     | Required<PaginationFetchResponse<Item>>
     | undefined {
@@ -321,6 +353,10 @@ export default class PaginationStore<
 
   get loadState() {
     return this._fetchStore.loadState;
+  }
+
+  get error() {
+    return this._fetchStore.error;
   }
 
   destroy() {

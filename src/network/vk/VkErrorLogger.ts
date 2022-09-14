@@ -3,6 +3,7 @@ import {
   AnyRequestMethodName,
   ErrorData,
 } from "@vkontakte/vk-bridge";
+import { VKBridgeError } from "./types/VkBridgeFetch";
 
 type VkErrorTypes = Pick<ErrorData, "error_type">["error_type"];
 type VkErrorPrintableTypes = Record<VkErrorTypes, string>;
@@ -30,6 +31,12 @@ export const vkErrorToText = ({
   const errorText = `${typeText}:\n${dataText}`;
   return errorText;
 };
+
+export const vkBridgeErrorToString = (err?: VKBridgeError) => {
+  if (!err) return "";
+  if (typeof err === "string") return err;
+  return vkErrorToText(err);
+}
 
 export const isVkErrorData = (error: any): error is ErrorData => {
   return (

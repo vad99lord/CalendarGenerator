@@ -40,6 +40,10 @@ export default class CalendarGeneratorStore implements Disposable {
     );
   }
 
+  get error() {
+    return this._fetchStore.error;
+  }
+
   get loadState() {
     return this._fetchStore.loadState;
   }

@@ -6,16 +6,15 @@ import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkAp
 import { IPaginationStore } from "@stores/PaginationStore/IPaginationStore";
 import { PaginationOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
 import PaginationStore, {
-  PaginationConfig,
-  PaginationItem,
-  PaginationOuterFetchParams,
+  PaginationConfig, PaginationError, PaginationItem,
+  PaginationOuterFetchParams
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
 import {
   Callback,
   Disposable,
-  UnionToIntersection,
+  UnionToIntersection
 } from "@utils/types";
 import { action, computed, makeObservable, observable } from "mobx";
 import { ChangeEvent } from "react";
@@ -60,7 +59,8 @@ const USER_PAGINATION_CONFIG: Record<
 };
 
 type UsersPaginationStore = IPaginationStore<
-  PaginationItem<PaginationStoresUnion>
+  PaginationItem<PaginationStoresUnion>,
+  PaginationError<PaginationStoresUnion>
 >;
 
 export default class UsersPickerTabStore<
@@ -102,6 +102,8 @@ export default class UsersPickerTabStore<
       disabledUsers: computed,
       areAllUsersChecked: computed,
       onSelectAllChanged: action.bound,
+      error: computed,
+      retry: action.bound,
     });
   }
 
@@ -111,6 +113,14 @@ export default class UsersPickerTabStore<
 
   get loadState() {
     return this._usersPaginationStore.loadState;
+  }
+
+  get error() {
+    return this._usersPaginationStore.error;
+  }
+
+  retry() {
+    return this._usersPaginationStore.retry();
   }
 
   setCurrentPage(page: number) {

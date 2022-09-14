@@ -2,15 +2,18 @@ import BottomButton from "@components/BottomButton/BottomButton";
 import SelectableUser from "@components/User/SelectableUser";
 import useLocalCachedStore from "@hooks/useLocalCachedStore";
 import { useVkApiFetchStoreCallback } from "@hooks/useVkApiFetchStore";
+import { vkBridgeErrorToString } from "@network/vk/VkErrorLogger";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { LoadState } from "@stores/LoadState";
 import {
   Button,
   Checkbox,
   Counter,
+  Div,
   Footer,
   FormItem,
   Group,
+  Headline,
   List,
   Pagination,
   PaginationProps,
@@ -19,8 +22,10 @@ import {
   SizeType,
   Spinner,
   Switch,
+  Title,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
+import { useCallback } from "react";
 import { ScopeId, StoreId } from "../../types/navProps";
 import UsersPickerTabStore, {
   UsersPaginationParamsNames,
@@ -92,6 +97,59 @@ const UsersPickerTab = <
     )
   );
 
+  const getContent = useCallback(() => {
+    switch (usersStore.loadState) {
+      case LoadState.Loading: {
+        return <Spinner size="large" />;
+      }
+      case LoadState.Error: {
+        return (
+          <Div>
+            <Title level="3">Произошла ошибка(</Title>
+            <Headline level="2">
+              {vkBridgeErrorToString(usersStore.error)}
+            </Headline>
+            <Button onClick={usersStore.retry}>
+              Попробовать еще раз
+            </Button>
+          </Div>
+        );
+      }
+      default: {
+        return userItems.length ? (
+          <List>{userItems}</List>
+        ) : (
+          <Footer>Ничего не найдено</Footer>
+        );
+      }
+    }
+  }, [userItems, usersStore]);
+
+  const getPagination = useCallback(() => {
+    const isDisabled = usersStore.loadState === LoadState.Loading;
+    // no pagination needed if 1 or less pages
+    if (usersStore.totalPagesCount < 2) return null;
+    switch (usersStore.loadState) {
+      case LoadState.Loading:
+      case LoadState.Success:
+      case LoadState.Error: {
+        return (
+          <Pagination
+            style={{ marginBottom: 60 }}
+            currentPage={usersStore.currentPage}
+            onChange={usersStore.setCurrentPage}
+            siblingCount={siblingCount}
+            boundaryCount={boundaryCount}
+            totalPages={usersStore.totalPagesCount}
+            disabled={isDisabled}
+          />
+        );
+      }
+      default: {
+        return null;
+      }
+    }
+  }, [boundaryCount, siblingCount, usersStore]);
   return (
     <Group>
       <Observer>
@@ -153,21 +211,8 @@ const UsersPickerTab = <
           Ручной выбор
         </SimpleCell>
       )}
-      {usersStore.loadState === LoadState.Loading ? (
-        <Spinner size="large" />
-      ) : userItems.length ? (
-        <List>{userItems}</List>
-      ) : (
-        <Footer>Ничего не найдено</Footer>
-      )}
-      <Pagination
-        style={{ marginBottom: 60 }}
-        currentPage={usersStore.currentPage}
-        onChange={usersStore.setCurrentPage}
-        siblingCount={siblingCount}
-        boundaryCount={boundaryCount}
-        totalPages={usersStore.totalPagesCount}
-      />
+      {getContent()}
+      {getPagination()}
       <Observer>
         {() => (
           <BottomButton
