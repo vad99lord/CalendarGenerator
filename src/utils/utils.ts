@@ -15,6 +15,9 @@ export const isObject = (it: unknown): it is object => {
 export const peek = <Item>(arr: Item[]): Item | undefined =>
   arr[arr.length - 1];
 
+export const deepCloneJson = <T>(obj: T) =>
+  JSON.parse(JSON.stringify(obj)) as T;
+
 export const filterValues = <V>(
   map: ReadonlyMap<any, V>,
   predicate: (value: V) => unknown

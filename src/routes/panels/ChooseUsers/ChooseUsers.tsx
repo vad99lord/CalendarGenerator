@@ -1,10 +1,10 @@
 import TabsList, { TabsMap } from "@components/TabsList/TabsList";
+import { NavElementId } from "@routes/types/navProps";
 import { Panel, PanelHeader } from "@vkontakte/vkui";
 import { useCallback } from "react";
-import { NavElementId } from "../types";
-import { UsersPickerTabOuterProps } from "../UsersPickerTab/UsersPickerTab";
-import FriendsTab from "./FriendsTab/FriendsTab";
-import UsersTab from "./UsersTab/UsersTab";
+import FriendsTab from "../../tabs/FriendsTab/FriendsTab";
+import { UsersPickerTabOuterProps } from "../../tabs/UsersPickerTab/UsersPickerTab";
+import UsersTab from "../../tabs/UsersTab/UsersTab";
 
 export interface ChooseUsersProps
   extends UsersPickerTabOuterProps,

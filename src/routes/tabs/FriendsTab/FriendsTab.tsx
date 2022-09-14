@@ -1,7 +1,7 @@
-import { ScopeId } from "src/routes/types";
+import { ScopeId } from "@routes/types/navProps";
 import UsersPickerTab, {
   UsersPickerTabOuterProps,
-} from "../../UsersPickerTab/UsersPickerTab";
+} from "../UsersPickerTab/UsersPickerTab";
 
 interface FriendsTabProps extends UsersPickerTabOuterProps, ScopeId {}
 

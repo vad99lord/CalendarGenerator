@@ -1,5 +1,7 @@
 import RemovableUser from "@components/User/RemovableUser";
 import useLocalStore from "@hooks/useLocalStore";
+import { UserID } from "@network/models/User/BaseUserModel";
+import { NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import {
   Button,
@@ -15,8 +17,6 @@ import {
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { UserID } from "../../network/models/User/BaseUserModel";
-import { NavElementId } from "../types";
 import SelectedUsersStore from "./SelectedUsersStore";
 
 interface SelectedUsersProps extends NavElementId {

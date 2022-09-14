@@ -2,14 +2,14 @@ import { PickerDate } from "@components/BirthdayPicker/BirthdayPicker";
 import BottomButton from "@components/BottomButton/BottomButton";
 import UserEditBirthday from "@components/User/UserEditBirthday";
 import useLocalStore from "@hooks/useLocalStore";
+import { UserID } from "@network/models/User/BaseUserModel";
+import { UserModel } from "@network/models/User/UserModel";
+import { NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { UserID } from "../../network/models/User/BaseUserModel";
-import { UserModel } from "../../network/models/User/UserModel";
-import { NavElementId } from "../types";
 import EditDatesStore from "./EditDatesStore";
 
 interface EditDatesProps extends NavElementId {

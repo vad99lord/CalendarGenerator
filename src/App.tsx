@@ -1,12 +1,12 @@
 import AppLayout from "./layouts/AppLayout";
 import VkAppRoot from "./layouts/VkAppRoot";
-import UsersPicker from "./routes/UsersPicker/UsersPicker";
+import BirthdaysCalendar from "./routes/roots/BirthdaysCalendar";
 
 const App = () => {
   return (
     <VkAppRoot>
       <AppLayout>
-        <UsersPicker />
+        <BirthdaysCalendar />
       </AppLayout>
     </VkAppRoot>
   );

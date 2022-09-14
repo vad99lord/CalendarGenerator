@@ -21,7 +21,7 @@ import {
   Switch,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
-import { ScopeId, StoreId } from "../types";
+import { ScopeId, StoreId } from "../../types/navProps";
 import UsersPickerTabStore, {
   UsersPaginationParamsNames,
 } from "./UsersPickerTabStore";

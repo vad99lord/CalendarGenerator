@@ -7,7 +7,7 @@ import { LoadState } from "@stores/LoadState";
 import { mapValues } from "@utils/utils";
 import { Icon56CalendarOutline } from "@vkontakte/icons";
 import { observer } from "mobx-react-lite";
-import { NavElementId } from "../types";
+import { NavElementId } from "../../types/navProps";
 import CalendarGeneratorStore from "./CalendarGeneratorStore";
 
 interface CalendarGeneratorProps extends NavElementId {
