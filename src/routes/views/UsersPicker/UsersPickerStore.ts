@@ -1,18 +1,13 @@
 import { PickerDate } from "@components/BirthdayPicker/BirthdayPicker";
-import { Updater } from "@hooks/useNavigationStack";
 import { BirthDate } from "@network/models/Birthday/Birthday";
 import { UserModel } from "@network/models/User/UserModel";
 import { BirthdaysCalendarRootNavigation } from "@routes/types/navigation/root";
 import { ChooseUsersTabs } from "@routes/types/navigation/tabs";
-import {
-  BirthdaysCalendarViewsIds,
-  BirthdaysCalendarViewsNavState,
-} from "@routes/types/navigation/views";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { INonEmptyNavigationStackStore } from "@stores/NavigationStackStore/INavigationStackStore";
 import { Disposable } from "@utils/types";
-import { deepCloneJson } from "@utils/utils";
 import { action, makeObservable } from "mobx";
+import { updateView } from "../utils";
 
 export default class UsersPickerStore implements Disposable {
   private readonly _checkedUsersStore: ICheckedUsersStore;
@@ -33,35 +28,18 @@ export default class UsersPickerStore implements Disposable {
     });
   }
 
-  private static _updateView<
-    ViewId extends BirthdaysCalendarViewsIds
-  >(
-    prevState: BirthdaysCalendarRootNavigation,
-    viewId: ViewId,
-    updater: Updater<BirthdaysCalendarViewsNavState[ViewId]>
-  ) {
-    const currentState = deepCloneJson(prevState);
-    let currentViewState = currentState.viewsState[viewId];
-    currentState.viewsState[viewId] = updater(currentViewState);
-    return currentState;
-  }
-
   setEditDatesPanel() {
     this._navStackStore.next((prevState) =>
-      UsersPickerStore._updateView(
-        prevState,
-        "users_picker",
-        (viewState) => ({
-          ...viewState,
-          activePanel: "edit_dates",
-        })
-      )
+      updateView(prevState, "users_picker", (viewState) => ({
+        ...viewState,
+        activePanel: "edit_dates",
+      }))
     );
   }
 
   setGenerateCalendarPanel() {
     this._navStackStore.next((prevState) =>
-      UsersPickerStore._updateView(
+      updateView(
         {
           ...prevState,
           activeView: "calendar_generator",
@@ -77,31 +55,23 @@ export default class UsersPickerStore implements Disposable {
 
   onOpenCheckedUsers() {
     this._navStackStore.next((prevState) =>
-      UsersPickerStore._updateView(
-        prevState,
-        "users_picker",
-        (viewState) => ({
-          ...viewState,
-          activePanel: "selected_users",
-        })
-      )
+      updateView(prevState, "users_picker", (viewState) => ({
+        ...viewState,
+        activePanel: "selected_users",
+      }))
     );
   }
 
   onChooseUserTabChange(activeTab: ChooseUsersTabs) {
     this._navStackStore.replace((prevState) =>
-      UsersPickerStore._updateView(
-        prevState,
-        "users_picker",
-        (viewState) => ({
-          ...viewState,
-          panelsState: {
-            choose_users: {
-              activeTab: activeTab,
-            },
+      updateView(prevState, "users_picker", (viewState) => ({
+        ...viewState,
+        panelsState: {
+          choose_users: {
+            activeTab: activeTab,
           },
-        })
-      )
+        },
+      }))
     );
   }
 

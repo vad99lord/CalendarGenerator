@@ -34,6 +34,7 @@ const CalendarGenerator = ({
       <CalendarGeneratorPanel
         nav={BirthdaysCalendarPanels.GenerateCalendar}
         checkedUsersStore={checkedUsersStore}
+        onNextClick={calendarGeneratorStore.setChooseUsersPanel}
       />
     </View>
   );

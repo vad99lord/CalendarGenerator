@@ -174,6 +174,7 @@ export default class UsersPickerTabStore<
   }
 
   destroy() {
+    console.log("PICKER DESTROY");
     this._searchStore.destroy();
     this._usersPaginationStore.destroy();
     this._usersFetchStore.destroy();
