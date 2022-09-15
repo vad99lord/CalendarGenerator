@@ -290,7 +290,7 @@ export default class PaginationStore<
     const loadStartPage = this._currentLoadPage;
     this._loadedPages = new Range(
       loadStartPage,
-      loadStartPage + pagesInLoad - 1
+      Math.max(loadStartPage, loadStartPage + pagesInLoad - 1)
     );
   }
 
