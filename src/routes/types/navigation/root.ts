@@ -15,7 +15,7 @@ export const INITIAL_NAV_STATE: BirthdaysCalendarRootNavigation = {
   activeView: "users_picker",
   viewsState: {
     users_picker: {
-      activePanel: "choose_users",
+      activePanel: "user_auth",
       panelsState: {
         choose_users: {
           activeTab: "FRIENDS",

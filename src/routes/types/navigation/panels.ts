@@ -5,6 +5,7 @@ export const BirthdaysCalendarPanels = {
   EditDates: "edit_dates",
   GenerateCalendar: "generate_calendar",
   SelectedUsers: "selected_users",
+  UserAuth: "user_auth",
 } as const;
 
 export type BirthdaysCalendarPanelsIds =

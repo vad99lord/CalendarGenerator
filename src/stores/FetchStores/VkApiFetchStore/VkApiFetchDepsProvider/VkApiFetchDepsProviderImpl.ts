@@ -1,16 +1,14 @@
-import { AuthStore } from "../../../types/AuthStore";
-import { ConfigStore } from "../../../types/ConfigStore";
+import { IAuthStore } from "@stores/types/IAuthStore";
+import { IConfigStore } from "@stores/types/IConfigStore";
 import {
   VkApiFetchDeps,
   VkApiFetchDepsProvider,
 } from "./VkApiFetchDepsProvider";
 
-export class VkApiFetchDepsProviderImpl
-  implements VkApiFetchDepsProvider
-{
-  private readonly _configStore: ConfigStore;
-  private readonly _authStore: AuthStore;
-  constructor(configStore: ConfigStore, authStore: AuthStore) {
+export class VkApiFetchDepsProviderImpl implements VkApiFetchDepsProvider {
+  private readonly _configStore: IConfigStore;
+  private readonly _authStore: IAuthStore;
+  constructor(configStore: IConfigStore, authStore: IAuthStore) {
     this._configStore = configStore;
     this._authStore = authStore;
   }

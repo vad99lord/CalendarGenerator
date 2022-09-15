@@ -3,6 +3,7 @@ import useScope from "@hooks/useScope";
 import ChooseUsers from "@routes/panels/ChooseUsers/ChooseUsers";
 import EditDates from "@routes/panels/EditDates/EditDates";
 import SelectedUsers from "@routes/panels/SelectedUsers/SelectedUsers";
+import UserAuth from "@routes/panels/UserAuth/UserAuth";
 import { BirthdaysCalendarPanels } from "@routes/types/navigation/panels";
 import { BirthdaysCalendarRootNavigation } from "@routes/types/navigation/root";
 import { NavElementId } from "@routes/types/navProps";
@@ -35,6 +36,10 @@ const UsersPicker = ({
   );
   return (
     <View activePanel={usersPickerPanels.activePanel}>
+      <UserAuth
+        nav={BirthdaysCalendarPanels.UserAuth}
+        onNextClick={usersPickerStore.setChooseUsersPanel}
+      />
       <ChooseUsers
         nav={BirthdaysCalendarPanels.ChooseUsers}
         checkedUsersStore={checkedUsersStore}

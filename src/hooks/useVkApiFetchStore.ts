@@ -8,8 +8,8 @@ import {
   VkApiMethodParamsNames,
   VK_API_PARAMS_PROVIDER_MAP,
 } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
-import { AuthStore } from "@stores/types/AuthStore";
-import { ConfigStore } from "@stores/types/ConfigStore";
+import { IAuthStore } from "@stores/types/IAuthStore";
+import { IConfigStore } from "@stores/types/IConfigStore";
 import { Callback } from "@utils/types";
 import { useCallback } from "react";
 import { useLateInitContext } from "./useLateInitContext";
@@ -19,8 +19,8 @@ const createVkApiFetchStore = <
   ParamsName extends VkApiMethodParamsNames
 >(
   name: ParamsName,
-  authStore: AuthStore,
-  configStore: ConfigStore
+  authStore: IAuthStore,
+  configStore: IConfigStore
 ) => {
   return new VkApiFetchStore<ParamsName>(
     new VkApiFetchDepsProviderImpl(configStore, authStore),

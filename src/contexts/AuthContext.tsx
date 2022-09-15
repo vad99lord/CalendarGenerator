@@ -4,16 +4,14 @@ import {
 } from "@hooks/useLateInitContext";
 import { useLocalStoreCreator } from "@hooks/useLocalStore";
 import FetchDepsProvider from "@stores/FetchStores/FetchDepsProvider/FetchDepsProvider";
-import VkBridgeFetchStore, {
-  IVkBridgeFetchStore,
-} from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
+import VkBridgeFetchStore from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
 import VkBridgeParamsProvider from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
-import { AuthStore } from "@stores/types/AuthStore";
+import { IAuthStore } from "@stores/types/IAuthStore";
 import { ChildrenProps } from "@utils/types";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { ConfigContext } from "./ConfigContext";
 
-export const AuthContext = createLateInitContext<AuthStore>();
+export const AuthContext = createLateInitContext<IAuthStore>();
 
 type AuthProviderProps = ChildrenProps;
 
@@ -44,14 +42,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         };
       },
     };
-    const store: IVkBridgeFetchStore<"VKWebAppGetAuthToken"> =
-      new VkBridgeFetchStore(authDeps, authParams);
+    const store: IAuthStore = new VkBridgeFetchStore(
+      authDeps,
+      authParams
+    );
     return store;
   }, [launchParamsStore]);
   const authStore = useLocalStoreCreator(authStoreCreator);
-  useEffect(() => {
-    authStore.fetch();
-  }, [authStore]);
+  // useEffect(() => {
+  //   authStore.fetch();
+  // }, [authStore]);
   return (
     <AuthContext.Provider value={authStore}>
       {children}

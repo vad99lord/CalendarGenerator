@@ -25,6 +25,7 @@ export default class UsersPickerStore implements Disposable {
       onChooseUserTabChange: action.bound,
       onOpenCheckedUsers: action.bound,
       onUserDateChange: action.bound,
+      setChooseUsersPanel: action.bound,
     });
   }
 
@@ -33,6 +34,15 @@ export default class UsersPickerStore implements Disposable {
       updateView(prevState, "users_picker", (viewState) => ({
         ...viewState,
         activePanel: "edit_dates",
+      }))
+    );
+  }
+
+  setChooseUsersPanel() {
+    this._navStackStore.next((prevState) =>
+      updateView(prevState, "users_picker", (viewState) => ({
+        ...viewState,
+        activePanel: "choose_users",
       }))
     );
   }

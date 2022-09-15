@@ -1,4 +1,4 @@
-import { LaunchParams } from "../../../types/ConfigStore";
+import { LaunchParams } from "../../../types/IConfigStore";
 import FetchDepsProvider from "../../FetchDepsProvider/FetchDepsProvider";
 
 export type VkApiFetchDeps = {
