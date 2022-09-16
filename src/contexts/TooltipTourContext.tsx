@@ -4,24 +4,24 @@ import ITooltipTourStore from "@stores/TooltipTourStore/ITooltipTourStore";
 import TooltipTourStore from "@stores/TooltipTourStore/TooltipTourStore";
 import { ChildrenProps } from "@utils/types";
 
-export const TooltipContext =
+export const TooltipTourContext =
   createLateInitContext<ITooltipTourStore>();
 
-interface TooltipContextProps extends ChildrenProps {
+interface TooltipTourContextProps extends ChildrenProps {
   tooltipsCount: number;
 }
 
-export const TooltipProvider = ({
+export const TooltipTourProvider = ({
   children,
   tooltipsCount,
-}: TooltipContextProps) => {
+}: TooltipTourContextProps) => {
   const tooltipTourStore: ITooltipTourStore = useLocalStore(
     TooltipTourStore,
     tooltipsCount
   );
   return (
-    <TooltipContext.Provider value={tooltipTourStore}>
+    <TooltipTourContext.Provider value={tooltipTourStore}>
       {children}
-    </TooltipContext.Provider>
+    </TooltipTourContext.Provider>
   );
 };

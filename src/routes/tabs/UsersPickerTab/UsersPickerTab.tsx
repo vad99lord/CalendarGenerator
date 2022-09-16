@@ -1,8 +1,6 @@
 import BottomButton from "@components/BottomButton/BottomButton";
 import TourTooltip from "@components/TourTooltip/TourTooltip";
 import SelectableUser from "@components/User/SelectableUser";
-import { TooltipContext } from "@contexts/TooltipContext";
-import { useLateInitContext } from "@hooks/useLateInitContext";
 import useLocalCachedStore from "@hooks/useLocalCachedStore";
 import { useVkApiFetchStoreCallback } from "@hooks/useVkApiFetchStore";
 import { vkBridgeErrorToString } from "@network/vk/VkErrorLogger";
@@ -28,7 +26,7 @@ import {
   Title,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { ScopeId, StoreId } from "../../types/navProps";
 import UsersPickerTabStore, {
   UsersPaginationParamsNames,

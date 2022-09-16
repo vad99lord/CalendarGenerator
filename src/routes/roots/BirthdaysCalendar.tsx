@@ -1,4 +1,4 @@
-import { TooltipContext } from "@contexts/TooltipContext";
+import { TooltipTourContext } from "@contexts/TooltipTourContext";
 import { useLateInitContext } from "@hooks/useLateInitContext";
 import useLocalStore from "@hooks/useLocalStore";
 import { BirthdaysCalendarViews } from "@routes/types/navigation/views";
@@ -23,7 +23,7 @@ const BirthdaysCalendar = () => {
   console.log("BirthdaysCalendar RENDER");
   const checkedUsersStore: ICheckedUsersStore =
     useLocalStore(CheckedUsersStore);
-  const tooltipTourStore = useLateInitContext(TooltipContext);
+  const tooltipTourStore = useLateInitContext(TooltipTourContext);
   const onboardingStore: IOnboardingStore = useLocalStore(
     OnboardingStore,
     tooltipTourStore

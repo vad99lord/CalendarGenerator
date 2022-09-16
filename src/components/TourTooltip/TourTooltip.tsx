@@ -1,4 +1,4 @@
-import { TooltipContext } from "@contexts/TooltipContext";
+import { TooltipTourContext } from "@contexts/TooltipTourContext";
 import { useLateInitContext } from "@hooks/useLateInitContext";
 import { Tooltip, TooltipProps } from "@vkontakte/vkui";
 import { observer } from "mobx-react-lite";
@@ -14,7 +14,7 @@ export interface TourTooltipProps
 }
 
 const TourTooltip = ({ stepId, ...props }: TourTooltipProps) => {
-  const tooltipTourStore = useLateInitContext(TooltipContext);
+  const tooltipTourStore = useLateInitContext(TooltipTourContext);
   const { isShown, onClose } = tooltipTourStore.tooltipState(stepId);
   console.log("TourTooltip render", stepId);
   return <Tooltip isShown={isShown} onClose={onClose} {...props} />;

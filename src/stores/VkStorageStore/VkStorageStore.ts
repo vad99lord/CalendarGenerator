@@ -5,6 +5,7 @@ import {
   RequestPropsMap,
 } from "@vkontakte/vk-bridge";
 import { VkStorage, VkStorageKeys } from "./IVkStorage";
+import IVkStorageStore from "./IVkStorageStore";
 
 export type VkApiStorage =
   ReceiveDataMap["VKWebAppStorageGet"]["keys"];
@@ -24,7 +25,8 @@ type VKStorageMethodsParamsMap = Pick<
   VkStorageMethods
 >;
 
-export default class VkStorageStore {
+let VkStorageStore: IVkStorageStore;
+VkStorageStore = class VkStorageStore {
   private static async _fetchStorage<Method extends VkStorageMethods>(
     method: Method,
     params: VKStorageMethodsParamsMap[Method]
@@ -95,4 +97,6 @@ export default class VkStorageStore {
       },
     };
   }
-}
+};
+
+export default VkStorageStore;
