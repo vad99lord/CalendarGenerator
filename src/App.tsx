@@ -7,7 +7,7 @@ const App = () => {
   return (
     <VkAppRoot>
       <AppLayout>
-        <TooltipProvider>
+        <TooltipProvider tooltipsCount={3}>
           <BirthdaysCalendar />
         </TooltipProvider>
       </AppLayout>

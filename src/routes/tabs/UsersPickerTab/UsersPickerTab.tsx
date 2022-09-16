@@ -84,10 +84,6 @@ const UsersPickerTab = <
     fetchStore,
     pagingParamsName
   );
-  const tooltipTour = useLateInitContext(TooltipContext);
-  useEffect(() => {
-    tooltipTour.start();
-  }, [tooltipTour]);
   const userItems = usersStore.selectableUsers.map(
     ({ user, isSelectable }) => (
       <Observer key={user.id}>

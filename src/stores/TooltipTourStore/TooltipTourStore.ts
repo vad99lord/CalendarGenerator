@@ -1,9 +1,16 @@
 import { noOp } from "@utils/utils";
-import { action, comparer, makeObservable, observable } from "mobx";
+import {
+  action,
+  comparer,
+  computed,
+  makeObservable,
+  observable,
+} from "mobx";
 import { computedFn } from "mobx-utils";
 import ITooltipTourStore from "./ITooltipTourStore";
 
 enum TooltipTourState {
+  INITIAL,
   ACTIVE,
   STOPPED,
 }
@@ -11,7 +18,7 @@ enum TooltipTourState {
 type TooltipTourStepState =
   | {
       step?: undefined;
-      state: TooltipTourState.STOPPED;
+      state: TooltipTourState.STOPPED | TooltipTourState.INITIAL;
     }
   | {
       step: number;
@@ -19,36 +26,26 @@ type TooltipTourStepState =
     };
 
 export default class TooltipTourStore implements ITooltipTourStore {
-  // private _currentStep: number = 0;
-  // private _tourState: TooltipTourState = TooltipTourState.STOPPED;
   private _tourStepState: TooltipTourStepState = {
-    state: TooltipTourState.STOPPED,
+    state: TooltipTourState.INITIAL,
   };
+  private _tooltipsCount: number;
 
-  constructor() {
+  constructor(tooltipsCount: number) {
+    this._tooltipsCount = tooltipsCount;
     makeObservable<
       TooltipTourStore,
       "_onCloseTooltip" | "_tourStepState"
     >(this, {
       _onCloseTooltip: action.bound,
-      // _currentStep: observable,
-      // _tourState: observable,
       _tourStepState: observable,
+      isStopped: computed,
     });
   }
 
-  // get tooltipsState(): TourTooltipState[] {
-  //   return Array.from(
-  //     { length: this._tooltipsCount },
-  //     (_tooltip, ind) => {
-  //       const isShown = ind + 1 === this._currentStep ? true : false;
-  //       return {
-  //         isShown,
-  //         onClose: this._onCloseTooltip,
-  //       };
-  //     }
-  //   );
-  // }
+  get isStopped() {
+    return this._tourStepState.state === TooltipTourState.STOPPED;
+  }
 
   tooltipState = computedFn(
     (stepId: number) => {
@@ -76,6 +73,13 @@ export default class TooltipTourStore implements ITooltipTourStore {
   private _onCloseTooltip() {
     const { state, step } = this._tourStepState;
     if (state !== TooltipTourState.ACTIVE) return;
+    console.log(step, this._tooltipsCount);
+    if (step === this._tooltipsCount) {
+      this._tourStepState = {
+        state: TooltipTourState.STOPPED,
+      };
+      return;
+    }
     this._tourStepState = {
       state,
       step: step + 1,

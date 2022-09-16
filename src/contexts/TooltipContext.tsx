@@ -7,13 +7,18 @@ import { ChildrenProps } from "@utils/types";
 export const TooltipContext =
   createLateInitContext<ITooltipTourStore>();
 
-interface TooltipContextProps extends ChildrenProps {}
+interface TooltipContextProps extends ChildrenProps {
+  tooltipsCount: number;
+}
 
 export const TooltipProvider = ({
   children,
+  tooltipsCount,
 }: TooltipContextProps) => {
-  const tooltipTourStore: ITooltipTourStore =
-    useLocalStore(TooltipTourStore);
+  const tooltipTourStore: ITooltipTourStore = useLocalStore(
+    TooltipTourStore,
+    tooltipsCount
+  );
   return (
     <TooltipContext.Provider value={tooltipTourStore}>
       {children}
