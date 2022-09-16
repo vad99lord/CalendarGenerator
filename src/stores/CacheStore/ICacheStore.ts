@@ -1,5 +1,6 @@
 import { Disposable } from "@utils/types";
 
+//TODO add proper interface
 export default interface ICacheStore extends Disposable {
   cache<V>(id: symbol, data: V): void;
   delete(id: symbol): void;

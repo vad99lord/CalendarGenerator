@@ -41,3 +41,5 @@ export const mapValues = <V, U>(
   });
   return mappedItems;
 };
+
+export const noOp = () => {};

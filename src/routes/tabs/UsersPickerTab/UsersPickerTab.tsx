@@ -1,5 +1,8 @@
 import BottomButton from "@components/BottomButton/BottomButton";
+import TourTooltip from "@components/TourTooltip/TourTooltip";
 import SelectableUser from "@components/User/SelectableUser";
+import { TooltipContext } from "@contexts/TooltipContext";
+import { useLateInitContext } from "@hooks/useLateInitContext";
 import useLocalCachedStore from "@hooks/useLocalCachedStore";
 import { useVkApiFetchStoreCallback } from "@hooks/useVkApiFetchStore";
 import { vkBridgeErrorToString } from "@network/vk/VkErrorLogger";
@@ -25,7 +28,7 @@ import {
   Title,
 } from "@vkontakte/vkui";
 import { Observer, observer } from "mobx-react-lite";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ScopeId, StoreId } from "../../types/navProps";
 import UsersPickerTabStore, {
   UsersPaginationParamsNames,
@@ -81,6 +84,10 @@ const UsersPickerTab = <
     fetchStore,
     pagingParamsName
   );
+  const tooltipTour = useLateInitContext(TooltipContext);
+  useEffect(() => {
+    tooltipTour.start();
+  }, [tooltipTour]);
   const userItems = usersStore.selectableUsers.map(
     ({ user, isSelectable }) => (
       <Observer key={user.id}>
@@ -164,20 +171,22 @@ const UsersPickerTab = <
       <FormItem>
         <Observer>
           {() => (
-            <Button
-              size="m"
-              appearance="accent"
-              stretched={false}
-              disabled={checkedUsersStore.checkedCount === 0}
-              after={
-                <Counter size="s">
-                  {checkedUsersStore.checkedCount}
-                </Counter>
-              }
-              onClick={onOpenChecked}
-            >
-              Выбранные пользователи
-            </Button>
+            <TourTooltip stepId={1} text="test1">
+              <Button
+                size="m"
+                appearance="accent"
+                stretched={false}
+                disabled={checkedUsersStore.checkedCount === 0}
+                after={
+                  <Counter size="s">
+                    {checkedUsersStore.checkedCount}
+                  </Counter>
+                }
+                onClick={onOpenChecked}
+              >
+                Выбранные пользователи
+              </Button>
+            </TourTooltip>
           )}
         </Observer>
       </FormItem>
@@ -200,10 +209,12 @@ const UsersPickerTab = <
           after={
             <Observer>
               {() => (
-                <Switch
-                  checked={usersStore.ignoreSelectable}
-                  onChange={usersStore.toggleIgnoreSelectable}
-                />
+                <TourTooltip stepId={2} text="test2">
+                  <Switch
+                    checked={usersStore.ignoreSelectable}
+                    onChange={usersStore.toggleIgnoreSelectable}
+                  />
+                </TourTooltip>
               )}
             </Observer>
           }
@@ -215,12 +226,14 @@ const UsersPickerTab = <
       {getPagination()}
       <Observer>
         {() => (
-          <BottomButton
-            onClick={onNextClick}
-            disabled={checkedUsersStore.checkedCount === 0}
-          >
-            Далее
-          </BottomButton>
+          <TourTooltip stepId={3} text="test3">
+            <BottomButton
+              onClick={onNextClick}
+              disabled={checkedUsersStore.checkedCount === 0}
+            >
+              Далее
+            </BottomButton>
+          </TourTooltip>
         )}
       </Observer>
     </Group>
