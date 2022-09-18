@@ -1,4 +1,5 @@
 import { ScopeId } from "@routes/types/navProps";
+import { memo } from "react";
 import UsersPickerTab, {
   UsersPickerTabOuterProps,
 } from "../UsersPickerTab/UsersPickerTab";
@@ -20,4 +21,4 @@ const UsersTab = ({ ...props }: UsersTabProps) => {
   );
 };
 
-export default UsersTab;
+export default memo(UsersTab);

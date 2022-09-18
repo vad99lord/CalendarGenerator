@@ -9,7 +9,7 @@ import { NonEmptyNavStackStore } from "@stores/NavigationStackStore/NavigationSt
 import IOnboardingStore from "@stores/OnboardingStore/IOnboardingStore";
 import OnboardingStore from "@stores/OnboardingStore/OnboardingStore";
 import { Root, SplitCol } from "@vkontakte/vkui";
-import { toJS } from "mobx";
+import { computed } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import {
@@ -33,10 +33,10 @@ const BirthdaysCalendar = () => {
       NonEmptyNavStackStore<BirthdaysCalendarRootNavigation>,
       INITIAL_NAV_STATE
     );
-  const {
-    currentEntry: { activeView },
-  } = navStackStore;
-  console.log({ navState: toJS(navStackStore.currentEntry) });
+  // console.log({ navState: toJS(navStackStore.currentEntry) });
+  const activeView = computed(
+    () => navStackStore.currentEntry.activeView
+  ).get();
   useEffect(() => {
     onboardingStore.startTooltipTour();
   }, [onboardingStore]);

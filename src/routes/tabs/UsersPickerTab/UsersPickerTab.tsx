@@ -25,7 +25,7 @@ import {
   Switch,
   Title,
 } from "@vkontakte/vkui";
-import { Observer, observer } from "mobx-react-lite";
+import { observer, Observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { ScopeId, StoreId } from "../../types/navProps";
 import UsersPickerTabStore, {
@@ -72,6 +72,7 @@ const UsersPickerTab = <
   scopeId,
   storeId,
 }: UsersPickerTabProps<ParamsName>) => {
+  console.log("UsersPickerTab render");
   //using callback to avoid recreation of store each mount
   const fetchStore = useVkApiFetchStoreCallback(pagingParamsName);
   const usersStore = useLocalCachedStore(
@@ -165,7 +166,7 @@ const UsersPickerTab = <
       <FormItem>
         <Observer>
           {() => (
-            <TourTooltip stepId={1} text="test1">
+            <TourTooltip stepId={2} text="selected users">
               <Button
                 size="m"
                 appearance="accent"
@@ -203,7 +204,7 @@ const UsersPickerTab = <
           after={
             <Observer>
               {() => (
-                <TourTooltip stepId={2} text="test2">
+                <TourTooltip stepId={3} text="ignoreSelectable">
                   <Switch
                     checked={usersStore.ignoreSelectable}
                     onChange={usersStore.toggleIgnoreSelectable}
@@ -220,14 +221,12 @@ const UsersPickerTab = <
       {getPagination()}
       <Observer>
         {() => (
-          <TourTooltip stepId={3} text="test3">
-            <BottomButton
-              onClick={onNextClick}
-              disabled={checkedUsersStore.checkedCount === 0}
-            >
-              Далее
-            </BottomButton>
-          </TourTooltip>
+          <BottomButton
+            onClick={onNextClick}
+            disabled={checkedUsersStore.checkedCount === 0}
+          >
+            Далее
+          </BottomButton>
         )}
       </Observer>
     </Group>

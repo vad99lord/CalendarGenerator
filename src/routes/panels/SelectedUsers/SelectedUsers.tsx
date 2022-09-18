@@ -33,6 +33,7 @@ const SelectedUsers = ({
   onAllUsersRemove,
   onBackClick,
 }: SelectedUsersProps) => {
+  console.log("SelectedUsers render");
   const selectedUsersStore = useLocalStore(
     SelectedUsersStore,
     checkedUsersStore

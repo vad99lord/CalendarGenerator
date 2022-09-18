@@ -1,10 +1,12 @@
 import { noOp } from "@utils/utils";
 import {
   action,
+  autorun,
   comparer,
   computed,
   makeObservable,
   observable,
+  toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import ITooltipTourStore from "./ITooltipTourStore";
@@ -40,6 +42,11 @@ export default class TooltipTourStore implements ITooltipTourStore {
       _onCloseTooltip: action.bound,
       _tourStepState: observable,
       isStopped: computed,
+      start: action.bound,
+      stop: action.bound,
+    });
+    autorun(() => {
+      console.log("_tourStepState",toJS(this._tourStepState));
     });
   }
 

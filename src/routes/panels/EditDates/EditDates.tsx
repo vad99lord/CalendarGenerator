@@ -30,6 +30,7 @@ const EditDates = ({
     EditDatesStore,
     checkedUsersStore
   );
+  console.log("EditDates render");
 
   const editDatesItems =
     editDatesStore.currentUsersWithoutBirthday.map((user) => (

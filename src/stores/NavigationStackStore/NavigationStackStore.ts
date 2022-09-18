@@ -34,8 +34,8 @@ abstract class NavigationStackStore<Item> implements Disposable {
       "_currentEntry" | "_navStack"
     >(this, {
       _navStack: observable,
-      _currentEntry: computed,
-      currentEntry: computed,
+      _currentEntry: computed.struct,
+      currentEntry: computed.struct,
       next: action.bound,
       back: action.bound,
       replace: action.bound,

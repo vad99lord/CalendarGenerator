@@ -16,7 +16,7 @@ export interface TourTooltipProps
 const TourTooltip = ({ stepId, ...props }: TourTooltipProps) => {
   const tooltipTourStore = useLateInitContext(TooltipTourContext);
   const { isShown, onClose } = tooltipTourStore.tooltipState(stepId);
-  console.log("TourTooltip render", stepId);
+  console.log("TourTooltip render", stepId, isShown, onClose);
   return <Tooltip isShown={isShown} onClose={onClose} {...props} />;
 };
 

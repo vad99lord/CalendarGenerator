@@ -10,6 +10,7 @@ import { NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { INonEmptyNavigationStackStore } from "@stores/NavigationStackStore/INavigationStackStore";
 import { View } from "@vkontakte/vkui";
+import { computed } from "mobx";
 import { observer } from "mobx-react-lite";
 import UsersPickerStore from "./UsersPickerStore";
 
@@ -24,11 +25,9 @@ const UsersPicker = ({
 }: UsersPickerProps) => {
   console.log("UsersPicker RENDER");
   const usersPickerScope = useScope();
-  const {
-    currentEntry: {
-      viewsState: { users_picker: usersPickerPanels },
-    },
-  } = navStackStore;
+  const usersPickerPanels = computed(
+    () => navStackStore.currentEntry.viewsState["users_picker"]
+  ).get();
   const usersPickerStore = useLocalStore(
     UsersPickerStore,
     checkedUsersStore,

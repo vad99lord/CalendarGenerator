@@ -6,15 +6,17 @@ import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkAp
 import { IPaginationStore } from "@stores/PaginationStore/IPaginationStore";
 import { PaginationOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
 import PaginationStore, {
-  PaginationConfig, PaginationError, PaginationItem,
-  PaginationOuterFetchParams
+  PaginationConfig,
+  PaginationError,
+  PaginationItem,
+  PaginationOuterFetchParams,
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
 import {
   Callback,
   Disposable,
-  UnionToIntersection
+  UnionToIntersection,
 } from "@utils/types";
 import { action, computed, makeObservable, observable } from "mobx";
 import { ChangeEvent } from "react";
@@ -71,7 +73,7 @@ export default class UsersPickerTabStore<
   private readonly _usersPaginationStore: UsersPaginationStore;
   private readonly _searchStore: ISearchStore;
   private readonly _checkedUsers: ICheckedUsersStore;
-  ignoreSelectable = false;
+  private _ignoreSelectable = false;
 
   constructor(
     checkedUsers: ICheckedUsersStore,
@@ -88,23 +90,27 @@ export default class UsersPickerTabStore<
       createQueryParamsProvider(this._searchStore),
       USER_PAGINATION_CONFIG[pagingParamsName]
     );
-    makeObservable(this, {
-      loadState: computed,
-      users: computed,
-      setCurrentPage: action.bound,
-      totalPagesCount: computed,
-      query: computed,
-      onSearchTextChange: action.bound,
-      ignoreSelectable: observable,
-      toggleIgnoreSelectable: action.bound,
-      selectableUsers: computed,
-      enabledUsers: computed,
-      disabledUsers: computed,
-      areAllUsersChecked: computed,
-      onSelectAllChanged: action.bound,
-      error: computed,
-      retry: action.bound,
-    });
+    makeObservable<UsersPickerTabStore<any>, "_ignoreSelectable">(
+      this,
+      {
+        loadState: computed,
+        users: computed,
+        setCurrentPage: action.bound,
+        totalPagesCount: computed,
+        query: computed,
+        onSearchTextChange: action.bound,
+        _ignoreSelectable: observable,
+        ignoreSelectable: computed,
+        toggleIgnoreSelectable: action.bound,
+        selectableUsers: computed.struct,
+        enabledUsers: computed,
+        disabledUsers: computed,
+        areAllUsersChecked: computed,
+        onSelectAllChanged: action.bound,
+        error: computed,
+        retry: action.bound,
+      }
+    );
   }
 
   get users() {
@@ -144,16 +150,20 @@ export default class UsersPickerTabStore<
   }
 
   toggleIgnoreSelectable() {
-    this.ignoreSelectable = !this.ignoreSelectable;
+    this._ignoreSelectable = !this._ignoreSelectable;
     if (!this.ignoreSelectable && this.disabledUsers.length > 0) {
       this._checkedUsers.setCheckedMany(false, this.disabledUsers);
     }
   }
 
+  get ignoreSelectable() {
+    return this._ignoreSelectable;
+  }
+
   get selectableUsers() {
     return this.users.map((user) => ({
       user,
-      isSelectable: this.ignoreSelectable || isUserSelectable(user),
+      isSelectable: this._ignoreSelectable || isUserSelectable(user),
     }));
   }
 

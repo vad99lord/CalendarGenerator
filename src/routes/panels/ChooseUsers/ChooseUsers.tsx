@@ -1,7 +1,8 @@
 import TabsList, { TabsMap } from "@components/TabsList/TabsList";
+import TourTooltip from "@components/TourTooltip/TourTooltip";
 import { NavElementId } from "@routes/types/navProps";
 import { Panel, PanelHeader } from "@vkontakte/vkui";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import FriendsTab from "../../tabs/FriendsTab/FriendsTab";
 import { UsersPickerTabOuterProps } from "../../tabs/UsersPickerTab/UsersPickerTab";
 import UsersTab from "../../tabs/UsersTab/UsersTab";
@@ -56,16 +57,17 @@ const ChooseUsers = ({
   return (
     <Panel id={panelId}>
       <PanelHeader separator={false}>Выбор пользователей</PanelHeader>
-      <TabsList
-        selectedItem={selectedTab}
-        tabs={CHOOSE_USERS_TABS_ITEMS}
-        onItemClick={onTabClick}
-        mode={"segmented"}
-      />
+      <TourTooltip stepId={1} text="friends/users">
+        <TabsList
+          selectedItem={selectedTab}
+          tabs={CHOOSE_USERS_TABS_ITEMS}
+          onItemClick={onTabClick}
+          mode={"segmented"}
+        />
+      </TourTooltip>
       {tabContent}
     </Panel>
   );
 };
 
-//TODO add memo
-export default ChooseUsers;
+export default memo(ChooseUsers);
