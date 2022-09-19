@@ -2,7 +2,7 @@ import RemovableUser from "@components/User/RemovableUser";
 import useLocalStore from "@hooks/useLocalStore";
 import { UserID } from "@network/models/User/BaseUserModel";
 import { PaginationConfig } from "@routes/tabs/UsersPickerTab/UsersPickerTab";
-import { NavElementId } from "@routes/types/navProps";
+import { NavActionsProps, NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { LoadState } from "@stores/LoadState";
 import {
@@ -19,18 +19,20 @@ import {
   Search,
   Spinner,
   Text,
-  Title,
+  Title
 } from "@vkontakte/vkui";
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
 import { useCallback, useEffect } from "react";
 import SelectedUsersStore from "./SelectedUsersStore";
 
-interface SelectedUsersProps extends NavElementId, PaginationConfig {
+interface SelectedUsersProps
+  extends NavElementId,
+    PaginationConfig,
+    Pick<NavActionsProps, "onBackClick"> {
   checkedUsersStore: ICheckedUsersStore;
   onUserRemove: (userId: UserID) => void;
   onAllUsersRemove: () => void;
-  onBackClick: () => void;
 }
 
 const SelectedUsers = ({

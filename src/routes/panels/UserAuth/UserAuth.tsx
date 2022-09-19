@@ -5,7 +5,7 @@ import {
   Headline,
   Panel,
   Spinner,
-  Title,
+  Title
 } from "@vkontakte/vkui";
 
 import { AuthContext } from "@contexts/AuthContext";
@@ -16,12 +16,12 @@ import { LoadState } from "@stores/LoadState";
 import { when } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect } from "react";
-import { NavElementId } from "../../types/navProps";
+import { NavActionsProps, NavElementId } from "../../types/navProps";
 import UserAuthStore from "./UserAuthStore";
 
-interface UserAuthProps extends NavElementId {
-  onNextClick: () => void;
-}
+interface UserAuthProps
+  extends NavElementId,
+    Pick<NavActionsProps, "onNextClick"> {}
 
 const UserAuth = ({ onNextClick, nav: panelId }: UserAuthProps) => {
   const authStore = useLateInitContext(AuthContext);

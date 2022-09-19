@@ -32,7 +32,11 @@ import {
 import { reaction } from "mobx";
 import { observer, Observer } from "mobx-react-lite";
 import { useCallback, useEffect } from "react";
-import { ScopeId, StoreId } from "../../types/navProps";
+import {
+  NavActionsProps,
+  ScopeId,
+  StoreId,
+} from "../../types/navProps";
 import UsersPickerTabStore, {
   UsersPaginationParamsNames,
 } from "./UsersPickerTabStore";
@@ -56,9 +60,9 @@ export interface UsersPickerTabProps<
 > extends UsersPickerConfig,
     PaginationConfig,
     ScopeId,
-    StoreId {
+    StoreId,
+    Pick<NavActionsProps, "onNextClick"> {
   checkedUsersStore: ICheckedUsersStore;
-  onNextClick: () => void;
   onOpenChecked: () => void;
   pagingParamsName: ParamsName;
 }

@@ -6,7 +6,7 @@ import {
   Panel,
   PanelHeader,
   Spinner,
-  Title,
+  Title
 } from "@vkontakte/vkui";
 
 import useLocalStore from "@hooks/useLocalStore";
@@ -15,12 +15,13 @@ import { LoadState } from "@stores/LoadState";
 import { Icon56CalendarOutline } from "@vkontakte/icons";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
-import { NavElementId } from "../../types/navProps";
+import { NavActionsProps, NavElementId } from "../../types/navProps";
 import CalendarGeneratorStore from "./CalendarGeneratorStore";
 
-interface CalendarGeneratorProps extends NavElementId {
+interface CalendarGeneratorProps
+  extends NavElementId,
+    Pick<NavActionsProps, "onNextClick"> {
   checkedUsersStore: ICheckedUsersStore;
-  onNextClick: () => void;
 }
 
 const CalendarGenerator = ({

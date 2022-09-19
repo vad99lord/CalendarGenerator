@@ -4,20 +4,24 @@ import UserEditBirthday from "@components/User/UserEditBirthday";
 import useLocalStore from "@hooks/useLocalStore";
 import { UserID } from "@network/models/User/BaseUserModel";
 import { UserModel } from "@network/models/User/UserModel";
-import { NavElementId } from "@routes/types/navProps";
+import { NavActionsProps, NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
-import { Group, List, Panel, PanelHeader, PanelHeaderBack } from "@vkontakte/vkui";
+import {
+  Group,
+  List,
+  Panel,
+  PanelHeader,
+  PanelHeaderBack
+} from "@vkontakte/vkui";
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import EditDatesStore from "./EditDatesStore";
 
-interface EditDatesProps extends NavElementId {
+interface EditDatesProps extends NavElementId, NavActionsProps {
   checkedUsersStore: ICheckedUsersStore;
   onUserRemove: (userId: UserID) => void;
   onUserDateChange: (date: PickerDate, user: UserModel) => void;
-  onNextClick: () => void;
-  onBackClick: () => void;
 }
 
 const EditDates = ({
