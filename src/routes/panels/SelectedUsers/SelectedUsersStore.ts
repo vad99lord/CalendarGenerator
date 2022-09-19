@@ -2,37 +2,74 @@ import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
 import { Disposable } from "@utils/types";
-import { filterValues } from "@utils/utils";
 import { action, computed, makeObservable } from "mobx";
 import { ChangeEvent } from "react";
+import SelectedUsersPaginationStore from "./SelectedUsersPaginationStore";
+
+export const SELECTED_USERS_PAGINATION_CONFIG = {
+  loadSize: 30,
+  initialLoadSize: 30,
+  itemsPerPage: 10,
+};
 
 export default class SelectedUsersStore implements Disposable {
   private readonly _checkedUsers: ICheckedUsersStore;
   private readonly _searchStore: ISearchStore;
+  private readonly _selectedUsersPaginationStore: SelectedUsersPaginationStore;
 
   constructor(checkedUsers: ICheckedUsersStore) {
     this._checkedUsers = checkedUsers;
     this._searchStore = new SearchStore();
+    this._selectedUsersPaginationStore =
+      new SelectedUsersPaginationStore(
+        this._checkedUsers,
+        this._searchStore,
+        SELECTED_USERS_PAGINATION_CONFIG
+      );
     makeObservable(this, {
-      searchText: computed,
+      loadState: computed,
+      users: computed,
+      setCurrentPage: action.bound,
+      totalPagesCount: computed,
+      query: computed,
       onSearchTextChange: action.bound,
-      filteredSelectedUsers: computed,
+      error: computed,
+      currentPage: computed,
     });
   }
 
-  get filteredSelectedUsers() {
-    return filterValues(
-      this._checkedUsers.checked,
-      ({ firstName, lastName }) =>
-        `${firstName} ${lastName}`
-          .toLocaleLowerCase()
-          .includes(
-            this._searchStore.debouncedSearchText.toLocaleLowerCase()
-          )
+  get users() {
+    return this._selectedUsersPaginationStore
+      ._selectedUsersPaginationStore.pageItems;
+  }
+
+  get loadState() {
+    return this._selectedUsersPaginationStore
+      ._selectedUsersPaginationStore.loadState;
+  }
+
+  get error() {
+    return this._selectedUsersPaginationStore
+      ._selectedUsersPaginationStore.error;
+  }
+
+  setCurrentPage(page: number) {
+    this._selectedUsersPaginationStore._selectedUsersPaginationStore.setCurrentPage(
+      page
     );
   }
 
-  get searchText() {
+  get totalPagesCount() {
+    return this._selectedUsersPaginationStore
+      ._selectedUsersPaginationStore.pagesCount;
+  }
+
+  get currentPage() {
+    return this._selectedUsersPaginationStore
+      ._selectedUsersPaginationStore.currentPage;
+  }
+
+  get query() {
     return this._searchStore.searchText;
   }
 
@@ -42,5 +79,6 @@ export default class SelectedUsersStore implements Disposable {
 
   destroy() {
     this._searchStore.destroy();
+    this._selectedUsersPaginationStore.destroy();
   }
 }

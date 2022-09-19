@@ -64,7 +64,7 @@ assumptions/constraints:
 3. only last page may be partially full
 4. pages indices start at 1
 5. load sizes should be multiple of itemsPerPage, with loadSize >= 3x itemsPerPage
-6. cached pages are reset on each new fetch
+6. cached pages are reset on each new fetch, before actual fetch
 7. pagination ui is blocked during fetch (can't change current page until loaded)
 8. first load fetches initialLoad items forward 
 9. subsequent loads fetch loadSize items centered across the current page
@@ -112,11 +112,13 @@ export default class PaginationStore<
       | "_load"
       | "_currentLoad"
       | "_setLoadedPages"
+      | "_resetLoadedPages"
       | "_currentPageInLoad"
       | "_offsetInLoad"
       | "_loadedPages"
       | "_currentPage"
       | "_currentLoadPage"
+      | "_currentPageLoaded"
     >(this, {
       pagesCount: computed,
       _offset: computed,
@@ -124,10 +126,12 @@ export default class PaginationStore<
       _load: action.bound,
       _currentLoad: computed,
       _setLoadedPages: action.bound,
+      _currentPageLoaded: computed,
       _currentPageInLoad: computed,
       _offsetInLoad: computed,
       pageItems: computed,
       setCurrentPage: action.bound,
+      _resetLoadedPages: action.bound,
       loadState: computed,
       currentPage: computed,
       _loadedPages: observable,
@@ -137,10 +141,10 @@ export default class PaginationStore<
       retry: action.bound,
     });
     this._fetchNewPagesReaction = reaction(
-      () => this._currentPage,
-      (currentPage) => {
-        console.log("_fetchNewPagesReaction", currentPage);
-        if (!this._loadedPages.contains(currentPage)) {
+      () => this._currentPageLoaded,
+      (currentPageLoaded) => {
+        console.log("_fetchNewPagesReaction", currentPageLoaded);
+        if (!currentPageLoaded) {
           this._load();
         }
       }
@@ -237,6 +241,7 @@ export default class PaginationStore<
 
   private _initialLoad() {
     this.setCurrentPage(1);
+    this._resetLoadedPages();
     this._fetchStore.fetch({
       offset: this._offset,
       count: this._initialLoadSize,
@@ -245,6 +250,7 @@ export default class PaginationStore<
   }
 
   private _load() {
+    this._resetLoadedPages();
     this._fetchStore.fetch({
       offset: this._offset,
       count: this._loadSize,
@@ -282,6 +288,10 @@ export default class PaginationStore<
     return pagesInLoad;
   }
 
+  private _resetLoadedPages() {
+    this._loadedPages = Range.EMPTY;
+  }
+
   private _setLoadedPages() {
     const pagesInLoad = this._pagesInLoad;
     if (pagesInLoad === 0) {
@@ -294,6 +304,10 @@ export default class PaginationStore<
     );
   }
 
+  private get _currentPageLoaded() {
+    return this._loadedPages.contains(this._currentPage);
+  }
+
   private get _currentPageInLoad() {
     console.log(
       "_currentPageInLoad",
@@ -301,8 +315,7 @@ export default class PaginationStore<
       toJS(this._loadedPages)
     );
     //currentPage is out of loaded pages range => undefined
-    if (!this._loadedPages.contains(this._currentPage))
-      return undefined;
+    if (!this._currentPageLoaded) return undefined;
     return Math.max(
       1,
       this._currentPage - this._loadedPages.start + 1
@@ -322,8 +335,10 @@ export default class PaginationStore<
       toJS(this._offsetInLoad),
       toJS(this._currentLoad)
     );
+    if (!this._currentPageLoaded) return [];
     if (this._offsetInLoad === undefined || !this._currentLoad)
       return [];
+    console.log("NEW pageItems");
     return this._currentLoad.items.slice(
       this._offsetInLoad,
       this._offsetInLoad + this._itemsPerPage
