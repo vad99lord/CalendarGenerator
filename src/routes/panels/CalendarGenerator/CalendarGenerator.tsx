@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Group,
   Headline,
   Panel,
@@ -88,6 +89,12 @@ const CalendarGenerator = ({
               <Button onClick={calendarStore.fetch}>
                 Создать календарь
               </Button>
+              <Checkbox
+                checked={calendarStore.shouldAddProfileLinks}
+                onChange={calendarStore.toggleShouldAddProfileLinks}
+              >
+                Добавить ссылки на профили
+              </Checkbox>
             </div>
           </Group>
         );

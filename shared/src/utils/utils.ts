@@ -18,3 +18,9 @@ export const isLeapYearLastFebruary = (month: number, day: number) =>
 
 export const isDevEnv = () =>
   !process.env.NODE_ENV || process.env.NODE_ENV === "development";
+
+export const VK_BASE_URL = "https://vk.com";
+
+export const getProfileUrl = (id: string) => {
+  return `${VK_BASE_URL}/id${id}`;
+};

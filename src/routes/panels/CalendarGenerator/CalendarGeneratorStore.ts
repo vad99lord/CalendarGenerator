@@ -13,6 +13,7 @@ import {
   computed,
   IReactionDisposer,
   makeObservable,
+  observable,
   reaction,
 } from "mobx";
 
@@ -21,15 +22,22 @@ export default class CalendarGeneratorStore implements Disposable {
   private static readonly CALENDAR_FILENAME = "birthdays";
   private readonly _saveCalendarReaction: IReactionDisposer;
   private readonly _checkedUsersStore: ICheckedUsersStore;
+  private _shouldAddProfileLinks: boolean = false;
 
   constructor(checkedUsersStore: ICheckedUsersStore) {
     this._checkedUsersStore = checkedUsersStore;
     this._fetchStore = new AxiosFetchStore();
-    makeObservable<CalendarGeneratorStore, "_fetch">(this, {
+    makeObservable<
+      CalendarGeneratorStore,
+      "_fetch" | "_shouldAddProfileLinks" | "_calendarUsers"
+    >(this, {
       fetch: action.bound,
       _fetch: action.bound,
       loadState: computed,
-      calendarUsers: computed,
+      _calendarUsers: computed,
+      _shouldAddProfileLinks: observable,
+      shouldAddProfileLinks: computed,
+      toggleShouldAddProfileLinks: action.bound,
     });
     this._saveCalendarReaction = reaction(
       () => this._fetchStore.data,
@@ -38,6 +46,14 @@ export default class CalendarGeneratorStore implements Disposable {
         saveAs(blob, CalendarGeneratorStore.CALENDAR_FILENAME);
       }
     );
+  }
+
+  get shouldAddProfileLinks() {
+    return this._shouldAddProfileLinks;
+  }
+
+  toggleShouldAddProfileLinks() {
+    this._shouldAddProfileLinks = !this._shouldAddProfileLinks;
   }
 
   get error() {
@@ -63,15 +79,21 @@ export default class CalendarGeneratorStore implements Disposable {
   }
 
   fetch() {
-    this._fetch({ birthdays: this.calendarUsers });
+    this._fetch({ birthdays: this._calendarUsers });
   }
 
-  get calendarUsers(): CalendarUserApi[] {
-    return mapValues(this._checkedUsersStore.checked, (user) => ({
-      name: `${user.firstName} ${user.lastName}`,
-      //TODO birthday should be non-nullable here already
-      birthday: user.birthday?.toDate().toJSON() ?? "",
-    }));
+  private get _calendarUsers(): CalendarUserApi[] {
+    return mapValues(this._checkedUsersStore.checked, (user) => {
+      if (!user.birthday)
+        throw Error(
+          `undefined date for ${user} during calendar generation!`
+        );
+      return {
+        name: `${user.firstName} ${user.lastName}`,
+        birthday: user.birthday.toDate().toJSON(),
+        id: this._shouldAddProfileLinks ? `${user.id}` : null,
+      };
+    });
   }
 
   destroy() {

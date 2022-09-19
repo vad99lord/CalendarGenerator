@@ -19,11 +19,15 @@ app.use(express.json());
 app.post(
   "/api/calendar",
   check("birthdays").isArray(),
-  check("birthdays.*.name").notEmpty(),
+  check("birthdays.*.name").isString().notEmpty(),
   check("birthdays.*.birthday").isISO8601({
     strict: true,
     strictSeparator: true,
   }),
+  check("birthdays.*.id")
+    .isString()
+    .notEmpty()
+    .optional({ nullable: true }),
   (req: RequestTypedBody<CalendarUserApiRequest>, res: Response) => {
     //TODO: make validation MiddleWare?
     const errors = validationResult(req);
@@ -35,7 +39,7 @@ app.post(
     const currentYear = new Date().getUTCFullYear();
     console.log(req.body.birthdays);
     const calendarUsers: CalendarUser[] = req.body.birthdays.map(
-      ({ name, birthday }) => {
+      ({ name, birthday, id }) => {
         const birthDate = new Date(birthday);
         const day = birthDate.getUTCDate();
         const month = birthDate.getUTCMonth();
@@ -51,6 +55,7 @@ app.post(
             month,
             fixedLeapYearDay
           ),
+          id: id,
         };
       }
     );
