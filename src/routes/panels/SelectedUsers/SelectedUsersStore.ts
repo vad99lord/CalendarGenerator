@@ -1,10 +1,12 @@
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import SearchStore from "@stores/SearchStore/SearchStore";
+import SelectedUsersPaginationStore, {
+  ISelectedUsersPaginationStore,
+} from "@stores/SelectedUsersPaginationStore/SelectedUsersPaginationStore";
 import { Disposable } from "@utils/types";
 import { action, computed, makeObservable } from "mobx";
 import { ChangeEvent } from "react";
-import SelectedUsersPaginationStore from "./SelectedUsersPaginationStore";
 
 export const SELECTED_USERS_PAGINATION_CONFIG = {
   loadSize: 30,
@@ -15,7 +17,8 @@ export const SELECTED_USERS_PAGINATION_CONFIG = {
 export default class SelectedUsersStore implements Disposable {
   private readonly _checkedUsers: ICheckedUsersStore;
   private readonly _searchStore: ISearchStore & Disposable;
-  private readonly _selectedUsersPaginationStore: SelectedUsersPaginationStore;
+  private readonly _selectedUsersPaginationStore: ISelectedUsersPaginationStore &
+    Disposable;
 
   constructor(checkedUsers: ICheckedUsersStore) {
     this._checkedUsers = checkedUsers;
@@ -39,34 +42,27 @@ export default class SelectedUsersStore implements Disposable {
   }
 
   get users() {
-    return this._selectedUsersPaginationStore
-      ._selectedUsersPaginationStore.pageItems;
+    return this._selectedUsersPaginationStore.pageItems;
   }
 
   get loadState() {
-    return this._selectedUsersPaginationStore
-      ._selectedUsersPaginationStore.loadState;
+    return this._selectedUsersPaginationStore.loadState;
   }
 
   get error() {
-    return this._selectedUsersPaginationStore
-      ._selectedUsersPaginationStore.error;
+    return this._selectedUsersPaginationStore.error;
   }
 
   setCurrentPage(page: number) {
-    this._selectedUsersPaginationStore._selectedUsersPaginationStore.setCurrentPage(
-      page
-    );
+    this._selectedUsersPaginationStore.setCurrentPage(page);
   }
 
   get totalPagesCount() {
-    return this._selectedUsersPaginationStore
-      ._selectedUsersPaginationStore.pagesCount;
+    return this._selectedUsersPaginationStore.pagesCount;
   }
 
   get currentPage() {
-    return this._selectedUsersPaginationStore
-      ._selectedUsersPaginationStore.currentPage;
+    return this._selectedUsersPaginationStore.currentPage;
   }
 
   get query() {

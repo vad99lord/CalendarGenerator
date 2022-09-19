@@ -8,6 +8,7 @@ import {
   PaginationFetchResponse,
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
+import { Disposable } from "@utils/types";
 import { filterValues } from "@utils/utils";
 import {
   action,
@@ -21,8 +22,14 @@ import {
 export type FetchParams = PaginationParams;
 export type ErrorData = string;
 
+export type ISelectedUsersFetchStore = IPaginationFetchStore<
+  FetchParams,
+  UserModel,
+  ErrorData
+>;
+
 export default class SelectedUsersFetchStore
-  implements IPaginationFetchStore<FetchParams, UserModel, ErrorData>
+  implements ISelectedUsersFetchStore, Disposable
 {
   private readonly _checkedUsers: ICheckedUsersStore;
   private readonly _searchStore: ISearchStore;

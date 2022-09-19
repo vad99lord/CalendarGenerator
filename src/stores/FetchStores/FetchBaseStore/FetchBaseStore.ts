@@ -33,7 +33,7 @@ export default abstract class FetchBaseStore<
   Response extends ApiResponse
 > implements IFetchStore<OwnFetchParams, Response>, Disposable
 {
-  response?: Response = undefined;
+  private _response?: Response = undefined;
   private _loadState: InternalLoadState = LoadState.Initial;
   private _fetchReaction!: IReactionDisposer;
   private _params?: OwnFetchParams | null;
@@ -46,9 +46,10 @@ export default abstract class FetchBaseStore<
   constructor(depsProvider: FetchDepsProvider<DepsFetchParams>) {
     makeObservable<
       FetchBaseStore<any, any, any>,
-      "_params" | "_loadState" | "_fetch"
+      "_params" | "_loadState" | "_fetch" | "_response"
     >(this, {
-      response: observable,
+      _response: observable,
+      response: computed,
       _params: observable,
       _loadState: observable,
       loadState: computed,
@@ -77,17 +78,20 @@ export default abstract class FetchBaseStore<
     return this._loadState;
   }
 
+  get response() {
+    return this._response;
+  }
   // type checks won't work for data/error
   // since any is assumed to be returned
   // correct typings are inferred in subclassed usages
   get data(): ApiSuccessData<Response> | undefined {
-    if (!this.response || this.response.isError) return undefined;
-    return this.response.data;
+    if (!this._response || this._response.isError) return undefined;
+    return this._response.data;
   }
 
   get error(): ApiErrorData<Response> | undefined {
-    if (!this.response || !this.response.isError) return undefined;
-    return this.response.data;
+    if (!this._response || !this._response.isError) return undefined;
+    return this._response.data;
   }
 
   destroy() {
@@ -140,12 +144,12 @@ export default abstract class FetchBaseStore<
     if (response.isError) {
       runInAction(() => {
         this._loadState = LoadState.Error;
-        this.response = response;
+        this._response = response;
       });
     } else {
       runInAction(() => {
         this._loadState = LoadState.Success;
-        this.response = response;
+        this._response = response;
       });
     }
   }

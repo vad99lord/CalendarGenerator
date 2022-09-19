@@ -1,31 +1,45 @@
+import { UserModel } from "@network/models/User/UserModel";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import {
   PaginationParams,
   SearchParams,
 } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { IPaginationStore } from "@stores/PaginationStore/IPaginationStore";
 import { EmptyOuterFetchParamsProvider } from "@stores/PaginationStore/PaginationOuterFetchParams";
 import PaginationStore, {
   PaginationConfig,
 } from "@stores/PaginationStore/PaginationStore";
 import ISearchStore from "@stores/SearchStore/ISearchStore";
+import { Disposable } from "@utils/types";
 import { isEmptyArray } from "@utils/utils";
 import {
   action,
+  computed,
   IReactionDisposer,
   makeObservable,
   reaction,
   toJS,
 } from "mobx";
-import SelectedUsersFetchStore from "./SelectedUsersFetchStore";
+import SelectedUsersFetchStore, {
+  ISelectedUsersFetchStore,
+} from "./SelectedUsersFetchStore";
 
 export type UsersSearchParams = SearchParams;
 export type FetchParams = PaginationParams;
 export type ErrorData = string;
 
-export default class SelectedUsersPaginationStore {
+export type ISelectedUsersPaginationStore = IPaginationStore<
+  UserModel,
+  ErrorData
+>;
+
+export default class SelectedUsersPaginationStore
+  implements IPaginationStore<UserModel, ErrorData>, Disposable
+{
   private _selectedUsersPaginationReaction: IReactionDisposer;
   private _previousPage?: number;
-  private _selectedUsersFetchStore: SelectedUsersFetchStore;
+  private _selectedUsersFetchStore: ISelectedUsersFetchStore &
+    Disposable;
   _selectedUsersPaginationStore;
   private _selectedUsersPaginationLoadReaction: IReactionDisposer;
   private _debouncedSearchPaginationReaction: IReactionDisposer;
@@ -50,6 +64,14 @@ export default class SelectedUsersPaginationStore {
     >(this, {
       _restorePreviousPage: action.bound,
       _setPreviousPage: action.bound,
+      pagesCount: computed,
+      pageItems: computed,
+      currentPage: computed,
+      loadState: computed,
+      error: computed,
+      setCurrentPage: action.bound,
+      refresh: action.bound,
+      retry: action.bound,
     });
     this._selectedUsersPaginationReaction = reaction(
       () => checkedUsers.checkedCount,
@@ -79,6 +101,38 @@ export default class SelectedUsersPaginationStore {
         this._selectedUsersPaginationStore.refresh();
       }
     );
+  }
+
+  get pagesCount() {
+    return this._selectedUsersPaginationStore.pagesCount;
+  }
+
+  get pageItems() {
+    return this._selectedUsersPaginationStore.pageItems;
+  }
+
+  get currentPage() {
+    return this._selectedUsersPaginationStore.currentPage;
+  }
+
+  get loadState() {
+    return this._selectedUsersPaginationStore.loadState;
+  }
+
+  get error() {
+    return this._selectedUsersPaginationStore.error;
+  }
+
+  setCurrentPage(page: number): void {
+    return this._selectedUsersPaginationStore.setCurrentPage(page);
+  }
+
+  refresh(): void {
+    return this._selectedUsersPaginationStore.refresh();
+  }
+
+  retry(): void {
+    return this._selectedUsersPaginationStore.retry();
   }
 
   private _setPreviousPage(previousPage?: number) {

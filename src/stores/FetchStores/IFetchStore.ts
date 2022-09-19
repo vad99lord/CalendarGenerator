@@ -9,10 +9,10 @@ export default interface IFetchStore<
   in out Params extends object | void, //make Params invariant though used as in only
   Response extends ApiResponse
 > {
-  response?: Response;
+  response: Response | undefined;
   loadState: LoadState;
-  data?: ApiSuccessData<Response>;
-  error?: ApiErrorData<Response>;
+  data: ApiSuccessData<Response> | undefined;
+  error: ApiErrorData<Response> | undefined;
   fetch(params: Params): void;
 }
 
