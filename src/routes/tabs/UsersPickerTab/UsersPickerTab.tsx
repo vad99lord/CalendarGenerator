@@ -1,12 +1,15 @@
 import BottomButton from "@components/BottomButton/BottomButton";
 import TourTooltip from "@components/TourTooltip/TourTooltip";
 import SelectableUser from "@components/User/SelectableUser";
+import { PopoutContext } from "@contexts/PopoutContext";
+import { useLateInitContext } from "@hooks/useLateInitContext";
 import useLocalCachedStore from "@hooks/useLocalCachedStore";
 import { useVkApiFetchStoreCallback } from "@hooks/useVkApiFetchStore";
 import { vkBridgeErrorToString } from "@network/vk/VkErrorLogger";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { LoadState } from "@stores/LoadState";
 import {
+  Alert,
   Button,
   Checkbox,
   Counter,
@@ -18,6 +21,7 @@ import {
   List,
   Pagination,
   PaginationProps,
+  ScreenSpinner,
   Search,
   SimpleCell,
   SizeType,
@@ -25,8 +29,9 @@ import {
   Switch,
   Title,
 } from "@vkontakte/vkui";
+import { reaction } from "mobx";
 import { observer, Observer } from "mobx-react-lite";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ScopeId, StoreId } from "../../types/navProps";
 import UsersPickerTabStore, {
   UsersPaginationParamsNames,
@@ -75,14 +80,18 @@ const UsersPickerTab = <
   console.log("UsersPickerTab render");
   //using callback to avoid recreation of store each mount
   const fetchStore = useVkApiFetchStoreCallback(pagingParamsName);
+  const selectAllFetchStore =
+    useVkApiFetchStoreCallback(pagingParamsName);
   const usersStore = useLocalCachedStore(
     scopeId,
     storeId,
     UsersPickerTabStore,
     checkedUsersStore,
     fetchStore,
+    selectAllFetchStore,
     pagingParamsName
   );
+  const popoutStore = useLateInitContext(PopoutContext);
   const userItems = usersStore.selectableUsers.map(
     ({ user, isSelectable }) => (
       <Observer key={user.id}>
@@ -152,6 +161,52 @@ const UsersPickerTab = <
       }
     }
   }, [boundaryCount, siblingCount, usersStore]);
+
+  const openSelectAllAlert = useCallback(() => {
+    popoutStore.setPopout(
+      <Alert
+        actions={[
+          {
+            title: "Выбрать",
+            mode: "default",
+            autoclose: true,
+            action: usersStore.onSelectAllUsers,
+          },
+          {
+            title: "Отмена",
+            autoclose: true,
+            mode: "cancel",
+          },
+        ]}
+        actionsLayout="vertical"
+        onClose={popoutStore.closePopout}
+        header="Выбрать всех пользователей?"
+        text="Будут выбрано первые 100 пользователей"
+      />
+    );
+  }, [popoutStore, usersStore]);
+
+  useEffect(() => {
+    return reaction(
+      () => usersStore.selectAllFetchState.loadState,
+      (selectAllLoadState) => {
+        switch (selectAllLoadState) {
+          case LoadState.Loading: {
+            popoutStore.setPopout(<ScreenSpinner state="loading" />);
+            break;
+          }
+          case LoadState.Error:
+          case LoadState.Success: {
+            popoutStore.closePopout();
+            break;
+          }
+          default: {
+          }
+        }
+      }
+    );
+  }, [popoutStore, usersStore]);
+
   return (
     <Group>
       <Observer>
@@ -186,16 +241,25 @@ const UsersPickerTab = <
         </Observer>
       </FormItem>
       {enableSelectAll && (
-        <Observer>
-          {() => (
-            <Checkbox
-              checked={usersStore.areAllUsersChecked}
-              onChange={usersStore.onSelectAllChanged}
-            >
-              Выбрать всех
-            </Checkbox>
-          )}
-        </Observer>
+        <Div>
+          <Observer>
+            {() => (
+              <Checkbox
+                checked={usersStore.areAllPageUsersChecked}
+                onChange={usersStore.onSelectAllPageChanged}
+              >
+                Выбрать всех на странице
+              </Checkbox>
+            )}
+          </Observer>
+          <Observer>
+            {() => (
+              <Button onClick={openSelectAllAlert}>
+                Выбрать всех
+              </Button>
+            )}
+          </Observer>
+        </Div>
       )}
       {selectableWithoutBirthday && (
         <SimpleCell

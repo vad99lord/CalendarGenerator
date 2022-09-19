@@ -16,3 +16,6 @@ export default interface IFetchStore<
   error?: ApiErrorData<Response>;
   fetch(params: Params): void;
 }
+
+export type IFetchStoreParams<Store extends IFetchStore<any, any>> =
+  Store extends IFetchStore<infer Params,any> ? Params : never;

@@ -1,6 +1,7 @@
 import userApiToUser from "@network/models/User/userApiToUser";
 import { isUserSelectable } from "@network/models/User/UserModel";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
+import { IFetchStoreParams } from "@stores/FetchStores/IFetchStore";
 import { IVkApiFetchStore } from "@stores/FetchStores/VkApiFetchStore/VkApiFetchStore";
 import { VkApiMethodParamsNames } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import { IPaginationStore } from "@stores/PaginationStore/IPaginationStore";
@@ -18,7 +19,14 @@ import {
   Disposable,
   UnionToIntersection,
 } from "@utils/types";
-import { action, computed, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  IReactionDisposer,
+  makeObservable,
+  observable,
+  reaction,
+} from "mobx";
 import { ChangeEvent } from "react";
 
 export type UsersPaginationParamsNames = Extract<
@@ -60,6 +68,13 @@ const USER_PAGINATION_CONFIG: Record<
   },
 };
 
+const SELECT_ALL_USERS_PARAMS: IFetchStoreParams<PaginationStoresUnion> =
+  {
+    count: 100,
+    offset: 0,
+    query: "",
+  };
+
 type UsersPaginationStore = IPaginationStore<
   PaginationItem<PaginationStoresUnion>,
   PaginationError<PaginationStoresUnion>
@@ -70,14 +85,17 @@ export default class UsersPickerTabStore<
 > implements Disposable
 {
   private readonly _usersFetchStore: IVkApiFetchStore<ParamsNames>;
+  private readonly _selectAllFetchStore: IVkApiFetchStore<ParamsNames>;
   private readonly _usersPaginationStore: UsersPaginationStore;
   private readonly _searchStore: ISearchStore;
   private readonly _checkedUsers: ICheckedUsersStore;
   private _ignoreSelectable = false;
+  private readonly _selectAllUsersReaction: IReactionDisposer;
 
   constructor(
     checkedUsers: ICheckedUsersStore,
     usersFetchStore: Callback<IVkApiFetchStore<ParamsNames>>,
+    selectAllUsersFetchStore: Callback<IVkApiFetchStore<ParamsNames>>,
     pagingParamsName: ParamsNames
   ) {
     this._searchStore = new SearchStore({
@@ -85,6 +103,8 @@ export default class UsersPickerTabStore<
     });
     this._checkedUsers = checkedUsers;
     this._usersFetchStore = usersFetchStore();
+
+    this._selectAllFetchStore = selectAllUsersFetchStore();
     this._usersPaginationStore = new PaginationStore(
       this._usersFetchStore as PaginationStoresUnion,
       createQueryParamsProvider(this._searchStore),
@@ -105,12 +125,37 @@ export default class UsersPickerTabStore<
         selectableUsers: computed.struct,
         enabledUsers: computed,
         disabledUsers: computed,
-        areAllUsersChecked: computed,
-        onSelectAllChanged: action.bound,
+        areAllPageUsersChecked: computed,
+        onSelectAllPageChanged: action.bound,
         error: computed,
         retry: action.bound,
+        onSelectAllUsers: action.bound,
+        selectAllFetchState: computed,
       }
     );
+    this._selectAllUsersReaction = reaction(
+      () => this._selectAllFetchStore.data,
+      (items) => {
+        console.log("_selectAllUsersReaction");
+        if (!items) return;
+        const users =
+          items.items?.map(userApiToUser).filter(isUserSelectable) ??
+          [];
+        this._checkedUsers.setCheckedMany(true, users);
+      }
+    );
+  }
+
+  onSelectAllUsers() {
+    console.log("onSelectAllUsers");
+    this._selectAllFetchStore.fetch(SELECT_ALL_USERS_PARAMS);
+  }
+
+  get selectAllFetchState(): Omit<
+    IVkApiFetchStore<ParamsNames>,
+    "fetch" | "data" | "response"
+  > {
+    return this._selectAllFetchStore;
   }
 
   get users() {
@@ -179,14 +224,14 @@ export default class UsersPickerTabStore<
       .map(({ user }) => user);
   }
 
-  get areAllUsersChecked() {
+  get areAllPageUsersChecked() {
     return this.enabledUsers.every(({ id }) =>
       this._checkedUsers.checked.get(id)
     );
   }
 
-  onSelectAllChanged() {
-    if (!this.areAllUsersChecked) {
+  onSelectAllPageChanged() {
+    if (!this.areAllPageUsersChecked) {
       this._checkedUsers.setCheckedMany(true, this.enabledUsers);
     } else {
       this._checkedUsers.setCheckedMany(false, this.enabledUsers);
@@ -198,5 +243,6 @@ export default class UsersPickerTabStore<
     this._searchStore.destroy();
     this._usersPaginationStore.destroy();
     this._usersFetchStore.destroy();
+    this._selectAllUsersReaction();
   }
 }
