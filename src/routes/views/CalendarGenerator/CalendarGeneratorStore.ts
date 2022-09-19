@@ -1,4 +1,7 @@
-import { BirthdaysCalendarRootNavigation } from "@routes/types/navigation/root";
+import {
+  BirthdaysCalendarRootNavigation,
+  INITIAL_USERS_PICKER_PANELS_STATE,
+} from "@routes/types/navigation/root";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { INonEmptyNavigationStackStore } from "@stores/NavigationStackStore/INavigationStackStore";
 import { Disposable } from "@utils/types";
@@ -22,18 +25,17 @@ export default class CalendarGeneratorStore implements Disposable {
 
   setChooseUsersPanel() {
     this._checkedUsersStore.clear();
-    this._navStackStore.next((prevState) =>
-      updateView(
-        {
-          ...prevState,
-          activeView: "users_picker",
-        },
-        "users_picker",
-        (viewState) => ({
-          ...viewState,
-          activePanel: "choose_users",
-        })
-      )
+    this._navStackStore.backUpTo((state) => {
+      return (
+        state.viewsState["users_picker"].activePanel ===
+        "choose_users"
+      );
+    });
+    this._navStackStore.replace((prevState) =>
+      updateView(prevState, "users_picker", (viewState) => ({
+        ...viewState,
+        panelsState: INITIAL_USERS_PICKER_PANELS_STATE,
+      }))
     );
   }
 

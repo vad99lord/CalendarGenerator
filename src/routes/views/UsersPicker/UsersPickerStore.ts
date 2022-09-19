@@ -48,7 +48,7 @@ export default class UsersPickerStore implements Disposable {
   }
 
   setGenerateCalendarPanel() {
-    this._navStackStore.next((prevState) =>
+    this._navStackStore.replace((prevState) =>
       updateView(
         {
           ...prevState,

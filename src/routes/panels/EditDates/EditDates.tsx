@@ -6,7 +6,7 @@ import { UserID } from "@network/models/User/BaseUserModel";
 import { UserModel } from "@network/models/User/UserModel";
 import { NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
-import { Group, List, Panel, PanelHeader } from "@vkontakte/vkui";
+import { Group, List, Panel, PanelHeader, PanelHeaderBack } from "@vkontakte/vkui";
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
 import { useEffect } from "react";
@@ -17,6 +17,7 @@ interface EditDatesProps extends NavElementId {
   onUserRemove: (userId: UserID) => void;
   onUserDateChange: (date: PickerDate, user: UserModel) => void;
   onNextClick: () => void;
+  onBackClick: () => void;
 }
 
 const EditDates = ({
@@ -25,6 +26,7 @@ const EditDates = ({
   onUserRemove,
   onUserDateChange,
   onNextClick,
+  onBackClick,
 }: EditDatesProps) => {
   const editDatesStore = useLocalStore(
     EditDatesStore,
@@ -51,7 +53,12 @@ const EditDates = ({
 
   return (
     <Panel id={panelId}>
-      <PanelHeader>Добавление недостающих дат</PanelHeader>
+      <PanelHeader
+        separator={false}
+        before={<PanelHeaderBack onClick={onBackClick} />}
+      >
+        Добавление недостающих дат
+      </PanelHeader>
       <Group>
         <List>{editDatesItems}</List>
       </Group>

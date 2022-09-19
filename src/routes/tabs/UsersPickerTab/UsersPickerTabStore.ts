@@ -159,7 +159,17 @@ export default class UsersPickerTabStore<
   }
 
   get users() {
-    return this._usersPaginationStore.pageItems.map(userApiToUser);
+    return this._usersPaginationStore.pageItems
+      .map(userApiToUser)
+      .map((user) => {
+        //retrieve users from checkedStore
+        //to restore possible set birthday
+        const checkedUser = this._checkedUsers.checked.get(user.id);
+        if (checkedUser) {
+          return checkedUser;
+        }
+        return user;
+      });
   }
 
   get loadState() {

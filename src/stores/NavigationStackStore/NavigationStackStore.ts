@@ -2,17 +2,20 @@ import { Disposable } from "@utils/types";
 import { peek } from "@utils/utils";
 import {
   action,
+  autorun,
   computed,
   IReactionDisposer,
   makeObservable,
   observable,
   override,
   reaction,
+  toJS,
 } from "mobx";
 import {
   INavigationStackStore,
   INonEmptyNavigationStackStore,
   ItemUpdate,
+  Matcher,
   Updater,
 } from "./INavigationStackStore";
 import NavigationStackError from "./NavigationStackError";
@@ -51,6 +54,9 @@ abstract class NavigationStackStore<Item> implements Disposable {
         );
       }
     );
+    autorun(() => {
+      console.log("NAVSTACK", toJS(this._navStack));
+    });
   }
 
   private static assertNullableCurrentEntry = <Item>(
@@ -134,6 +140,23 @@ abstract class NavigationStackStore<Item> implements Disposable {
     } else {
       this._navStack[this._navStack.length - 1] = item;
     }
+  }
+
+  backUpTo(matcher: Matcher<Item>) {
+    const shouldLeaveLastItem = this._stackMode === "NonEmpty";
+    const matchedItemInd = this._navStack.findIndex(matcher);
+    console.log("matchedItemInd", matchedItemInd);
+    if (matchedItemInd < 0) {
+      //shrink array without changing refs
+      if (shouldLeaveLastItem) {
+        this._navStack.length = 1;
+      } else {
+        this._navStack.length = 0;
+      }
+    } else {
+      this._navStack.length = matchedItemInd + 1;
+    }
+    console.log("_navStack.length",toJS(this._navStack));
   }
 
   destroy() {

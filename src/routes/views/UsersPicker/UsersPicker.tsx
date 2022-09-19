@@ -56,6 +56,7 @@ const UsersPicker = ({
         onUserRemove={checkedUsersStore.uncheck}
         onUserDateChange={usersPickerStore.onUserDateChange}
         onNextClick={usersPickerStore.setGenerateCalendarPanel}
+        onBackClick={navStackStore.back}
       />
       <SelectedUsers
         nav={BirthdaysCalendarPanels.SelectedUsers}

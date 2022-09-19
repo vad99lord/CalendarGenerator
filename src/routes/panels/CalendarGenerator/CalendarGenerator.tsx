@@ -3,6 +3,7 @@ import {
   Group,
   Headline,
   Panel,
+  PanelHeader,
   Spinner,
   Title,
 } from "@vkontakte/vkui";
@@ -94,7 +95,12 @@ const CalendarGenerator = ({
     }
   }, [calendarStore, onNextClick]);
 
-  return <Panel id={panelId}>{getContent()}</Panel>;
+  return (
+    <Panel id={panelId}>
+      <PanelHeader separator={true}>Создание календаря</PanelHeader>
+      {getContent()}
+    </Panel>
+  );
 };
 
 export default observer(CalendarGenerator);
