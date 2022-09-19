@@ -1,6 +1,7 @@
 import { ApiResponse } from "@network/types/ApiResponse";
 import IFetchStore from "@stores/FetchStores/IFetchStore";
 import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
+import { Disposable } from "@utils/types";
 import {
   action,
   autorun,
@@ -74,7 +75,7 @@ export default class PaginationStore<
   Item extends PaginationItem<FetchStore>,
   OuterFetchParams extends PaginationOuterFetchParams<FetchStore>,
   ErrorData extends PaginationError<FetchStore>
-> implements IPaginationStore<Item, ErrorData>
+> implements IPaginationStore<Item, ErrorData>, Disposable
 {
   private readonly _fetchStore: IPaginationFetchStore<
     PaginationOwnFetchParams & OuterFetchParams,

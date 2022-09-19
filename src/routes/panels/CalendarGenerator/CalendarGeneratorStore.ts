@@ -18,7 +18,7 @@ import {
 } from "mobx";
 
 export default class CalendarGeneratorStore implements Disposable {
-  private readonly _fetchStore: IAxiosFetchStore<"GenerateCalendar">;
+  private readonly _fetchStore: IAxiosFetchStore<"GenerateCalendar"> & Disposable;
   private static readonly CALENDAR_FILENAME = "birthdays";
   private readonly _saveCalendarReaction: IReactionDisposer;
   private readonly _checkedUsersStore: ICheckedUsersStore;

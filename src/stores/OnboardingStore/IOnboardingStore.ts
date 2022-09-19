@@ -1,5 +1,3 @@
-import { Disposable } from "@utils/types";
-
-export default interface IOnboardingStore extends Disposable {
+export default interface IOnboardingStore {
   startTooltipTour(): void;
 }

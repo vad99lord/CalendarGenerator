@@ -14,7 +14,7 @@ export const SELECTED_USERS_PAGINATION_CONFIG = {
 
 export default class SelectedUsersStore implements Disposable {
   private readonly _checkedUsers: ICheckedUsersStore;
-  private readonly _searchStore: ISearchStore;
+  private readonly _searchStore: ISearchStore & Disposable;
   private readonly _selectedUsersPaginationStore: SelectedUsersPaginationStore;
 
   constructor(checkedUsers: ICheckedUsersStore) {

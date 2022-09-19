@@ -1,3 +1,4 @@
+import { Disposable } from "@utils/types";
 import debounce from "lodash.debounce";
 import {
   action,
@@ -15,7 +16,7 @@ type InitialState = {
   waitTime?: number;
 };
 
-export default class SearchStore implements ISearchStore {
+export default class SearchStore implements ISearchStore, Disposable {
   private _searchText!: string;
   private _debouncedSearchText!: string;
   private readonly _debouncedSearchTextReaction: IReactionDisposer;

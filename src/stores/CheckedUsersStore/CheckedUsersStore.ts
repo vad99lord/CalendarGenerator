@@ -1,9 +1,12 @@
 import { UserID } from "@network/models/User/BaseUserModel";
 import { UserModel } from "@network/models/User/UserModel";
+import { Disposable } from "@utils/types";
 import { action, computed, makeObservable, observable } from "mobx";
 import ICheckedUsersStore from "./ICheckedUsersStore";
 
-export default class CheckedUsersStore implements ICheckedUsersStore {
+export default class CheckedUsersStore
+  implements ICheckedUsersStore, Disposable
+{
   private readonly _checked = new Map<UserID, UserModel>();
 
   constructor() {

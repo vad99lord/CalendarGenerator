@@ -1,8 +1,7 @@
 import { UserID } from "@network/models/User/BaseUserModel";
 import { UserModel } from "@network/models/User/UserModel";
-import { Disposable } from "@utils/types";
 
-export default interface ICheckedUsersStore extends Disposable {
+export default interface ICheckedUsersStore {
   checked: ReadonlyMap<UserID, UserModel>;
   checkedCount: number;
   uncheck(id: UserID): void;

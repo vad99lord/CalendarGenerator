@@ -1,3 +1,4 @@
+import { Disposable } from "@utils/types";
 import { noOp } from "@utils/utils";
 import {
   action,
@@ -27,7 +28,9 @@ type TooltipTourStepState =
       state: TooltipTourState.ACTIVE;
     };
 
-export default class TooltipTourStore implements ITooltipTourStore {
+export default class TooltipTourStore
+  implements ITooltipTourStore, Disposable
+{
   private _tourStepState: TooltipTourStepState = {
     state: TooltipTourState.INITIAL,
   };
@@ -46,7 +49,7 @@ export default class TooltipTourStore implements ITooltipTourStore {
       stop: action.bound,
     });
     autorun(() => {
-      console.log("_tourStepState",toJS(this._tourStepState));
+      console.log("_tourStepState", toJS(this._tourStepState));
     });
   }
 

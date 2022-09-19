@@ -10,7 +10,7 @@ import {
 } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import { IAuthStore } from "@stores/types/IAuthStore";
 import { IConfigStore } from "@stores/types/IConfigStore";
-import { Callback } from "@utils/types";
+import { Callback, Disposable } from "@utils/types";
 import { useCallback } from "react";
 import { useLateInitContext } from "./useLateInitContext";
 import { useLocalStoreCreator } from "./useLocalStore";
@@ -50,11 +50,12 @@ export const useVkApiFetchStoreCallback = <
 ) => {
   const authStore = useLateInitContext(AuthContext);
   const configStore = useLateInitContext(ConfigContext);
-  const fetchStoreCallback: Callback<IVkApiFetchStore<ParamsName>> =
-    useCallback(
-      () => createVkApiFetchStore(name, authStore, configStore),
-      [authStore, configStore, name]
-    );
+  const fetchStoreCallback: Callback<
+    IVkApiFetchStore<ParamsName> & Disposable
+  > = useCallback(
+    () => createVkApiFetchStore(name, authStore, configStore),
+    [authStore, configStore, name]
+  );
 
   return fetchStoreCallback;
 };

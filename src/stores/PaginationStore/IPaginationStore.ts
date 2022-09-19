@@ -1,8 +1,6 @@
 import { LoadState } from "@stores/LoadState";
-import { Disposable } from "@utils/types";
 
-export interface IPaginationStore<Item, ErrorData>
-  extends Disposable {
+export interface IPaginationStore<Item, ErrorData> {
   pagesCount: number;
   pageItems: Item[];
   currentPage: number;

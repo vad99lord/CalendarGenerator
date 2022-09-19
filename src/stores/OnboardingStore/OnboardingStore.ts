@@ -1,5 +1,6 @@
 import ITooltipTourStore from "@stores/TooltipTourStore/ITooltipTourStore";
 import VkStorageStore from "@stores/VkStorageStore/VkStorageStore";
+import { Disposable } from "@utils/types";
 import {
   action,
   IReactionDisposer,
@@ -8,7 +9,9 @@ import {
 } from "mobx";
 import IOnboardingStore from "./IOnboardingStore";
 
-export default class OnboardingStore implements IOnboardingStore {
+export default class OnboardingStore
+  implements IOnboardingStore, Disposable
+{
   private readonly _tooltipTourFinishedReaction: IReactionDisposer;
   private readonly _tooltipTourStore: ITooltipTourStore;
 

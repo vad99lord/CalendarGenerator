@@ -4,7 +4,7 @@ import emptyDepsProvider from "@stores/FetchStores/FetchDepsProvider/EmptyFetchD
 import VkBridgeFetchStore from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
 import VkBridgeParamsProvider from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
 import { IConfigStore } from "@stores/types/IConfigStore";
-import { ChildrenProps } from "@utils/types";
+import { ChildrenProps, Disposable } from "@utils/types";
 import { useCallback, useEffect } from "react";
 
 export const ConfigContext = createLateInitContext<IConfigStore>();
@@ -20,7 +20,7 @@ const configParams: VkBridgeParamsProvider<"VKWebAppGetLaunchParams"> =
 
 export const ConfigProvider = ({ children }: ConfigProviderProps) => {
   const configStoreCreator = useCallback(() => {
-    const store: IConfigStore = new VkBridgeFetchStore(
+    const store: IConfigStore & Disposable = new VkBridgeFetchStore(
       emptyDepsProvider,
       configParams
     );

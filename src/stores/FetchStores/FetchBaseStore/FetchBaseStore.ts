@@ -3,6 +3,7 @@ import {
   ApiResponse,
   ApiSuccessData,
 } from "@network/types/ApiResponse";
+import { Disposable } from "@utils/types";
 import { isObject } from "@utils/utils";
 import {
   action,
@@ -30,7 +31,7 @@ export default abstract class FetchBaseStore<
   OwnFetchParams extends object | void,
   DepsFetchParams extends object | void,
   Response extends ApiResponse
-> implements IFetchStore<OwnFetchParams, Response>
+> implements IFetchStore<OwnFetchParams, Response>, Disposable
 {
   response?: Response = undefined;
   private _loadState: InternalLoadState = LoadState.Initial;

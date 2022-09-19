@@ -7,7 +7,7 @@ import FetchDepsProvider from "@stores/FetchStores/FetchDepsProvider/FetchDepsPr
 import VkBridgeFetchStore from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeFetchStore";
 import VkBridgeParamsProvider from "@stores/FetchStores/VkBridgeFetchStore/VkBridgeParamsProvider/VkBridgeParamsProvider";
 import { IAuthStore } from "@stores/types/IAuthStore";
-import { ChildrenProps } from "@utils/types";
+import { ChildrenProps, Disposable } from "@utils/types";
 import { useCallback } from "react";
 import { ConfigContext } from "./ConfigContext";
 
@@ -42,16 +42,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         };
       },
     };
-    const store: IAuthStore = new VkBridgeFetchStore(
+    const store: IAuthStore & Disposable = new VkBridgeFetchStore(
       authDeps,
       authParams
     );
     return store;
   }, [launchParamsStore]);
   const authStore = useLocalStoreCreator(authStoreCreator);
-  // useEffect(() => {
-  //   authStore.fetch();
-  // }, [authStore]);
   return (
     <AuthContext.Provider value={authStore}>
       {children}

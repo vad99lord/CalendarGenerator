@@ -84,18 +84,25 @@ export default class UsersPickerTabStore<
   ParamsNames extends UsersPaginationParamsNames
 > implements Disposable
 {
-  private readonly _usersFetchStore: IVkApiFetchStore<ParamsNames>;
-  private readonly _selectAllFetchStore: IVkApiFetchStore<ParamsNames>;
-  private readonly _usersPaginationStore: UsersPaginationStore;
-  private readonly _searchStore: ISearchStore;
+  private readonly _usersFetchStore: IVkApiFetchStore<ParamsNames> &
+    Disposable;
+  private readonly _selectAllFetchStore: IVkApiFetchStore<ParamsNames> &
+    Disposable;
+  private readonly _usersPaginationStore: UsersPaginationStore &
+    Disposable;
+  private readonly _searchStore: ISearchStore & Disposable;
   private readonly _checkedUsers: ICheckedUsersStore;
   private _ignoreSelectable = false;
   private readonly _selectAllUsersReaction: IReactionDisposer;
 
   constructor(
     checkedUsers: ICheckedUsersStore,
-    usersFetchStore: Callback<IVkApiFetchStore<ParamsNames>>,
-    selectAllUsersFetchStore: Callback<IVkApiFetchStore<ParamsNames>>,
+    usersFetchStore: Callback<
+      IVkApiFetchStore<ParamsNames> & Disposable
+    >,
+    selectAllUsersFetchStore: Callback<
+      IVkApiFetchStore<ParamsNames> & Disposable
+    >,
     pagingParamsName: ParamsNames
   ) {
     this._searchStore = new SearchStore({
@@ -253,6 +260,7 @@ export default class UsersPickerTabStore<
     this._searchStore.destroy();
     this._usersPaginationStore.destroy();
     this._usersFetchStore.destroy();
+    this._selectAllFetchStore.destroy();
     this._selectAllUsersReaction();
   }
 }

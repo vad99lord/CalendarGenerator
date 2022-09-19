@@ -1,7 +1,8 @@
+import { Disposable } from "@utils/types";
 import { action, computed, makeObservable, observable } from "mobx";
 import IPopoutStore, { PopoutContent } from "./IPopoutStore";
 
-export default class PopoutStore implements IPopoutStore {
+export default class PopoutStore implements IPopoutStore, Disposable {
   private _popout: PopoutContent;
 
   constructor() {
