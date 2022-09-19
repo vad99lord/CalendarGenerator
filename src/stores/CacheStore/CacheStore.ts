@@ -1,9 +1,11 @@
 import { Disposable } from "@utils/types";
-import Scope from "./Scope";
+import ICacheStore from "./ICacheStore";
+import IScope from "./Scope/IScope";
+import Scope from "./Scope/Scope";
 
-type CacheData = Map<symbol, Scope>;
+type CacheData = Map<symbol, IScope & Disposable>;
 
-export default class CacheStore {
+export default class CacheStore implements ICacheStore, Disposable {
   private static readonly TAG = "CacheStore";
   private readonly _cache: CacheData = new Map();
 

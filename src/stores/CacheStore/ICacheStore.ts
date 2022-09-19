@@ -1,13 +1,13 @@
 import { Disposable } from "@utils/types";
+import IScope from "./Scope/IScope";
 
-//TODO add proper interface
-export default interface ICacheStore extends Disposable {
-  cache<V>(id: symbol, data: V): void;
-  delete(id: symbol): void;
-  /**
-   * Non-observable cache getter for current cache state
-   * @param id symbol cache id
-   * @returns undefined or casted data
-   */
-  cached<V>(id: symbol): V | undefined;
+export default interface ICacheStore {
+  createScope(scopeId: symbol): IScope;
+  destroyScope(scopeId: symbol): void;
+  cache(scopeId: symbol, dataId: symbol, data: Disposable): void;
+  delete(scopeId: symbol, dataId: symbol): void;
+  cached<V extends Disposable>(
+    scopeId: symbol,
+    dataId: symbol
+  ): V | undefined;
 }

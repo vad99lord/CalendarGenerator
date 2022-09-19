@@ -1,8 +1,9 @@
 import { Disposable } from "@utils/types";
+import IScope from "./IScope";
 
 type ScopeData = Map<symbol, Disposable>;
 
-export default class Scope implements Disposable {
+export default class Scope implements IScope, Disposable {
   private readonly _data: ScopeData;
   private readonly _id: symbol;
 
