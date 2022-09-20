@@ -2,7 +2,10 @@ import RemovableUser from "@components/User/RemovableUser";
 import useLocalStore from "@hooks/useLocalStore";
 import { UserID } from "@network/models/User/BaseUserModel";
 import { PaginationConfig } from "@routes/tabs/UsersPickerTab/UsersPickerTab";
-import { NavActionsProps, NavElementId } from "@routes/types/navProps";
+import {
+  NavActionsProps,
+  NavElementId,
+} from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { LoadState } from "@stores/FetchStores/LoadState";
 import {
@@ -19,7 +22,7 @@ import {
   Search,
   Spinner,
   Text,
-  Title
+  Title,
 } from "@vkontakte/vkui";
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
@@ -76,9 +79,9 @@ const SelectedUsers = ({
           <Div>
             <Title level="3">Произошла ошибка(</Title>
             <Headline level="2">{selectedUsersStore.error}</Headline>
-            {/* <Button onClick={selectedUsersStore.refresh}>
+            <Button onClick={selectedUsersStore.retry}>
               Попробовать еще раз
-            </Button> */}
+            </Button>
           </Div>
         );
       }
@@ -154,11 +157,6 @@ const SelectedUsers = ({
             Очистить все
           </Button>
         </Div>
-        {/* {selectedUsersStore.filteredSelectedUsers.length ? (
-          <List>{selectedUsersItems}</List>
-        ) : (
-          <Footer>Ничего не выбрано</Footer>
-        )} */}
         {getContent()}
         {getPagination()}
       </Group>

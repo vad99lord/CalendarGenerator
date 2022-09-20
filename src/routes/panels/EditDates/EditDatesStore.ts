@@ -16,8 +16,11 @@ export default class EditDatesStore implements Disposable {
       {
         initialUsersWithoutBirthday: observable,
         _setInitialUsersWithoutBirthday: action.bound,
+        currentUsers: computed,
+        currentUsersWithBirthday: computed,
         currentUsersWithoutBirthday: computed,
         allDatesProvided: computed,
+        onRemoveAllCurrentUsers: action.bound,
       }
     );
     this._setInitialUsersWithoutBirthday();
@@ -30,7 +33,7 @@ export default class EditDatesStore implements Disposable {
     );
   }
 
-  get currentUsersWithoutBirthday() {
+  get currentUsers() {
     return this.initialUsersWithoutBirthday
       .map((user) => {
         return this._checkedUsersStore.checked.get(user.id);
@@ -38,9 +41,24 @@ export default class EditDatesStore implements Disposable {
       .filter(Boolean) as UserModel[];
   }
 
+  get currentUsersWithoutBirthday() {
+    return this.currentUsers.filter(
+      (user) => !Boolean(user.birthday)
+    );
+  }
+
+  get currentUsersWithBirthday() {
+    return this.currentUsers.filter((user) => Boolean(user.birthday));
+  }
+
+  onRemoveAllCurrentUsers() {
+    this._checkedUsersStore.setCheckedMany(false, this.currentUsers);
+  }
+
   get allDatesProvided() {
-    return this.currentUsersWithoutBirthday.every((user) =>
-      Boolean(user.birthday)
+    return (
+      this.currentUsersWithBirthday.length ===
+      this.currentUsers.length
     );
   }
 

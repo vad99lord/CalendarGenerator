@@ -4,14 +4,20 @@ import UserEditBirthday from "@components/User/UserEditBirthday";
 import useLocalStore from "@hooks/useLocalStore";
 import { UserID } from "@network/models/User/BaseUserModel";
 import { UserModel } from "@network/models/User/UserModel";
-import { NavActionsProps, NavElementId } from "@routes/types/navProps";
+import {
+  NavActionsProps,
+  NavElementId,
+} from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import {
+  Button,
+  Div,
   Group,
   List,
   Panel,
   PanelHeader,
-  PanelHeaderBack
+  PanelHeaderBack,
+  Text,
 } from "@vkontakte/vkui";
 import { when } from "mobx";
 import { Observer, observer } from "mobx-react-lite";
@@ -38,19 +44,18 @@ const EditDates = ({
   );
   console.log("EditDates render");
 
-  const editDatesItems =
-    editDatesStore.currentUsersWithoutBirthday.map((user) => (
-      <UserEditBirthday
-        key={user.id}
-        user={user}
-        onDateChange={onUserDateChange}
-        onRemoveUser={onUserRemove}
-      />
-    ));
+  const editDatesItems = editDatesStore.currentUsers.map((user) => (
+    <UserEditBirthday
+      key={user.id}
+      user={user}
+      onDateChange={onUserDateChange}
+      onRemoveUser={onUserRemove}
+    />
+  ));
 
   useEffect(() => {
     return when(
-      () => editDatesStore.currentUsersWithoutBirthday.length === 0,
+      () => editDatesStore.currentUsers.length === 0,
       () => onNextClick()
     );
   }, [editDatesStore, onNextClick]);
@@ -63,6 +68,24 @@ const EditDates = ({
       >
         Добавление недостающих дат
       </PanelHeader>
+      <Div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text>
+          Пользователей без дней рождения:{" "}
+          {editDatesStore.currentUsersWithoutBirthday.length}
+        </Text>
+        <Button
+          size="m"
+          appearance="negative"
+          onClick={editDatesStore.onRemoveAllCurrentUsers}
+        >
+          Очистить все
+        </Button>
+      </Div>
       <Group>
         <List>{editDatesItems}</List>
       </Group>

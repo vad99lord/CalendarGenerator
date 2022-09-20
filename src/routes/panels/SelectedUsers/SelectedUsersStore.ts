@@ -38,6 +38,7 @@ export default class SelectedUsersStore implements Disposable {
       onSearchTextChange: action.bound,
       error: computed,
       currentPage: computed,
+      retry: action.bound,
     });
   }
 
@@ -51,6 +52,10 @@ export default class SelectedUsersStore implements Disposable {
 
   get error() {
     return this._selectedUsersPaginationStore.error;
+  }
+
+  retry() {
+    this._selectedUsersPaginationStore.retry();
   }
 
   setCurrentPage(page: number) {
