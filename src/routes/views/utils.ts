@@ -1,9 +1,9 @@
-import { Updater } from "@hooks/useNavigationStack";
 import { BirthdaysCalendarRootNavigation } from "@routes/types/navigation/root";
 import {
   BirthdaysCalendarViewsIds,
   BirthdaysCalendarViewsNavState,
 } from "@routes/types/navigation/views";
+import { Updater } from "@stores/NavigationStackStore/INavigationStackStore";
 import { deepCloneJson } from "@utils/utils";
 
 export const updateView = <ViewId extends BirthdaysCalendarViewsIds>(
