@@ -11,7 +11,7 @@ import {
 
 import useLocalStore from "@hooks/useLocalStore";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
-import { LoadState } from "@stores/LoadState";
+import { LoadState } from "@stores/FetchStores/LoadState";
 import { Icon56CalendarOutline } from "@vkontakte/icons";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";

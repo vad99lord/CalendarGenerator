@@ -12,7 +12,7 @@ import { AuthContext } from "@contexts/AuthContext";
 import { useLateInitContext } from "@hooks/useLateInitContext";
 import useLocalStore from "@hooks/useLocalStore";
 import { vkBridgeErrorToString } from "@network/vk/VkErrorLogger";
-import { LoadState } from "@stores/LoadState";
+import { LoadState } from "@stores/FetchStores/LoadState";
 import { when } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect } from "react";

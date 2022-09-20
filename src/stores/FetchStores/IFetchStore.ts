@@ -3,7 +3,7 @@ import {
   ApiResponse,
   ApiSuccessData,
 } from "@network/types/ApiResponse";
-import { LoadState } from "../LoadState";
+import { LoadState } from "./LoadState";
 
 export default interface IFetchStore<
   in out Params extends object | void, //make Params invariant though used as in only

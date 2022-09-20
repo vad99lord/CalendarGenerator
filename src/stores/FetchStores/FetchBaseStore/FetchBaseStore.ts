@@ -14,7 +14,7 @@ import {
   reaction,
   runInAction,
 } from "mobx";
-import { LoadState, StartState } from "../../LoadState";
+import { LoadState, StartState } from "../LoadState";
 import FetchDepsProvider from "../FetchDepsProvider/FetchDepsProvider";
 import IFetchStore from "../IFetchStore";
 

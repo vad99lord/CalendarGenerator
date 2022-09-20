@@ -56,6 +56,8 @@ export type VkApiParamsProviderMap = {
   >;
 };
 
+const USERS_QUERY_FIELDS = "bdate,photo_100,photo_200,photo_max";
+
 export const VK_API_PARAMS_PROVIDER_MAP: VkApiParamsProviderMap = {
   SearchFriendsByQuery: {
     method: "friends.search",
@@ -65,8 +67,7 @@ export const VK_API_PARAMS_PROVIDER_MAP: VkApiParamsProviderMap = {
         q: query,
         count: 20,
         offset: 0,
-        //TODO extract to typed const somehow
-        fields: "bdate,photo_100,photo_200,photo_max",
+        fields: USERS_QUERY_FIELDS,
       };
     },
   },
@@ -77,8 +78,7 @@ export const VK_API_PARAMS_PROVIDER_MAP: VkApiParamsProviderMap = {
         q: query,
         count: 20,
         offset: 0,
-        //TODO extract to typed const somehow
-        fields: "bdate,photo_100,photo_200,photo_max",
+        fields: USERS_QUERY_FIELDS,
       };
     },
   },
@@ -90,8 +90,7 @@ export const VK_API_PARAMS_PROVIDER_MAP: VkApiParamsProviderMap = {
         q: query,
         count: count,
         offset: offset,
-        //TODO extract to typed const somehow
-        fields: "bdate,photo_100,photo_200,photo_max",
+        fields: USERS_QUERY_FIELDS,
       };
     },
   },
@@ -103,8 +102,7 @@ export const VK_API_PARAMS_PROVIDER_MAP: VkApiParamsProviderMap = {
         q: query,
         count: count,
         offset: offset,
-        //TODO extract to typed const somehow
-        fields: "bdate,photo_100,photo_200,photo_max",
+        fields: USERS_QUERY_FIELDS,
       };
     },
   },

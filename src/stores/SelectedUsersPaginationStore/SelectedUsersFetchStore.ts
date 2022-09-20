@@ -2,7 +2,7 @@ import { UserModel } from "@network/models/User/UserModel";
 import { ApiSuccess } from "@network/types/ApiResponse";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
 import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
-import { LoadState } from "@stores/LoadState";
+import { LoadState } from "@stores/FetchStores/LoadState";
 import {
   IPaginationFetchStore,
   PaginationFetchResponse,

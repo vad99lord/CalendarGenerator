@@ -4,7 +4,7 @@ import { UserID } from "@network/models/User/BaseUserModel";
 import { PaginationConfig } from "@routes/tabs/UsersPickerTab/UsersPickerTab";
 import { NavActionsProps, NavElementId } from "@routes/types/navProps";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
-import { LoadState } from "@stores/LoadState";
+import { LoadState } from "@stores/FetchStores/LoadState";
 import {
   Button,
   Div,

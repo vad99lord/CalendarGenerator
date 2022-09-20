@@ -7,7 +7,7 @@ import useLocalCachedStore from "@hooks/useLocalCachedStore";
 import { useVkApiFetchStoreCallback } from "@hooks/useVkApiFetchStore";
 import { vkBridgeErrorToString } from "@network/vk/VkErrorLogger";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
-import { LoadState } from "@stores/LoadState";
+import { LoadState } from "@stores/FetchStores/LoadState";
 import {
   Alert,
   Button,

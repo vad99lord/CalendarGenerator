@@ -1,4 +1,4 @@
-import { LoadState } from "@stores/LoadState";
+import { LoadState } from "@stores/FetchStores/LoadState";
 
 export interface IPaginationStore<Item, ErrorData> {
   pagesCount: number;
