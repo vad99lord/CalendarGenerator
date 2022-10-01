@@ -10,8 +10,8 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "isolatedModules": true,
-    "noEmit": true,
+    "outDir": "build"
   },
-  "include": ["./*.ts"],
+  "include": ["**/*.ts"],
   "extends": "../tsconfig.paths.json",
 }

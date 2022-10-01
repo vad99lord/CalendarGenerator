@@ -2,7 +2,7 @@ import { CalendarUserApiRequest } from "@shared/models/CalendarUser";
 import { ApiResponse } from "../types/ApiResponse";
 import { AxiosFetchError } from "./fetchAxios";
 
-const BASE_URL = "api";
+const BASE_URL = "/.netlify/functions/server/api";
 
 const endpointUrl = (endpoint: string): string =>
   `${BASE_URL}/${endpoint}`;

@@ -24,3 +24,5 @@ yarn-error.log*
 
 /.VSCodeCounter
 /.vscode
+# Local Netlify folder
+.netlify

@@ -8,15 +8,15 @@ import {
 } from "@shared/utils/utils";
 import express, { Response } from "express";
 import { check, validationResult } from "express-validator";
-import { createBirthdayCalendar } from "./calendar-generator";
-import { RequestTypedBody } from "./types";
+import serverless from "serverless-http";
+import { createBirthdayCalendar } from "./generator/calendar-generator";
+import { RequestTypedBody } from "./types/types";
 
 const app = express();
-const port = 3000;
 
-app.use(express.json());
+const router = express.Router();
 
-app.post(
+router.post(
   "/api/calendar",
   check("birthdays").isArray(),
   check("birthdays.*.name").isString().notEmpty(),
@@ -63,6 +63,9 @@ app.post(
   }
 );
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+
+app.use(express.json());
+app.use('/.netlify/functions/server', router);  // path must route to lambda
+
+module.exports = app;
+module.exports.handler = serverless(app);
