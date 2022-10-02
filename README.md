@@ -1,7 +1,5 @@
 # VK mini apps birthday calendar generator app
 
-![alt text](imgs/product_screen.png)
-
 React app within VK ecosystem in an embedded app format for mobile and desktop version of the main website. 
 
 ## Main features:
@@ -20,3 +18,7 @@ React app within VK ecosystem in an embedded app format for mobile and desktop v
 ### Deploy: 
 
 Deployed with Netlify, available at [VK](https://vk.com/app51426746) (registration needed)
+
+### Screens:
+
+![alt text](imgs/product_screen.png)
