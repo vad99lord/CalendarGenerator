@@ -1,5 +1,7 @@
 # VK mini apps birthday calendar generator app
 
+![alt text](imgs/product_screen.png)
+
 React app within VK ecosystem in an embedded app format for mobile and desktop version of the main website. 
 
 ## Main features:
