@@ -143,7 +143,6 @@ export default class UsersPickerTabStore<
     this._selectAllUsersReaction = reaction(
       () => this._selectAllFetchStore.data,
       (items) => {
-        console.log("_selectAllUsersReaction");
         if (!items) return;
         const users =
           items.items?.map(userApiToUser).filter(isUserSelectable) ??
@@ -154,7 +153,6 @@ export default class UsersPickerTabStore<
   }
 
   onSelectAllUsers() {
-    console.log("onSelectAllUsers");
     this._selectAllFetchStore.fetch(SELECT_ALL_USERS_PARAMS);
   }
 
@@ -256,7 +254,6 @@ export default class UsersPickerTabStore<
   }
 
   destroy() {
-    console.log("PICKER DESTROY");
     this._searchStore.destroy();
     this._usersPaginationStore.destroy();
     this._usersFetchStore.destroy();

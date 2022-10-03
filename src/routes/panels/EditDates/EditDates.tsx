@@ -42,7 +42,6 @@ const EditDates = ({
     EditDatesStore,
     checkedUsersStore
   );
-  console.log("EditDates render");
 
   const editDatesItems = editDatesStore.currentUsers.map((user) => (
     <UserEditBirthday

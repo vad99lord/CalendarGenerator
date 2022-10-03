@@ -50,8 +50,6 @@ const ChooseUsers = ({
     },
     [onTabChange]
   );
-  console.log("ChooseUsers RENDER");
-  console.log({ panelId, selectedTab });
   const tabContent = getTabContent(selectedTab, props);
 
   return (

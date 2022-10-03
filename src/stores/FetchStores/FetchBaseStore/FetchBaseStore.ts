@@ -26,7 +26,6 @@ type FetchDepsInternal<Deps> = {
   fetchDeps: Deps;
 };
 
-const log = console.log;
 export default abstract class FetchBaseStore<
   OwnFetchParams extends object | void,
   DepsFetchParams extends object | void,
@@ -111,7 +110,6 @@ export default abstract class FetchBaseStore<
   }: FetchDepsInternal<DepsFetchParams>):
     | FetchParams<OwnFetchParams, Required<DepsFetchParams>>
     | undefined {
-    log("checkFetchDeps", { loadState, fetchDeps, id: this.id });
     if (loadState !== StartState.Start) return undefined;
     // params are undefined if unset, null if empty, object if provided
     if (this._params === undefined) return undefined;

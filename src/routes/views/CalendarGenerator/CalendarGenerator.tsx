@@ -18,7 +18,6 @@ const CalendarGenerator = ({
   checkedUsersStore,
   navStackStore,
 }: CalendarGeneratorProps) => {
-  console.log("CalendarGenerator RENDER");
   const {
     currentEntry: {
       viewsState: { calendar_generator: calendarGeneratorPanels },

@@ -4,13 +4,11 @@ import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParam
 import { Disposable } from "@utils/types";
 import {
   action,
-  autorun,
   computed,
   IReactionDisposer,
   makeObservable,
   observable,
   reaction,
-  toJS,
 } from "mobx";
 import { IPaginationStore } from "./IPaginationStore";
 import { PaginationOuterFetchParamsProvider } from "./PaginationOuterFetchParams";
@@ -144,7 +142,6 @@ export default class PaginationStore<
     this._fetchNewPagesReaction = reaction(
       () => this._currentPageLoaded,
       (currentPageLoaded) => {
-        console.log("_fetchNewPagesReaction", currentPageLoaded);
         if (!currentPageLoaded) {
           this._load();
         }
@@ -152,19 +149,13 @@ export default class PaginationStore<
     );
     this._loadedPagesReaction = reaction(
       () => this._currentLoad,
-      (currentLoad) => {
-        console.log(
-          "_loadedPagesReaction",
-          toJS(currentLoad),
-          toJS(this._pagesInLoad)
-        );
+      () => {
         this._setLoadedPages();
       }
     );
     this._fetchParamsLoadReaction = reaction(
       () => fetchParamsProvider.getOuterFetchParams(),
       (fetchParams) => {
-        console.log("fetchParamsReaction", fetchParams);
         this._setFetchParams(fetchParams);
         this._initialLoad();
       },
@@ -172,25 +163,6 @@ export default class PaginationStore<
         fireImmediately: true,
       }
     );
-    autorun(() => {
-      const state = {
-        initialLoadSize: toJS(this._initialLoadSize),
-        loadSize: toJS(this._loadSize),
-        itemsPerPage: toJS(this._itemsPerPage),
-        pagesCount: toJS(this.pagesCount),
-        offset: toJS(this._offset),
-        currentLoad: toJS(this._currentLoad),
-        pagesInLoad: toJS(this._pagesInLoad),
-        currentPageInLoad: toJS(this._currentPageInLoad),
-        offsetInLoad: toJS(this._offsetInLoad),
-        pageItems: toJS(this.pageItems),
-        currentPage: toJS(this.currentPage),
-        loadState: toJS(this.loadState),
-        loadedPages: toJS(this._loadedPages),
-        currentLoadPage: toJS(this._currentLoadPage),
-      };
-      console.log(state);
-    });
   }
 
   private _validateConfig(config: Required<PaginationConfig>) {
@@ -310,11 +282,6 @@ export default class PaginationStore<
   }
 
   private get _currentPageInLoad() {
-    console.log(
-      "_currentPageInLoad",
-      toJS(this._currentPage),
-      toJS(this._loadedPages)
-    );
     //currentPage is out of loaded pages range => undefined
     if (!this._currentPageLoaded) return undefined;
     return Math.max(
@@ -331,15 +298,9 @@ export default class PaginationStore<
   }
 
   get pageItems() {
-    console.log(
-      "pageItems",
-      toJS(this._offsetInLoad),
-      toJS(this._currentLoad)
-    );
     if (!this._currentPageLoaded) return [];
     if (this._offsetInLoad === undefined || !this._currentLoad)
       return [];
-    console.log("NEW pageItems");
     return this._currentLoad.items.slice(
       this._offsetInLoad,
       this._offsetInLoad + this._itemsPerPage

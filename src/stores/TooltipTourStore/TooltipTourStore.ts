@@ -2,12 +2,10 @@ import { Disposable } from "@utils/types";
 import { noOp } from "@utils/utils";
 import {
   action,
-  autorun,
   comparer,
   computed,
   makeObservable,
   observable,
-  toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
 import ITooltipTourStore from "./ITooltipTourStore";
@@ -48,9 +46,6 @@ export default class TooltipTourStore
       start: action.bound,
       stop: action.bound,
     });
-    autorun(() => {
-      console.log("_tourStepState", toJS(this._tourStepState));
-    });
   }
 
   get isStopped() {
@@ -83,7 +78,6 @@ export default class TooltipTourStore
   private _onCloseTooltip() {
     const { state, step } = this._tourStepState;
     if (state !== TooltipTourState.ACTIVE) return;
-    console.log(step, this._tooltipsCount);
     if (step === this._tooltipsCount) {
       this._tourStepState = {
         state: TooltipTourState.STOPPED,

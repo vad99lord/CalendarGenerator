@@ -81,7 +81,6 @@ const UsersPickerTab = <
   scopeId,
   storeId,
 }: UsersPickerTabProps<ParamsName>) => {
-  console.log("UsersPickerTab render");
   //using callback to avoid recreation of store each mount
   const fetchStore = useVkApiFetchStoreCallback(pagingParamsName);
   const selectAllFetchStore =

@@ -1,4 +1,4 @@
-import { toStringOrEmpty } from "@utils/utils";
+import { isDevEnv } from "@shared/utils/utils";
 import {
   AnyRequestMethodName,
   ErrorData,
@@ -19,7 +19,9 @@ export const logVkBridgeError = <T extends AnyRequestMethodName>(
 ) => {
   const failedFetchText = `Failed to fetch ${method}`;
   const errText = isVkErrorData(err) ? vkErrorToText(err) : err;
-  console.log(`${failedFetchText}\n${errText}`);
+  if (isDevEnv()) {
+    console.log(`${failedFetchText}\n${errText}`);
+  }
 };
 
 export const vkErrorToText = ({
@@ -36,55 +38,11 @@ export const vkBridgeErrorToString = (err?: VKBridgeError) => {
   if (!err) return "";
   if (typeof err === "string") return err;
   return vkErrorToText(err);
-}
+};
 
 export const isVkErrorData = (error: any): error is ErrorData => {
   return (
     typeof error.error_type === "string" &&
     typeof error.error_data === "object"
   );
-};
-
-/**
- * @deprecated Doesn't fully covers nested undocumented errors
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const logVkError = (err: ErrorData) => {
-  const errorText = errorToText(err);
-  console.log(errorText);
-};
-
-const errorToText = ({
-  error_data: errorData,
-  error_type: errorType,
-}: ErrorData) => {
-  switch (errorType) {
-    case "api_error": {
-      const {
-        error_code: code,
-        error_msg: msg,
-        request_params: requestParams,
-      } = errorData;
-      return `${code} : ${msg},
-      parameters requested: ${requestParams}`;
-    }
-    case "auth_error": {
-      const {
-        error_code: code,
-        error_reason: reason,
-        error_description: description,
-      } = errorData;
-      return `${code} : ${reason},
-      ${toStringOrEmpty(description)}`;
-    }
-    case "client_error": {
-      const {
-        error_code: code,
-        error_reason: reason,
-        error_description: description,
-      } = errorData;
-      return `${code} : ${reason},
-      ${toStringOrEmpty(description)}`;
-    }
-  }
 };

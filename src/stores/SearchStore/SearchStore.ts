@@ -47,7 +47,6 @@ export default class SearchStore implements ISearchStore, Disposable {
     this._debouncedSearchTextReaction = reaction(
       () => this._searchText,
       debounce((searchText: string) => {
-        console.log("DEBOUNCED reaction");
         this._setDebouncedSearchText(searchText);
       }, this._waitTime)
     );

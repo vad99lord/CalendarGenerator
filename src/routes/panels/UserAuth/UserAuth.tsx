@@ -26,7 +26,6 @@ interface UserAuthProps
 const UserAuth = ({ onNextClick, nav: panelId }: UserAuthProps) => {
   const authStore = useLateInitContext(AuthContext);
   const userAuthStore = useLocalStore(UserAuthStore, authStore);
-  console.log("UserAuth render");
 
   useEffect(() => {
     userAuthStore.auth();

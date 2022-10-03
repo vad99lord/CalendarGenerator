@@ -23,7 +23,6 @@ export default class OnboardingStore
     this._tooltipTourFinishedReaction = reaction(
       () => this._tooltipTourStore.isStopped,
       (isTourStopped) => {
-        console.log("_tooltipTourFinishedReaction", isTourStopped);
         if (!isTourStopped) return;
         this._setIsOnboardingShown();
       }
@@ -45,7 +44,6 @@ export default class OnboardingStore
     const response = await VkStorageStore.getStorage(["isShown"]);
     if (!response.isError) {
       const storage = response.data.keys;
-      console.log("STORAGE GET", storage);
       return Boolean(storage.isShown);
     }
     return false;

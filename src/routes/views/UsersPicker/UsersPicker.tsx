@@ -23,7 +23,6 @@ const UsersPicker = ({
   checkedUsersStore,
   navStackStore,
 }: UsersPickerProps) => {
-  console.log("UsersPicker RENDER");
   const usersPickerScope = useScope();
   const usersPickerPanels = computed(
     () => navStackStore.currentEntry.viewsState["users_picker"]

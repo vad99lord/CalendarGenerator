@@ -47,7 +47,6 @@ const SelectedUsers = ({
   siblingCount,
   boundaryCount,
 }: SelectedUsersProps) => {
-  console.log("SelectedUsers render");
   const selectedUsersStore = useLocalStore(
     SelectedUsersStore,
     checkedUsersStore

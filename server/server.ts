@@ -36,13 +36,11 @@ router.post(
         .json({ errors: errors.array({ onlyFirstError: true }) });
     }
     const currentYear = new Date().getUTCFullYear();
-    console.log(req.body.birthdays);
     const calendarUsers: CalendarUser[] = req.body.birthdays.map(
       ({ name, birthday, id }) => {
         const birthDate = new Date(birthday);
         const day = birthDate.getUTCDate();
         const month = birthDate.getUTCMonth();
-        console.log({ currentYear, day, month });
         //make 29 february -> 28 for cross-years consistency
         const fixedLeapYearDay = isLeapYearLastFebruary(month, day)
           ? day - 1

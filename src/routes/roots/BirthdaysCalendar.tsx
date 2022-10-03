@@ -20,7 +20,6 @@ import CalendarGenerator from "../views/CalendarGenerator/CalendarGenerator";
 import UsersPicker from "../views/UsersPicker/UsersPicker";
 
 const BirthdaysCalendar = () => {
-  console.log("BirthdaysCalendar RENDER");
   const checkedUsersStore: ICheckedUsersStore =
     useLocalStore(CheckedUsersStore);
   const tooltipTourStore = useLateInitContext(TooltipTourContext);
@@ -33,7 +32,6 @@ const BirthdaysCalendar = () => {
       NonEmptyNavStackStore<BirthdaysCalendarRootNavigation>,
       INITIAL_NAV_STATE
     );
-  // console.log({ navState: toJS(navStackStore.currentEntry) });
   const activeView = computed(
     () => navStackStore.currentEntry.activeView
   ).get();

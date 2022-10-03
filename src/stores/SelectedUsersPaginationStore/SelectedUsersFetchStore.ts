@@ -1,8 +1,8 @@
 import { UserModel } from "@network/models/User/UserModel";
 import { ApiSuccess } from "@network/types/ApiResponse";
 import ICheckedUsersStore from "@stores/CheckedUsersStore/ICheckedUsersStore";
-import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import { LoadState } from "@stores/FetchStores/LoadState";
+import { PaginationParams } from "@stores/FetchStores/VkApiFetchStore/VkApiParamsProvider/VkApiParamsProviderMap";
 import {
   IPaginationFetchStore,
   PaginationFetchResponse,
@@ -10,14 +10,7 @@ import {
 import ISearchStore from "@stores/SearchStore/ISearchStore";
 import { Disposable } from "@utils/types";
 import { filterValues } from "@utils/utils";
-import {
-  action,
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  toJS,
-} from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
 export type FetchParams = PaginationParams;
 export type ErrorData = string;
@@ -55,16 +48,6 @@ export default class SelectedUsersFetchStore
       error: computed,
       fetch: action.bound,
       _filteredSelectedUsers: computed,
-    });
-    autorun(() => {
-      const state = {
-        _filteredSelectedUsers: toJS(this._filteredSelectedUsers),
-        _paginatedFilteredSelectedUsers: toJS(
-          this._paginatedFilteredSelectedUsers
-        ),
-        _fetchParams: toJS(this._fetchParams),
-      };
-      console.log("selectedPagination", state);
     });
   }
 

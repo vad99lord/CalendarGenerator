@@ -77,7 +77,6 @@ export class BirthDate {
   private static stringToBirthDateParts(
     bdate: string
   ): BirthDateParts {
-    // console.log(bdate);
     const bdateTokenized = bdate.split(".").map(Number);
 
     if (
@@ -92,7 +91,6 @@ export class BirthDate {
       },
       {}
     ) as BirthDateParts;
-    // console.log(birthDate);
     return birthDate;
   }
 }

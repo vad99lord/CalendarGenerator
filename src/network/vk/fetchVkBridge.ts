@@ -22,7 +22,6 @@ export const fetchVkBridgeInstance = async <
 ): Promise<VkBridgeFetchResponse<T>> => {
   try {
     const result = await bridge.send(...params);
-    // console.log(result);
 
     return { isError: false, data: result };
   } catch (err: unknown) {

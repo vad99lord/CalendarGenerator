@@ -18,7 +18,6 @@ import {
   IReactionDisposer,
   makeObservable,
   reaction,
-  toJS,
 } from "mobx";
 import SelectedUsersFetchStore, {
   ISelectedUsersFetchStore,
@@ -85,11 +84,6 @@ export default class SelectedUsersPaginationStore
     this._selectedUsersPaginationLoadReaction = reaction(
       () => this._selectedUsersPaginationStore.pageItems,
       (pageItems) => {
-        console.log(
-          "_selectedUsersPaginationLoadReaction",
-          toJS(pageItems),
-          this._previousPage
-        );
         if (!isEmptyArray(pageItems)) {
           this._restorePreviousPage();
         }

@@ -73,7 +73,6 @@ const BirthdayPicker = ({
     },
     [acceptYear, onDateChange]
   );
-  // console.log({ min, max, acceptYear });
   const pickerClassName = [
     className,
     acceptYear ? undefined : "BirthdayPicker__no-year",

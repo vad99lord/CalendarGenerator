@@ -9,7 +9,6 @@ interface UsersTabProps extends UsersPickerTabOuterProps, ScopeId {}
 const USER_STORE_PICKER_ID = Symbol("FriendsTab");
 
 const UsersTab = ({ ...props }: UsersTabProps) => {
-  console.log("UsersTab render");
   return (
     <UsersPickerTab
       pagingParamsName="PaginateUsersByQuery"

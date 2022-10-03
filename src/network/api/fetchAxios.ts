@@ -50,7 +50,6 @@ const fetchAxios = async <E extends ApiEndpoints>({
     if (axios.isAxiosError(err)) {
       const reqUrlText = err.config.url ? `${err.config.url}: ` : "";
       const errText = `${reqUrlText}${err.message}`;
-      console.log(errText);
       if (isDevEnv()) {
         const { data } = err.response || {};
         console.log("request:\n", err?.response?.request);
@@ -64,8 +63,6 @@ const fetchAxios = async <E extends ApiEndpoints>({
       const errText = UNKNOWN_ERROR_TEXT;
       if (isDevEnv()) {
         console.log(errText, err);
-      } else {
-        console.log(errText);
       }
       return { isError: true, data: errText };
     }
